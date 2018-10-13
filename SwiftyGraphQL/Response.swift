@@ -13,6 +13,11 @@ import Foundation
 public struct GraphQLResponse<T>: Decodable where T: Decodable {
     public let data: T
     public let errors: [String]?
+    
+    public init(data: T, errors: [String]?) {
+        self.data = data
+        self.errors = errors
+    }
 }
 
 /// All graphql responses come back wrapped in a `data` object
