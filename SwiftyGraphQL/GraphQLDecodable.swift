@@ -8,12 +8,12 @@
 
 import Foundation
 
-public protocol GraphQLDecodeable: Decodable {}
-extension String: GraphQLDecodeable {}
-extension Array: GraphQLDecodeable where Element: GraphQLDecodeable {}
+public protocol GraphQLDecodable: Decodable {}
+extension String: GraphQLDecodable {}
+extension Array: GraphQLDecodable where Element: GraphQLDecodable {}
 
 extension JSONDecoder {
-    public func graphQLDecode<T>(_ type: T.Type, from data: Data) throws -> T where T: GraphQLDecodeable {
+    public func graphQLDecode<T>(_ type: T.Type, from data: Data) throws -> T where T: GraphQLDecodable {
         do {
             return try decode(type, from: data)
         } catch {

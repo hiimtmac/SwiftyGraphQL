@@ -15,7 +15,7 @@ class GraphQLDecodeableTests: XCTestCase {
         let name: String
     }
     
-    struct TypeTwo: GraphQLDecodeable {
+    struct TypeTwo: GraphQLDecodable {
         let name: String
     }
 
