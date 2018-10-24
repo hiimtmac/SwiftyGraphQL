@@ -16,6 +16,10 @@ public struct GraphQLMutation: Encodable {
     public init(mutation: GraphQLStatement, returning: GraphQLRepresentable) {
         self.query = "mutation { \(mutation) { \(returning.rawQuery) } } \(returning.fragments)"
     }
+    
+    public init(mutation: Mutation, returning: GraphQLRepresentable) {
+        self.query = "mutation { \(mutation) { \(returning.rawQuery) } } \(returning.fragments)"
+    }
 }
 
 public struct Mutation: CustomStringConvertible {

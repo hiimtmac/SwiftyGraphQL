@@ -17,8 +17,6 @@ private let slashQuote = """
 \\\"
 """
 
-public let kGraphQLNull = "\"NULL\""
-
 public protocol ParameterEncoded {
     func graphEncoded() -> String
 }
