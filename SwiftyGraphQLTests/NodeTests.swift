@@ -60,4 +60,18 @@ class NodeTests: XCTestCase {
         XCTAssertEqual(nodes.rawQuery, "one: one { ...fragment1 } two: two { no maybe ...frag2 }")
         XCTAssertEqual(nodes.fragments, "fragment frag2 on Frag2 { birthday address } fragment fragment1 on Fragment1 { name age }")
     }
+    
+    func testEmptyNode() {
+        let one = Node.node(nil, "one", nil, [])
+        XCTAssertEqual(one.rawQuery, "one: one")
+        XCTAssertEqual(one.fragments, "")
+    }
+    
+    func testEmptyNodeWithOtherNode() {
+        let one = Node.node(nil, "one", nil, [])
+        let two = Node.node(nil, "two", nil, [.attributes(["no", "maybe"]), .fragment(Frag2.self)])
+        let nodes = [one, two]
+        XCTAssertEqual(nodes.rawQuery, "one: one two: two { no maybe ...frag2 }")
+        XCTAssertEqual(nodes.fragments, "fragment frag2 on Frag2 { birthday address }")
+    }
 }

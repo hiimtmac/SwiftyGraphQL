@@ -33,7 +33,11 @@ public enum Node: GraphQLRepresentable {
                 parameterString = "(\(params))"
             }
             
-            return "\(label ?? name): \(name)\(parameterString) { \(nodeString) }"
+            if nodes.isEmpty {
+                return "\(label ?? name): \(name)\(parameterString)"
+            } else {
+                return "\(label ?? name): \(name)\(parameterString) { \(nodeString) }"
+            }
         case .attributes(let attributes): return attributes.joined(separator: " ")
         case .fragment(let type): return "...\(type.fragmentName)"
         }

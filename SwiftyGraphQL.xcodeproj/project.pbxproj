@@ -21,6 +21,10 @@
 		D7E5B2CF216CEC2A004CA6C4 /* ResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E5B2CE216CEC2A004CA6C4 /* ResponseTests.swift */; };
 		D7E5B2D1216CEE60004CA6C4 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E5B2D0216CEE60004CA6C4 /* Helpers.swift */; };
 		D7E5B2D3216CFCE8004CA6C4 /* Statement.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E5B2D2216CFCE8004CA6C4 /* Statement.swift */; };
+		D7F588C52180CEE800BDD411 /* GraphQLError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F588C42180CEE800BDD411 /* GraphQLError.swift */; };
+		D7F588C72180D27B00BDD411 /* GraphQLDecodeable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F588C62180D27B00BDD411 /* GraphQLDecodeable.swift */; };
+		D7F588CD2180D4CC00BDD411 /* GraphQLDecodeableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F588CC2180D4CC00BDD411 /* GraphQLDecodeableTests.swift */; };
+		D7F588CF2180D4D400BDD411 /* GraphQLErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F588CE2180D4D400BDD411 /* GraphQLErrorTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +58,10 @@
 		D7E5B2D4216CFE92004CA6C4 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		D7E5B2D5216CFE92004CA6C4 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		D7E5B2D6216CFE93004CA6C4 /* SwiftyGraphQL.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SwiftyGraphQL.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		D7F588C42180CEE800BDD411 /* GraphQLError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphQLError.swift; sourceTree = "<group>"; };
+		D7F588C62180D27B00BDD411 /* GraphQLDecodeable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphQLDecodeable.swift; sourceTree = "<group>"; };
+		D7F588CC2180D4CC00BDD411 /* GraphQLDecodeableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphQLDecodeableTests.swift; sourceTree = "<group>"; };
+		D7F588CE2180D4D400BDD411 /* GraphQLErrorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphQLErrorTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +115,8 @@
 				D724F92F216C9FAC00342F5A /* Query.swift */,
 				D7E5B2C4216CE52F004CA6C4 /* Response.swift */,
 				D7E5B2D2216CFCE8004CA6C4 /* Statement.swift */,
+				D7F588C42180CEE800BDD411 /* GraphQLError.swift */,
+				D7F588C62180D27B00BDD411 /* GraphQLDecodeable.swift */,
 			);
 			path = SwiftyGraphQL;
 			sourceTree = "<group>";
@@ -119,6 +129,8 @@
 				D7E5B2CA216CEC1A004CA6C4 /* MutationTests.swift */,
 				D7E5B2CC216CEC22004CA6C4 /* QueryTests.swift */,
 				D7E5B2CE216CEC2A004CA6C4 /* ResponseTests.swift */,
+				D7F588CC2180D4CC00BDD411 /* GraphQLDecodeableTests.swift */,
+				D7F588CE2180D4D400BDD411 /* GraphQLErrorTests.swift */,
 				D7E5B2D0216CEE60004CA6C4 /* Helpers.swift */,
 				D724F91F216C9F9000342F5A /* Info.plist */,
 			);
@@ -236,9 +248,11 @@
 			files = (
 				D724F930216C9FAC00342F5A /* Query.swift in Sources */,
 				D724F92A216C9F9A00342F5A /* Node.swift in Sources */,
+				D7F588C52180CEE800BDD411 /* GraphQLError.swift in Sources */,
 				D724F92E216C9FA500342F5A /* Mutation.swift in Sources */,
 				D7E5B2D3216CFCE8004CA6C4 /* Statement.swift in Sources */,
 				D724F92C216C9FA000342F5A /* Fragment.swift in Sources */,
+				D7F588C72180D27B00BDD411 /* GraphQLDecodeable.swift in Sources */,
 				D7E5B2C5216CE52F004CA6C4 /* Response.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -249,9 +263,11 @@
 			files = (
 				D7E5B2C9216CEC13004CA6C4 /* FragmentTests.swift in Sources */,
 				D7E5B2D1216CEE60004CA6C4 /* Helpers.swift in Sources */,
+				D7F588CD2180D4CC00BDD411 /* GraphQLDecodeableTests.swift in Sources */,
 				D7E5B2CD216CEC22004CA6C4 /* QueryTests.swift in Sources */,
 				D7E5B2CB216CEC1A004CA6C4 /* MutationTests.swift in Sources */,
 				D7E5B2CF216CEC2A004CA6C4 /* ResponseTests.swift in Sources */,
+				D7F588CF2180D4D400BDD411 /* GraphQLErrorTests.swift in Sources */,
 				D7E5B2C7216CEC0B004CA6C4 /* NodeTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
