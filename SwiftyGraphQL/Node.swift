@@ -14,7 +14,7 @@ public protocol GraphQLRepresentable {
 }
 
 public enum Node: GraphQLRepresentable {
-    indirect case node(String?, String, [String: String]?, [Node])
+    indirect case node(String?, String, Parameters?, [Node])
     case attributes([String])
     case fragment(GraphQLFragmentRepresentable.Type)
     
@@ -25,14 +25,7 @@ public enum Node: GraphQLRepresentable {
                 .map { $0.rawQuery }
                 .joined(separator: " ")
             
-            var parameterString = ""
-            if let parameters = parameters {
-                let params = parameters
-                    .map { "\($0.key): \($0.value)" }
-                    .sorted()
-                    .joined(separator: ", ")
-                parameterString = "(\(params))"
-            }
+            let parameterString = "\(parameters ?? Parameters([:]))"
             
             if nodes.isEmpty {
                 return "\(label ?? name): \(name)\(parameterString)"

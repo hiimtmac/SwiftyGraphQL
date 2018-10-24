@@ -17,3 +17,17 @@ public struct GraphQLMutation: Encodable {
         self.query = "mutation { \(mutation) { \(returning.rawQuery) } } \(returning.fragments)"
     }
 }
+
+public struct Mutation: CustomStringConvertible {
+    let title: String
+    let parameters: Parameters
+    
+    public init(title: String, parameters: Parameters) {
+        self.title = title
+        self.parameters = parameters
+    }
+    
+    public var description: String {
+        return "\(title)\(parameters)"
+    }
+}

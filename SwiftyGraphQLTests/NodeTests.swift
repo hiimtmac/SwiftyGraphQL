@@ -26,7 +26,7 @@ class NodeTests: XCTestCase {
     }
     
     func testWithParameters() {
-        let node = Node.node(nil, "myNode", ["since": "4", "name": "\"taylor\""], [.attributes(["hello", "hi"])])
+        let node = Node.node(nil, "myNode", Parameters(["since": 4, "name": "taylor"]), [.attributes(["hello", "hi"])])
         XCTAssertEqual(node.rawQuery, "myNode: myNode(name: \"taylor\", since: 4) { hello hi }")
         XCTAssert(node.fragmentTypes.isEmpty)
     }

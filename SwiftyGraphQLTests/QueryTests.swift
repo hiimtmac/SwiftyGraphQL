@@ -24,7 +24,7 @@ class QueryTests: XCTestCase {
     }
     
     func testAdvanced() {
-        let frag1 = Node.node("allFrag1s", "frag1", ["since": "20", "name": "\"taylor\""], [.fragment(Frag1.self)])
+        let frag1 = Node.node("allFrag1s", "frag1", Parameters(["since": 20, "name": "taylor"]), [.fragment(Frag1.self)])
         let frag2 = Node.node(nil, "frag2", nil, [.fragment(Frag2.self), frag1])
         
         let node = Node.node(nil, "myQuery", nil, [frag2, .attributes(["thing1", "thing2"])])
