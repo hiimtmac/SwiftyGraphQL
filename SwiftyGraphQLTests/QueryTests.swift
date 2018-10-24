@@ -29,7 +29,7 @@ class QueryTests: XCTestCase {
         
         let node = Node.node(nil, "myQuery", nil, [frag2, .attributes(["thing1", "thing2"])])
         let query = GraphQLQuery(returning: node)
-        XCTAssertEqual(query.query, "{ myQuery: myQuery { frag2: frag2 { ...frag2 allFrag1s: frag1(since: 20, name: \"taylor\") { ...fragment1 } } thing1 thing2 } } fragment frag2 on Frag2 { birthday address } fragment fragment1 on Fragment1 { name age }")
+        XCTAssertEqual(query.query, "{ myQuery: myQuery { frag2: frag2 { ...frag2 allFrag1s: frag1(name: \"taylor\", since: 20) { ...fragment1 } } thing1 thing2 } } fragment frag2 on Frag2 { birthday address } fragment fragment1 on Fragment1 { name age }")
     }
     
     func testWithArray() {

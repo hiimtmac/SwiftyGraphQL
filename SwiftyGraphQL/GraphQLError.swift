@@ -8,6 +8,37 @@
 
 import Foundation
 
+public struct GraphQLErrors: Decodable {
+    public let errors: [GraphQLError]
+}
+
+extension GraphQLErrors: Error {}
+extension GraphQLErrors: LocalizedError {
+    public var errorDescription: String? {
+        if errors.count == 1 {
+            return errors.first?.localizedDescription
+        } else {
+            return "Multiple unrecoverable GraphQL© queries/mutations"
+        }
+    }
+    
+    public var failureReason: String? {
+        if errors.count == 1 {
+            return errors.first?.failureReason
+        } else {
+            return "Multiple GraphQL© queries/mutations have been incorrectly constructed."
+        }
+    }
+    
+    public var recoverySuggestion: String? {
+        if errors.count == 1 {
+            return errors.first?.recoverySuggestion
+        } else {
+            return nil
+        }
+    }
+}
+
 public struct GraphQLError: Decodable {
     public let message: String
     public let locations: [Location]?
@@ -24,7 +55,6 @@ public struct GraphQLError: Decodable {
 }
 
 extension GraphQLError: Error {}
-
 extension GraphQLError: LocalizedError {
     public var errorDescription: String? {
         return "Unrecoverable GraphQL© query/mutation: \(message)"

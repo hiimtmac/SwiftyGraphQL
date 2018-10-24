@@ -29,6 +29,7 @@ public enum Node: GraphQLRepresentable {
             if let parameters = parameters {
                 let params = parameters
                     .map { "\($0.key): \($0.value)" }
+                    .sorted()
                     .joined(separator: ", ")
                 parameterString = "(\(params))"
             }

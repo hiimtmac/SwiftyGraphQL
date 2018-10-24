@@ -59,16 +59,20 @@ class GraphQLDecodeableTests: XCTestCase {
     func testDecodeFailsGraphQLDecodeable() {
         let json = """
         {
-            "message": "this is bad",
-            "locations": [
+            "errors": [
                 {
-                    "line": 4,
-                    "column": 6
+                    "message": "this is bad",
+                    "locations": [
+                        {
+                            "line": 4,
+                            "column": 6
+                        }
+                    ],
+                    "fields": [
+                        "thing",
+                        "other"
+                    ]
                 }
-            ],
-            "fields": [
-                "thing",
-                "other"
             ]
         }
         """
@@ -78,8 +82,52 @@ class GraphQLDecodeableTests: XCTestCase {
             let _ = try JSONDecoder().graphQLDecode(TypeTwo.self, from: data)
             XCTFail("should not work")
         } catch {
-            let decodeError = error as? GraphQLError
+            let decodeError = error as? GraphQLErrors
             XCTAssertEqual(decodeError?.localizedDescription, "Unrecoverable GraphQL© query/mutation: this is bad")
+        }
+    }
+    
+    func testDecodeFailsGraphQLDecodeableMultiple() {
+        let json = """
+        {
+            "errors": [
+                {
+                    "message": "this is bad",
+                    "locations": [
+                        {
+                            "line": 4,
+                            "column": 6
+                        }
+                    ],
+                    "fields": [
+                        "thing",
+                        "other"
+                    ]
+                },
+                {
+                    "message": "this is horrible",
+                    "locations": [
+                        {
+                            "line": 6,
+                            "column": 9
+                        }
+                    ],
+                    "fields": [
+                        "bad",
+                        "other"
+                    ]
+                }
+            ]
+        }
+        """
+        let data = json.data(using: .utf8)!
+        
+        do {
+            let _ = try JSONDecoder().graphQLDecode(TypeTwo.self, from: data)
+            XCTFail("should not work")
+        } catch {
+            let decodeError = error as? GraphQLErrors
+            XCTAssertEqual(decodeError?.localizedDescription, "Multiple unrecoverable GraphQL© queries/mutations")
         }
     }
 }
