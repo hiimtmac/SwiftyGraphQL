@@ -31,7 +31,11 @@ public struct Mutation: CustomStringConvertible {
         self.parameters = parameters
     }
     
-    public var description: String {
+    var mutation: GraphQLStatement {
         return "\(title)\(parameters)"
+    }
+    
+    public var description: String {
+        return mutation
     }
 }
