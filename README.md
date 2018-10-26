@@ -17,14 +17,14 @@ The main object of this framework is the `Node` enumeration. It is used to creat
 
 ```swift
 public enum Node {
-    indirect case node(String?, String, [String: String]?, [Node])
+    indirect case node(String?, String, Parameters?, [Node])
     case attributes([String])
     case fragment(GraphQLFragmentRepresentable.Type)
     ...
 }
 
 // Node.node(`Alias`, `GraphQLEntity`, `Parameters`, `Child Nodes`)
-// Node.node(String?, String, [String: String]?, [Node])
+// Node.node(String?, String, Parameters?, [Node])
 ```
 
 Example usage:
@@ -180,17 +180,21 @@ This is the name of the graphql entity, setup in the graphql schema.
 
 #### Parameters
 
-If parameters for a node are specified, they will be encoded into the query.
-
->Note: quotes **must** be escaped
+The `Parameters` object handles options passed to the query/mutation in the format of a `[String: ParameterEncoded]` dictionary. 
+Anything conforming to `ParameterEncoded` can be put into the parameters object, thought currently only `String`, `Int`, & `Double` conform. 
+Additionally, escaping `\` & `"` sucks, so the `String` implementation of `ParameterEncoded` handles make it graphql safe.
+Any optional values are encoded as `NULL` (which I think is better than omitting the whole key/value pair).
 
 ```swift
-let node = Node.node("myNode", "allNodes", ["since": "8", "id": ""\"123\""], [.node(nil, "frag", nil, [.fragment(Frag2.self)]), .attributes(["hi", "ok"])])
+let num: Int? = nil
+let string: String? = nil
+let parameters = Parameters(["since": num, "name": string ?? "defaultValue", "other": 2, "date": "today", "zzz": nil])
+let node = Node.node("myNode", "allNodes", parameters, [.node(nil, "frag", nil, [.fragment(Frag2.self)]), .attributes(["hi", "ok"])])
 let query = GraphQLQuery(returning: node)
 
 /*
 Raw Query:
-myNode: allNodes(since: 8, name: "123") {
+myNode: allNodes(date: "today", name: "defaultValue", other: 2, since: NULL, zzz: NULL) {
     frag: frag {
         ...frag2
     }
@@ -205,14 +209,13 @@ fragment frag2 on Frag2 {
 */
 ```
 
-### Mutation
+### Mutations
 
-The `GraphQLQuery` object is initialized with a `Node` object and takes care of creating the query for graphql.
-
->Note: Quotes **must** be escaped.
+A `Mutation` object has been included to help create the mutation string along with the returning query.
 
 ```swift
-let mutation = "newPerson(id: \"123\", name: \"taylor\", age: 666)"
+let parameters = Parameters(["id": "123", "name": "taylor", "age": 666])
+let mutation = Mutation(title: "newPerson, parameters: parameters)
 let node = Node.node("createdPerson", "person", nil, [.fragment(Frag2.self)])
 let query = GraphQLMutation(mutation: mutation, returning: node)
 let json = try JSONEncoder().encode(query)
@@ -322,3 +325,10 @@ or
     ]
 }
 ```
+
+### GraphQLError
+
+If you have a type that conforms to `GraphQLDecodable` (which only needs to conform to `Decodable`), you can use an extension 
+on `JSONDecoder` to `graphQLDecode<T>(...)`. If the decoding of your type fails because the `data` node is missing from the 
+JSON because a graphQL error has been thrown, this method will attemp to decode the graphql error type and throw that instead
+of the normal JSONDecoder error.

@@ -20,13 +20,22 @@ class ParameterTests: XCTestCase {
         XCTAssertEqual(parameters.description, compare)
     }
     
+    func testNullParameters() {
+        let parameters = Parameters(["since": nil, "name": "taylor"])
+        
+        let compare = """
+        (name: "taylor", since: NULL)
+        """
+        XCTAssertEqual(parameters.description, compare)
+    }
+    
     func testParametersWithOptionals() {
         let num: Int? = nil
         let string: String? = nil
-        let parameters = Parameters(["since": num ?? "NULL", "name": string ?? "NULL", "other": 2, "date": "today"])
+        let parameters = Parameters(["since": num, "name": string ?? "NULL", "other": 2, "date": "today", "zzz": nil])
         
         let compare = """
-        (date: "today", name: "NULL", other: 2, since: "NULL")
+        (date: "today", name: "NULL", other: 2, since: NULL, zzz: NULL)
         """
         XCTAssertEqual(parameters.description, compare)
     }

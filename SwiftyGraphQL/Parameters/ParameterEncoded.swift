@@ -42,3 +42,10 @@ extension Double: ParameterEncoded {
         return "\(self)"
     }
 }
+
+extension Optional: ParameterEncoded where Wrapped == ParameterEncoded {
+    public func graphEncoded() -> String {
+        guard let self = self else { return "NULL" }
+        return self.graphEncoded()
+    }
+}
