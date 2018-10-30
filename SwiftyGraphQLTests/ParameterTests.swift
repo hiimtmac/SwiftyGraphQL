@@ -24,7 +24,7 @@ class ParameterTests: XCTestCase {
         let parameters = Parameters(["since": nil, "name": "taylor"])
         
         let compare = """
-        (name: "taylor", since: NULL)
+        (name: "taylor", since: null)
         """
         XCTAssertEqual(parameters.description, compare)
     }
@@ -35,7 +35,7 @@ class ParameterTests: XCTestCase {
         let parameters = Parameters(["since": num, "name": string ?? "NULL", "other": 2, "date": "today", "zzz": nil])
         
         let compare = """
-        (date: "today", name: "NULL", other: 2, since: NULL, zzz: NULL)
+        (date: "today", name: "NULL", other: 2, since: null, zzz: null)
         """
         XCTAssertEqual(parameters.description, compare)
     }
