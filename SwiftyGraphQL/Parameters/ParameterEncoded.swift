@@ -43,6 +43,12 @@ extension Double: ParameterEncoded {
     }
 }
 
+extension Bool: ParameterEncoded {
+    public func graphEncoded() -> String {
+        return "\(self)"
+    }
+}
+
 extension Optional: ParameterEncoded where Wrapped == ParameterEncoded {
     public func graphEncoded() -> String {
         guard let self = self else { return "null" }

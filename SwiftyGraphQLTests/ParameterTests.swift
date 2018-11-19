@@ -12,10 +12,32 @@ import XCTest
 class ParameterTests: XCTestCase {
 
     func testParameters() {
-        let parameters = Parameters(["since": 20, "name": "taylor"])
+        let parameters = Parameters(["since": 20, "name": "taylor", "true": true])
         
         let compare = """
-        (name: "taylor", since: 20)
+        (name: "taylor", since: 20, true: true)
+        """
+        XCTAssertEqual(parameters.description, compare)
+    }
+    
+    func testParameterCombination() {
+        let p1 = Parameters(["since": 20, "name": "taylor"])
+        let p2 = Parameters(["ok": true, "address": "difficult"])
+        let parameters = p1 + p2
+        
+        let compare = """
+        (address: "difficult", name: "taylor", ok: true, since: 20)
+        """
+        XCTAssertEqual(parameters.description, compare)
+    }
+    
+    func testParameterCombinationChoosesRhsKeys() {
+        let p1 = Parameters(["since": 20, "name": "taylor", "true": true])
+        let p2 = Parameters(["since": 30, "true": false])
+        let parameters = p1 + p2
+        
+        let compare = """
+        (name: "taylor", since: 30, true: false)
         """
         XCTAssertEqual(parameters.description, compare)
     }

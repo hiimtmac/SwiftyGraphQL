@@ -28,4 +28,9 @@ public struct Parameters: CustomStringConvertible {
     public var description: GraphQLStatement {
         return encoded
     }
+    
+    public static func +(lhs: Parameters, rhs: Parameters) -> Parameters {
+        let contents = lhs.parameters.merging(rhs.parameters) { (_, new) in new }
+        return Parameters(contents)
+    }
 }
