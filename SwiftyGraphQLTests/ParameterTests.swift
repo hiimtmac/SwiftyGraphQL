@@ -121,7 +121,30 @@ class ParameterTests: XCTestCase {
         (normal: "also", ok: "thing\\\\thing", since: "thing\\"thing", sure: 4, yes: "thing\\\\\\"thing")
         """
         
-        print(compare)
         XCTAssertEqual(parameters.description, compare)
+    }
+    
+    func testNestedParameters() {
+        let p1 = Parameters(["ok": "yes"])
+        let p2 = Parameters(["yes": p1])
+        
+        let compare = """
+        (yes: { ok: "yes" })
+        """
+        
+        XCTAssertEqual(p2.description, compare)
+    }
+    
+    func testArrayParameters() {
+        let p1 = Parameters(["ok": "yes"])
+        let p2 = Parameters(["ok": "no"])
+        let p3 = Parameters(["ok": "maybe"])
+        let p4 = Parameters(["ok": [p1, p2, p3]])
+        
+        let compare = """
+        (ok: [ { ok: "maybe" }, { ok: "no" }, { ok: "yes" } ])
+        """
+        
+        XCTAssertEqual(p4.description, compare)
     }
 }

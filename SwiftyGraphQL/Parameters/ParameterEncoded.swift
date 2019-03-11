@@ -49,6 +49,28 @@ extension Bool: ParameterEncoded {
     }
 }
 
+extension Array: ParameterEncoded where Element: ParameterEncoded {
+    public func graphEncoded() -> String {
+        let parametersEncoded = self
+            .map { $0.graphEncoded() }
+            .sorted()
+            .joined(separator: ", ")
+        
+        return "[ \(parametersEncoded) ]"
+    }
+}
+
+extension Parameters: ParameterEncoded {
+    public func graphEncoded() -> String {
+        let parametersEncoded = parameters
+            .map { "\($0.key): \($0.value.graphEncoded())" }
+            .sorted()
+            .joined(separator: ", ")
+        
+        return "{ \(parametersEncoded) }"
+    }
+}
+
 extension Optional: ParameterEncoded where Wrapped == ParameterEncoded {
     public func graphEncoded() -> String {
         guard let self = self else { return "null" }
