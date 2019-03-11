@@ -18,11 +18,11 @@ public struct GraphQLMutation: Encodable {
     }
     
     public init(mutation: Mutation, returning: GraphQLRepresentable) {
-        self.query = "mutation { \(mutation) { \(returning.rawQuery) } } \(returning.fragments)"
+        self.query = "mutation { \(mutation.statement) { \(returning.rawQuery) } } \(returning.fragments)"
     }
 }
 
-public struct Mutation: CustomStringConvertible {
+public struct Mutation {
     let title: String
     let parameters: Parameters
     
@@ -31,11 +31,7 @@ public struct Mutation: CustomStringConvertible {
         self.parameters = parameters
     }
     
-    var mutation: GraphQLStatement {
-        return "\(title)\(parameters)"
-    }
-    
-    public var description: String {
-        return mutation
+    public var statement: GraphQLStatement {
+        return "\(title)\(parameters.statement)"
     }
 }

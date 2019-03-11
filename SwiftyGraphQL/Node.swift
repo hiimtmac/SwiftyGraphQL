@@ -24,13 +24,11 @@ public enum Node: GraphQLRepresentable {
             let nodeString = nodes
                 .map { $0.rawQuery }
                 .joined(separator: " ")
-            
-            let parameterString = "\(parameters ?? Parameters([:]))"
-            
+                        
             if nodes.isEmpty {
-                return "\(label ?? name): \(name)\(parameterString)"
+                return "\(label ?? name): \(name)\(parameters?.statement ?? "")"
             } else {
-                return "\(label ?? name): \(name)\(parameterString) { \(nodeString) }"
+                return "\(label ?? name): \(name)\(parameters?.statement ?? "") { \(nodeString) }"
             }
         case .attributes(let attributes): return attributes.joined(separator: " ")
         case .fragment(let type): return "...\(type.fragmentName)"

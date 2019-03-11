@@ -17,7 +17,7 @@ class ParameterTests: XCTestCase {
         let compare = """
         (name: "taylor", since: 20, true: true)
         """
-        XCTAssertEqual(parameters.description, compare)
+        XCTAssertEqual(parameters.statement, compare)
     }
     
     func testParameterCombination() {
@@ -28,7 +28,7 @@ class ParameterTests: XCTestCase {
         let compare = """
         (address: "difficult", name: "taylor", ok: true, since: 20)
         """
-        XCTAssertEqual(parameters.description, compare)
+        XCTAssertEqual(parameters.statement, compare)
     }
     
     func testParameterCombinationChoosesRhsKeys() {
@@ -39,7 +39,7 @@ class ParameterTests: XCTestCase {
         let compare = """
         (name: "taylor", since: 30, true: false)
         """
-        XCTAssertEqual(parameters.description, compare)
+        XCTAssertEqual(parameters.statement, compare)
     }
     
     func testNullParameters() {
@@ -48,7 +48,7 @@ class ParameterTests: XCTestCase {
         let compare = """
         (name: "taylor", since: null)
         """
-        XCTAssertEqual(parameters.description, compare)
+        XCTAssertEqual(parameters.statement, compare)
     }
     
     func testParametersWithOptionals() {
@@ -59,14 +59,14 @@ class ParameterTests: XCTestCase {
         let compare = """
         (date: "today", name: "NULL", other: 2, since: null, zzz: null)
         """
-        XCTAssertEqual(parameters.description, compare)
+        XCTAssertEqual(parameters.statement, compare)
     }
     
     func testParametersEmpty() {
         let parameters = Parameters([:])
         
         let compare = ""
-        XCTAssertEqual(parameters.description, compare)
+        XCTAssertEqual(parameters.statement, compare)
     }
     
     func testQuoteEscaped() {
@@ -121,7 +121,7 @@ class ParameterTests: XCTestCase {
         (normal: "also", ok: "thing\\\\thing", since: "thing\\"thing", sure: 4, yes: "thing\\\\\\"thing")
         """
         
-        XCTAssertEqual(parameters.description, compare)
+        XCTAssertEqual(parameters.statement, compare)
     }
     
     func testNestedParameters() {
@@ -132,7 +132,7 @@ class ParameterTests: XCTestCase {
         (yes: { ok: "yes" })
         """
         
-        XCTAssertEqual(p2.description, compare)
+        XCTAssertEqual(p2.statement, compare)
     }
     
     func testArrayParameters() {
@@ -145,6 +145,6 @@ class ParameterTests: XCTestCase {
         (ok: [ { ok: "maybe" }, { ok: "no" }, { ok: "yes" } ])
         """
         
-        XCTAssertEqual(p4.description, compare)
+        XCTAssertEqual(p4.statement, compare)
     }
 }

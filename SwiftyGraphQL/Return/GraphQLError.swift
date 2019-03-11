@@ -44,11 +44,11 @@ public struct GraphQLError: Decodable {
     public let locations: [Location]?
     public let fields: [String]?
     
-    public struct Location: Decodable, CustomStringConvertible {
+    public struct Location: Decodable {
         let line: Int
         let column: Int
         
-        public var description: String {
+        public var location: String {
             return "Ln: \(line) / Col: \(column)"
         }
     }
@@ -66,6 +66,6 @@ extension GraphQLError: LocalizedError {
     
     public var recoverySuggestion: String? {
         guard let locations = locations, let fields = fields else { return nil }
-        return "Locations: \(locations.map({$0.description}).joined(separator: ", ")) | Fields: \(fields.map({$0}).joined(separator: ", "))"
+        return "Locations: \(locations.map({$0.location}).joined(separator: ", ")) | Fields: \(fields.map({$0}).joined(separator: ", "))"
     }
 }

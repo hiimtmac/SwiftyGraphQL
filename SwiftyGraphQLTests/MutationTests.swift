@@ -53,7 +53,7 @@ class MutationTests: XCTestCase {
         let two = Node.node(nil, "two", nil, [.attributes(["no", "maybe"]), .fragment(Frag2.self)])
         let mutation = Mutation(title: "testMutation", parameters: Parameters(["thing": "ok"]))
         
-        let graphmutation = GraphQLMutation(mutation: mutation.description, returning: [one, two])
+        let graphmutation = GraphQLMutation(mutation: mutation, returning: [one, two])
         XCTAssertEqual(graphmutation.query, "mutation { testMutation(thing: \"ok\") { one: one two: two { no maybe ...frag2 } } } fragment frag2 on Frag2 { birthday address }")
     }
 }

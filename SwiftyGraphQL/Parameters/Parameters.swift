@@ -8,14 +8,14 @@
 
 import Foundation
 
-public struct Parameters: CustomStringConvertible {
+public struct Parameters {
     let parameters: [String: ParameterEncoded?]
     
     public init(_ parameters: [String: ParameterEncoded?]) {
         self.parameters = parameters
     }
     
-    var encoded: GraphQLStatement {
+    public var statement: GraphQLStatement {
         guard !parameters.isEmpty else { return "" }
         let parametersEncoded = parameters
             .map { "\($0.key): \($0.value.graphEncoded())" }
@@ -23,10 +23,6 @@ public struct Parameters: CustomStringConvertible {
             .joined(separator: ", ")
         
         return "(\(parametersEncoded))"
-    }
-    
-    public var description: GraphQLStatement {
-        return encoded
     }
     
     public static func +(lhs: Parameters, rhs: Parameters) -> Parameters {
