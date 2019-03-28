@@ -8,14 +8,10 @@
 
 import Foundation
 
-private let slash = "\\"
+private let slash = #"\"#
 private let quote = "\""
-private let slashSlash = """
-\\\\
-"""
-private let slashQuote = """
-\\\"
-"""
+private let slashSlash = #"\\"#
+private let slashQuote = #"\""#
 
 public protocol ParameterEncoded {
     func graphEncoded() -> String
@@ -25,9 +21,7 @@ extension String: ParameterEncoded {
     public func graphEncoded() -> String {
         let slashEncoded = self.replacingOccurrences(of: slash, with: slashSlash)
         let quoteEncoded = slashEncoded.replacingOccurrences(of: quote, with: slashQuote)
-        return """
-        "\(quoteEncoded)"
-        """
+        return #""\#(quoteEncoded)""#
     }
 }
 

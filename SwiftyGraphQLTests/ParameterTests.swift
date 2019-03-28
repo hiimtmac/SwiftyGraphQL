@@ -13,10 +13,7 @@ class ParameterTests: XCTestCase {
 
     func testParameters() {
         let parameters = Parameters(["since": 20, "name": "taylor", "true": true])
-        
-        let compare = """
-        (name: "taylor", since: 20, true: true)
-        """
+        let compare = #"(name: "taylor", since: 20, true: true)"#
         XCTAssertEqual(parameters.statement, compare)
     }
     
@@ -25,9 +22,7 @@ class ParameterTests: XCTestCase {
         let p2 = Parameters(["ok": true, "address": "difficult"])
         let parameters = p1 + p2
         
-        let compare = """
-        (address: "difficult", name: "taylor", ok: true, since: 20)
-        """
+        let compare = #"(address: "difficult", name: "taylor", ok: true, since: 20)"#
         XCTAssertEqual(parameters.statement, compare)
     }
     
@@ -36,18 +31,14 @@ class ParameterTests: XCTestCase {
         let p2 = Parameters(["since": 30, "true": false])
         let parameters = p1 + p2
         
-        let compare = """
-        (name: "taylor", since: 30, true: false)
-        """
+        let compare = #"(name: "taylor", since: 30, true: false)"#
         XCTAssertEqual(parameters.statement, compare)
     }
     
     func testNullParameters() {
         let parameters = Parameters(["since": nil, "name": "taylor"])
         
-        let compare = """
-        (name: "taylor", since: null)
-        """
+        let compare = #"(name: "taylor", since: null)"#
         XCTAssertEqual(parameters.statement, compare)
     }
     
@@ -56,71 +47,41 @@ class ParameterTests: XCTestCase {
         let string: String? = nil
         let parameters = Parameters(["since": num, "name": string ?? "NULL", "other": 2, "date": "today", "zzz": nil])
         
-        let compare = """
-        (date: "today", name: "NULL", other: 2, since: null, zzz: null)
-        """
+        let compare = #"(date: "today", name: "NULL", other: 2, since: null, zzz: null)"#
         XCTAssertEqual(parameters.statement, compare)
     }
     
     func testParametersEmpty() {
         let parameters = Parameters([:])
-        
         let compare = ""
         XCTAssertEqual(parameters.statement, compare)
     }
     
     func testQuoteEscaped() {
-        let val = """
-        thing"thing
-        """.graphEncoded()
-        
-        let compare = """
-        "thing\\"thing"
-        """
+        let val = #"thing"thing"#.graphEncoded()
+        let compare = #""thing\"thing""#
         XCTAssertEqual(val, compare)
     }
     
     func testSlashEscaped() {
-        let val = """
-        thing\\thing
-        """.graphEncoded()
-        
-        let compare = """
-        "thing\\\\thing"
-        """
+        let val = #"thing\thing"#.graphEncoded()
+        let compare = #""thing\\thing""#
         XCTAssertEqual(val, compare)
     }
     
     func testSlashQuoteEscaped() {
-        let val = """
-        thing\\"thing
-        """.graphEncoded()
-        
-        let compare = """
-        "thing\\\\\\"thing"
-        """
+        let val = #"thing\"thing"#.graphEncoded()
+        let compare = #""thing\\\"thing""#
         XCTAssertEqual(val, compare)
     }
     
     func testParametersEncoded() {
-        let val1 = """
-        thing"thing
-        """
-        
-        let val2 = """
-        thing\\thing
-        """
-        
-        let val3 = """
-        thing\\"thing
-        """
+        let val1 = #"thing"thing"#
+        let val2 = #"thing\thing"#
+        let val3 = #"thing\"thing"#
         
         let parameters = Parameters(["since":val1, "ok":val2, "yes": val3, "sure": 4, "normal":"also"])
-        
-        let compare = """
-        (normal: "also", ok: "thing\\\\thing", since: "thing\\"thing", sure: 4, yes: "thing\\\\\\"thing")
-        """
-        
+        let compare = #"(normal: "also", ok: "thing\\thing", since: "thing\"thing", sure: 4, yes: "thing\\\"thing")"#
         XCTAssertEqual(parameters.statement, compare)
     }
     
@@ -128,10 +89,7 @@ class ParameterTests: XCTestCase {
         let p1 = Parameters(["ok": "yes"])
         let p2 = Parameters(["yes": p1])
         
-        let compare = """
-        (yes: { ok: "yes" })
-        """
-        
+        let compare = #"(yes: { ok: "yes" })"#
         XCTAssertEqual(p2.statement, compare)
     }
     
@@ -141,10 +99,7 @@ class ParameterTests: XCTestCase {
         let p3 = Parameters(["ok": "maybe"])
         let p4 = Parameters(["ok": [p1, p2, p3]])
         
-        let compare = """
-        (ok: [ { ok: "maybe" }, { ok: "no" }, { ok: "yes" } ])
-        """
-        
+        let compare = #"(ok: [ { ok: "maybe" }, { ok: "no" }, { ok: "yes" } ])"#
         XCTAssertEqual(p4.statement, compare)
     }
 }
