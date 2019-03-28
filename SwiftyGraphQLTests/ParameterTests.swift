@@ -102,4 +102,36 @@ class ParameterTests: XCTestCase {
         let compare = #"(ok: [ { ok: "maybe" }, { ok: "no" }, { ok: "yes" } ])"#
         XCTAssertEqual(p4.statement, compare)
     }
+    
+    func testSingleAppend() {
+        var parameters = Parameters(["since": 20, "name": "taylor"])
+        parameters.set(key: "age", value: 12.5)
+        
+        let compare = #"(age: 12.5, name: "taylor", since: 20)"#
+        XCTAssertEqual(parameters.statement, compare)
+    }
+    
+    func testMultipleAppend() {
+        var parameters = Parameters(["since": 20, "name": "taylor"])
+        parameters.set(["age": 12.5, "nickname":"tmac"])
+        
+        let compare = #"(age: 12.5, name: "taylor", nickname: "tmac", since: 20)"#
+        XCTAssertEqual(parameters.statement, compare)
+    }
+    
+    func testSingleOverride() {
+        var parameters = Parameters(["since": 20, "name": "taylor"])
+        parameters.set(key: "since", value: "ok")
+        
+        let compare = #"(name: "taylor", since: "ok")"#
+        XCTAssertEqual(parameters.statement, compare)
+    }
+    
+    func testMultipleOverride() {
+        var parameters = Parameters(["since": 20, "name": "taylor"])
+        parameters.set(["since": 12.5, "name":"tmac"])
+        
+        let compare = #"(name: "tmac", since: 12.5)"#
+        XCTAssertEqual(parameters.statement, compare)
+    }
 }
