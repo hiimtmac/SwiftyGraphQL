@@ -9,9 +9,9 @@
 import Foundation
 
 public struct Parameters {
-    let parameters: [String: ParameterEncoded?]
+    var parameters: [String: ParameterEncoded?]
     
-    public init(_ parameters: [String: ParameterEncoded?]) {
+    public init(_ parameters: [String: ParameterEncoded?] = [:]) {
         self.parameters = parameters
     }
     
@@ -28,5 +28,24 @@ public struct Parameters {
     public static func +(lhs: Parameters, rhs: Parameters) -> Parameters {
         let contents = lhs.parameters.merging(rhs.parameters) { (_, new) in new }
         return Parameters(contents)
+    }
+    
+    public mutating func set(_ parameters: [String: ParameterEncoded?]) {
+        for parameter in parameters {
+            self.set(key: parameter.key, value: parameter.value)
+        }
+    }
+    
+    public mutating func set(key: String, value: ParameterEncoded?) {
+        self.parameters[key] = value
+    }
+    
+    public subscript(key: String) -> ParameterEncoded? {
+        get {
+            return self.parameters[key]
+        }
+        set {
+            self.parameters[key] = newValue
+        }
     }
 }
