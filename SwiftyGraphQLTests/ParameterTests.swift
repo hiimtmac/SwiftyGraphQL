@@ -134,4 +134,19 @@ class ParameterTests: XCTestCase {
         let compare = #"(name: "tmac", since: 12.5)"#
         XCTAssertEqual(parameters.statement, compare)
     }
+    
+    func testSubcriptGet() {
+        let parameters = Parameters(["since": 20, "name": "taylor"])
+        let name = parameters["name"]
+        
+        XCTAssertEqual(name.graphEncoded(), #""taylor""#)
+    }
+    
+    func testSubcriptSet() {
+        var parameters = Parameters(["since": 20, "name": "taylor"])
+        parameters["age"] = 12.5
+        
+        let compare = #"(age: 12.5, name: "taylor", since: 20)"#
+        XCTAssertEqual(parameters.statement, compare)
+    }
 }

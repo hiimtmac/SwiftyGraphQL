@@ -11,7 +11,7 @@ import Foundation
 public struct Parameters {
     var parameters: [String: ParameterEncoded?]
     
-    public init(_ parameters: [String: ParameterEncoded?]) {
+    public init(_ parameters: [String: ParameterEncoded?] = [:]) {
         self.parameters = parameters
     }
     
@@ -38,5 +38,14 @@ public struct Parameters {
     
     public mutating func set(key: String, value: ParameterEncoded?) {
         self.parameters[key] = value
+    }
+    
+    public subscript(key: String) -> ParameterEncoded? {
+        get {
+            return self.parameters[key]
+        }
+        set {
+            self.parameters[key] = newValue
+        }
     }
 }
