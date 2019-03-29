@@ -8,10 +8,10 @@
 
 import Foundation
 
-public struct Parameters {
-    var parameters: [String: ParameterEncoded?]
+public struct GraphQLParameters {
+    var parameters: [String: GraphQLParameterEncodable?]
     
-    public init(_ parameters: [String: ParameterEncoded?] = [:]) {
+    public init(_ parameters: [String: GraphQLParameterEncodable?] = [:]) {
         self.parameters = parameters
     }
     
@@ -25,22 +25,22 @@ public struct Parameters {
         return "(\(parametersEncoded))"
     }
     
-    public static func +(lhs: Parameters, rhs: Parameters) -> Parameters {
+    public static func +(lhs: GraphQLParameters, rhs: GraphQLParameters) -> GraphQLParameters {
         let contents = lhs.parameters.merging(rhs.parameters) { (_, new) in new }
-        return Parameters(contents)
+        return GraphQLParameters(contents)
     }
     
-    public mutating func set(_ parameters: [String: ParameterEncoded?]) {
+    public mutating func set(_ parameters: [String: GraphQLParameterEncodable?]) {
         for parameter in parameters {
             self.set(key: parameter.key, value: parameter.value)
         }
     }
     
-    public mutating func set(key: String, value: ParameterEncoded?) {
+    public mutating func set(key: String, value: GraphQLParameterEncodable?) {
         self.parameters[key] = value
     }
     
-    public subscript(key: String) -> ParameterEncoded? {
+    public subscript(key: String) -> GraphQLParameterEncodable? {
         get {
             return self.parameters[key]
         }

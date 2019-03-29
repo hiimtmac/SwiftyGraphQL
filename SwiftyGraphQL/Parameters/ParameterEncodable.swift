@@ -13,11 +13,11 @@ private let quote = "\""
 private let slashSlash = #"\\"#
 private let slashQuote = #"\""#
 
-public protocol ParameterEncoded {
+public protocol GraphQLParameterEncodable {
     func graphEncoded() -> String
 }
 
-extension String: ParameterEncoded {
+extension String: GraphQLParameterEncodable {
     public func graphEncoded() -> String {
         let slashEncoded = self.replacingOccurrences(of: slash, with: slashSlash)
         let quoteEncoded = slashEncoded.replacingOccurrences(of: quote, with: slashQuote)
@@ -25,25 +25,25 @@ extension String: ParameterEncoded {
     }
 }
 
-extension Int: ParameterEncoded {
+extension Int: GraphQLParameterEncodable {
     public func graphEncoded() -> String {
         return "\(self)"
     }
 }
 
-extension Double: ParameterEncoded {
+extension Double: GraphQLParameterEncodable {
     public func graphEncoded() -> String {
         return "\(self)"
     }
 }
 
-extension Bool: ParameterEncoded {
+extension Bool: GraphQLParameterEncodable {
     public func graphEncoded() -> String {
         return "\(self)"
     }
 }
 
-extension Parameters: ParameterEncoded {
+extension GraphQLParameters: GraphQLParameterEncodable {
     public func graphEncoded() -> String {
         let parametersEncoded = parameters
             .map { "\($0.key): \($0.value.graphEncoded())" }
@@ -54,7 +54,7 @@ extension Parameters: ParameterEncoded {
     }
 }
 
-extension Array: ParameterEncoded where Element: ParameterEncoded {
+extension Array: GraphQLParameterEncodable where Element: GraphQLParameterEncodable {
     public func graphEncoded() -> String {
         let parametersEncoded = self
             .map { $0.graphEncoded() }
@@ -65,7 +65,7 @@ extension Array: ParameterEncoded where Element: ParameterEncoded {
     }
 }
 
-extension Optional: ParameterEncoded where Wrapped == ParameterEncoded {
+extension Optional: GraphQLParameterEncodable where Wrapped == GraphQLParameterEncodable {
     public func graphEncoded() -> String {
         guard let self = self else { return "null" }
         return self.graphEncoded()

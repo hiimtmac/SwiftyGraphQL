@@ -13,8 +13,8 @@ public protocol GraphQLRepresentable {
     var fragments: GraphQLStatement { get }
 }
 
-public enum Node: GraphQLRepresentable {
-    indirect case node(String?, String, Parameters?, [Node])
+public enum GraphQLNode: GraphQLRepresentable {
+    indirect case node(String?, String, GraphQLParameters?, [GraphQLNode])
     case attributes([String])
     case fragment(GraphQLFragmentRepresentable.Type)
     
@@ -52,7 +52,7 @@ public enum Node: GraphQLRepresentable {
     }
 }
 
-extension Array: GraphQLRepresentable where Iterator.Element == Node {
+extension Array: GraphQLRepresentable where Iterator.Element == GraphQLNode {
     public var rawQuery: GraphQLStatement {
         return self
             .map { $0.rawQuery }
