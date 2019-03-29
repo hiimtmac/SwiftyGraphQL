@@ -24,9 +24,9 @@ public struct GraphQLMutation: Encodable {
 
 public struct Mutation {
     let title: String
-    let parameters: Parameters
+    let parameters: GraphQLParameters
     
-    public init(title: String, parameters: Parameters) {
+    public init(title: String, parameters: GraphQLParameters) {
         self.title = title
         self.parameters = parameters
     }
