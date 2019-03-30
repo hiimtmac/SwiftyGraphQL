@@ -11,8 +11,10 @@
 		D724F920216C9F9000342F5A /* SwiftyGraphQL.h in Headers */ = {isa = PBXBuildFile; fileRef = D724F912216C9F9000342F5A /* SwiftyGraphQL.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D724F92A216C9F9A00342F5A /* Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = D724F929216C9F9A00342F5A /* Node.swift */; };
 		D724F92C216C9FA000342F5A /* Fragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D724F92B216C9FA000342F5A /* Fragment.swift */; };
-		D724F92E216C9FA500342F5A /* Mutation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D724F92D216C9FA500342F5A /* Mutation.swift */; };
 		D724F930216C9FAC00342F5A /* Query.swift in Sources */ = {isa = PBXBuildFile; fileRef = D724F92F216C9FAC00342F5A /* Query.swift */; };
+		D776D329224EB39100460389 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = D776D328224EB39100460389 /* Request.swift */; };
+		D776D32B224EB58000460389 /* RequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D776D32A224EB58000460389 /* RequestTests.swift */; };
+		D776D32D224EBD3600460389 /* StateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D776D32C224EBD3600460389 /* StateMachine.swift */; };
 		D7E5B2C5216CE52F004CA6C4 /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E5B2C4216CE52F004CA6C4 /* Response.swift */; };
 		D7E5B2C7216CEC0B004CA6C4 /* NodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E5B2C6216CEC0B004CA6C4 /* NodeTests.swift */; };
 		D7E5B2C9216CEC13004CA6C4 /* FragmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E5B2C8216CEC13004CA6C4 /* FragmentTests.swift */; };
@@ -48,8 +50,10 @@
 		D724F91F216C9F9000342F5A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D724F929216C9F9A00342F5A /* Node.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Node.swift; sourceTree = "<group>"; };
 		D724F92B216C9FA000342F5A /* Fragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fragment.swift; sourceTree = "<group>"; };
-		D724F92D216C9FA500342F5A /* Mutation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mutation.swift; sourceTree = "<group>"; };
 		D724F92F216C9FAC00342F5A /* Query.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Query.swift; sourceTree = "<group>"; };
+		D776D328224EB39100460389 /* Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
+		D776D32A224EB58000460389 /* RequestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestTests.swift; sourceTree = "<group>"; };
+		D776D32C224EBD3600460389 /* StateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateMachine.swift; sourceTree = "<group>"; };
 		D7E5B2C4216CE52F004CA6C4 /* Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
 		D7E5B2C6216CEC0B004CA6C4 /* NodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodeTests.swift; sourceTree = "<group>"; };
 		D7E5B2C8216CEC13004CA6C4 /* FragmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FragmentTests.swift; sourceTree = "<group>"; };
@@ -118,6 +122,7 @@
 				D724F929216C9F9A00342F5A /* Node.swift */,
 				D724F92B216C9FA000342F5A /* Fragment.swift */,
 				D7E5B2D2216CFCE8004CA6C4 /* Statement.swift */,
+				D776D327224EB37E00460389 /* Requests */,
 				D7ED5DD82181145C005E5CDB /* Parameters */,
 				D7ED5DD0218101B8005E5CDB /* Query */,
 				D7ED5DD521811346005E5CDB /* Return */,
@@ -136,16 +141,25 @@
 				D7F588CC2180D4CC00BDD411 /* GraphQLDecodeableTests.swift */,
 				D7F588CE2180D4D400BDD411 /* GraphQLErrorTests.swift */,
 				D7ED5DD321810A27005E5CDB /* ParameterTests.swift */,
+				D776D32A224EB58000460389 /* RequestTests.swift */,
 				D7E5B2D0216CEE60004CA6C4 /* Helpers.swift */,
 				D724F91F216C9F9000342F5A /* Info.plist */,
 			);
 			path = SwiftyGraphQLTests;
 			sourceTree = "<group>";
 		};
+		D776D327224EB37E00460389 /* Requests */ = {
+			isa = PBXGroup;
+			children = (
+				D776D328224EB39100460389 /* Request.swift */,
+				D776D32C224EBD3600460389 /* StateMachine.swift */,
+			);
+			path = Requests;
+			sourceTree = "<group>";
+		};
 		D7ED5DD0218101B8005E5CDB /* Query */ = {
 			isa = PBXGroup;
 			children = (
-				D724F92D216C9FA500342F5A /* Mutation.swift */,
 				D724F92F216C9FAC00342F5A /* Query.swift */,
 			);
 			path = Query;
@@ -284,8 +298,9 @@
 				D724F92A216C9F9A00342F5A /* Node.swift in Sources */,
 				D7ED5DCF218101B0005E5CDB /* ParameterEncodable.swift in Sources */,
 				D7F588C52180CEE800BDD411 /* GraphQLError.swift in Sources */,
-				D724F92E216C9FA500342F5A /* Mutation.swift in Sources */,
+				D776D329224EB39100460389 /* Request.swift in Sources */,
 				D7ED5DD721811450005E5CDB /* Parameters.swift in Sources */,
+				D776D32D224EBD3600460389 /* StateMachine.swift in Sources */,
 				D7E5B2D3216CFCE8004CA6C4 /* Statement.swift in Sources */,
 				D724F92C216C9FA000342F5A /* Fragment.swift in Sources */,
 				D7F588C72180D27B00BDD411 /* GraphQLDecodable.swift in Sources */,
@@ -302,6 +317,7 @@
 				D7F588CD2180D4CC00BDD411 /* GraphQLDecodeableTests.swift in Sources */,
 				D7ED5DD421810A27005E5CDB /* ParameterTests.swift in Sources */,
 				D7E5B2CD216CEC22004CA6C4 /* QueryTests.swift in Sources */,
+				D776D32B224EB58000460389 /* RequestTests.swift in Sources */,
 				D7E5B2CB216CEC1A004CA6C4 /* MutationTests.swift in Sources */,
 				D7E5B2CF216CEC2A004CA6C4 /* ResponseTests.swift in Sources */,
 				D7F588CF2180D4D400BDD411 /* GraphQLErrorTests.swift in Sources */,

@@ -37,6 +37,12 @@ extension Double: GraphQLParameterEncodable {
     }
 }
 
+extension Float: GraphQLParameterEncodable {
+    public func graphEncoded() -> String {
+        return "\(self)"
+    }
+}
+
 extension Bool: GraphQLParameterEncodable {
     public func graphEncoded() -> String {
         return "\(self)"
