@@ -11,10 +11,11 @@ import Foundation
 public protocol GraphQLRequest {
     associatedtype GraphQLReturn: GraphQLDecodable
     var query: GraphQLQuery { get set }
+    var headers: [String: String]? { get set }
 }
 
 extension GraphQLRequest {
-    public func urlRequest(headers: [String: String], encoder: JSONEncoder? = nil) throws -> URLRequest {
+    public func urlRequest(headers: [String: String]? = nil, encoder: JSONEncoder? = nil) throws -> URLRequest {
         let encoder = encoder ?? SwiftyGraphQL.shared.queryEncoder ?? JSONEncoder()
         
         guard let url = SwiftyGraphQL.shared.graphQLEndpoint else {
@@ -25,7 +26,7 @@ extension GraphQLRequest {
         request.httpMethod = "POST"
         request.httpBody = try encoder.encode(query)
         
-        for header in headers {
+        for header in headers ?? self.headers ?? [:] {
             request.setValue(header.value, forHTTPHeaderField: header.key)
         }
         

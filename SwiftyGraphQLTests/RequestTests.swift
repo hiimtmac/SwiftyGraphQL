@@ -30,18 +30,19 @@ class RequestTests: XCTestCase {
         
         let node = GraphQLNode.node(nil, "me", nil, [.fragment(MockObject.self)])
         let query = GraphQLQuery(returning: node)
-        request = TestRequest(query: query)
+        request = TestRequest(query: query, headers: ["Content-Type":"application/json"])
         
         SwiftyGraphQL.shared.graphQLEndpoint = components.url!
     }
     
     struct TestRequest: GraphQLRequest {
         var query: GraphQLQuery
+        var headers: [String : String]?
         typealias GraphQLReturn = MockObject
     }
     
     func testRequestCreation() throws {
-        let urlRequest = try request.urlRequest(headers: ["Content-Type":"application/json"])
+        let urlRequest = try request.urlRequest()
         
         XCTAssertEqual(urlRequest.url?.absoluteString, "https://graphql.com/graphql")
         XCTAssertEqual(urlRequest.httpMethod, "POST")
