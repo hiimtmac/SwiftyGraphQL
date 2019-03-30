@@ -1,12 +1,12 @@
 Pod::Spec.new do |s|
     
     s.name                    = "SwiftyGraphQL"
-    s.version                 = "0.4.0"
+    s.version                 = "0.5.0"
     s.summary                 = "Typesafe(er) helpers for creating graphql queries & mutations"
     s.description             = <<-DESC
-    This small library helps to create typesafe(er) mutations & queries for use with graphql.
-    These objects can then be `codable-d` and used in `URLSession`s
-    DESC
+                                This small library helps to create typesafe(er) mutations & queries for use with graphql.
+                                These objects can then be `codable-d` and used in `URLSession`s
+                                DESC
     
     s.homepage                = "http://github.com/hiimtmac/SwiftyGraphQL"
     s.license                 = { :type => "MIT", :file => "LICENSE" }

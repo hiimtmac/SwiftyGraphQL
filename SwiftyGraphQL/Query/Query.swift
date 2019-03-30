@@ -16,4 +16,26 @@ public struct GraphQLQuery: Encodable {
     public init(returning: GraphQLRepresentable) {
         self.query = "{ \(returning.rawQuery) } \(returning.fragments)"
     }
+    
+    public init(mutation: GraphQLStatement, returning: GraphQLRepresentable) {
+        self.query = "mutation { \(mutation) { \(returning.rawQuery) } } \(returning.fragments)"
+    }
+    
+    public init(mutation: GraphQLMutation, returning: GraphQLRepresentable) {
+        self.query = "mutation { \(mutation.statement) { \(returning.rawQuery) } } \(returning.fragments)"
+    }
+}
+
+public struct GraphQLMutation {
+    let title: String
+    let parameters: GraphQLParameters
+    
+    public init(title: String, parameters: GraphQLParameters) {
+        self.title = title
+        self.parameters = parameters
+    }
+    
+    public var statement: GraphQLStatement {
+        return "\(title)\(parameters.statement)"
+    }
 }
