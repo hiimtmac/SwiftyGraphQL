@@ -41,10 +41,11 @@ class RequestTests: XCTestCase {
     }
     
     func testRequestCreation() throws {
-        let urlRequest = try request.urlRequest()
+        let urlRequest = try request.urlRequest(headers: ["Content-Type":"application/json"])
         
         XCTAssertEqual(urlRequest.url?.absoluteString, "https://graphql.com/graphql")
         XCTAssertEqual(urlRequest.httpMethod, "POST")
+        XCTAssertEqual(urlRequest.allHTTPHeaderFields?["Content-Type"], "application/json")
         
         let compare = #"{"query":"{ me: me { ...mockobject } } fragment mockobject on Mockobject { name age birthday }"}"#
         
@@ -65,8 +66,8 @@ class RequestTests: XCTestCase {
         MockURLProtocol.requestHandler = { request in
             return (HTTPURLResponse(), data)
         }
-
-        network.perform(request: request) { result in
+        
+        network.perform(headers: [:], request: request) { result in
             switch result {
             case .success(let decoded):
                 XCTAssertEqual(decoded.age, 27)
@@ -96,8 +97,8 @@ class RequestTests: XCTestCase {
         
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
-
-        network.perform(request: request, decoder: decoder) { result in
+        
+        network.perform(headers: [:], request: request, decoder: decoder) { result in
             switch result {
             case .success(let decoded):
                 XCTAssertEqual(decoded.age, 27)
@@ -140,7 +141,7 @@ class RequestTests: XCTestCase {
             return (HTTPURLResponse(), data)
         }
         
-        network.perform(request: request) { result in
+        network.perform(headers: [:], request: request) { result in
             switch result {
             case .success:
                 XCTFail("should not succeed")
