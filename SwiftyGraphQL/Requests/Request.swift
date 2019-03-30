@@ -14,7 +14,7 @@ public protocol GraphQLRequest {
 }
 
 extension GraphQLRequest {
-    public func urlRequest(encoder: JSONEncoder? = nil) throws -> URLRequest {
+    public func urlRequest(headers: [String: String], encoder: JSONEncoder? = nil) throws -> URLRequest {
         let encoder = encoder ?? SwiftyGraphQL.shared.queryEncoder ?? JSONEncoder()
         
         guard let url = SwiftyGraphQL.shared.graphQLEndpoint else {
@@ -24,6 +24,10 @@ extension GraphQLRequest {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.httpBody = try encoder.encode(query)
+        
+        for header in headers {
+            request.setValue(header.value, forHTTPHeaderField: header.key)
+        }
         
         return request
     }
