@@ -6,13 +6,13 @@
 //  Copyright © 2019 hiimtmac. All rights reserved.
 //
 
-import Foundation
+public import Foundation
 
 class SwiftyGraphQL {
     public static let shared = SwiftyGraphQL()
     private init() {}
     
-    var graphQLEndpoint: URL!
-    var queryEncoder: JSONEncoder?
-    var responseDecoder: JSONDecoder?
+    public var graphQLEndpoint: URL!
+    public var queryEncoder: JSONEncoder?
+    public var responseDecoder: JSONDecoder?
 }
