@@ -6,9 +6,9 @@
 //  Copyright © 2019 hiimtmac. All rights reserved.
 //
 
-public import Foundation
+import Foundation
 
-class SwiftyGraphQL {
+public class SwiftyGraphQL {
     public static let shared = SwiftyGraphQL()
     private init() {}
     
