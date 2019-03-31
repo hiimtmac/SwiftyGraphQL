@@ -33,8 +33,8 @@ extension GraphQLRequest {
         return request
     }
     
-    public func decode(data: Data, decoder: JSONDecoder? = nil) throws -> GraphQLReturn {
+    public func decode(data: Data, decoder: JSONDecoder? = nil) throws -> GraphQLResponse<GraphQLReturn> {
         let decoder = decoder ?? SwiftyGraphQL.shared.responseDecoder ?? JSONDecoder()
-        return try decoder.graphQLDecode(GraphQLReturn.self, from: data)
+        return try decoder.graphQLDecode(GraphQLResponse<GraphQLReturn>.self, from: data)
     }
 }

@@ -80,7 +80,10 @@ class MockNetwork {
         self.session = session
     }
     
-    func perform<T, U>(headers: [String: String], request: T, decoder: JSONDecoder? = nil, completion: @escaping (Result<U, Error>) -> Void) where T: GraphQLRequest, U == T.GraphQLReturn {
+    func perform<T, U>(headers: [String: String],
+                       request: T, decoder: JSONDecoder? = nil,
+                       completion: @escaping (Result<GraphQLResponse<U>, Error>) -> Void) where T: GraphQLRequest, U == T.GraphQLReturn {
+        
         guard let urlRequest = try? request.urlRequest(headers: headers) else {
             completion(.failure(MockError.noURL))
             return

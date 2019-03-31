@@ -61,8 +61,17 @@ class RequestTests: XCTestCase {
     func testRequestDefaultDecoder() {
         let exp = expectation(description: "network")
         
-        let date = DateComponents(calendar: .current, year: 2019, month: 1, day: 1).date! // 1546322400.0
-        let data = try! JSONEncoder().encode(MockObject(name: "hiimtmac", age: 27, birth: date))
+        let date = DateComponents(calendar: .current, year: 2019, month: 1, day: 1).date!
+
+        let data = """
+        {
+            "data": {
+                "name":"hiimtmac",
+                "age":27,
+                "birth":568011600
+            }
+        }
+        """.data(using: .utf8)!
         
         MockURLProtocol.requestHandler = { request in
             return (HTTPURLResponse(), data)
@@ -71,9 +80,9 @@ class RequestTests: XCTestCase {
         network.perform(headers: [:], request: request) { result in
             switch result {
             case .success(let decoded):
-                XCTAssertEqual(decoded.age, 27)
-                XCTAssertEqual(decoded.name, "hiimtmac")
-                XCTAssertEqual(decoded.birth.timeIntervalSince1970, date.timeIntervalSince1970)
+                XCTAssertEqual(decoded.data.age, 27)
+                XCTAssertEqual(decoded.data.name, "hiimtmac")
+                XCTAssertEqual(decoded.data.birth.timeIntervalSince1970, date.timeIntervalSince1970)
             case .failure(let error):
                 print(error)
                 XCTFail(error.localizedDescription)
@@ -87,10 +96,17 @@ class RequestTests: XCTestCase {
     func testRequestCustomDecoder() {
         let exp = expectation(description: "network")
         
-        let date = DateComponents(calendar: .current, year: 2019, month: 1, day: 1).date! // 1546322400.0
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        let data = try! encoder.encode(MockObject(name: "hiimtmac", age: 27, birth: date))
+        let date = DateComponents(calendar: .current, year: 2019, month: 1, day: 1).date!
+        
+        let data = """
+        {
+            "data": {
+                "name":"hiimtmac",
+                "age":27,
+                "birth":"2019-01-01T05:00:00Z"
+            }
+        }
+        """.data(using: .utf8)!
         
         MockURLProtocol.requestHandler = { request in
             return (HTTPURLResponse(), data)
@@ -102,9 +118,9 @@ class RequestTests: XCTestCase {
         network.perform(headers: [:], request: request, decoder: decoder) { result in
             switch result {
             case .success(let decoded):
-                XCTAssertEqual(decoded.age, 27)
-                XCTAssertEqual(decoded.name, "hiimtmac")
-                XCTAssertEqual(decoded.birth.timeIntervalSince1970, date.timeIntervalSince1970)
+                XCTAssertEqual(decoded.data.age, 27)
+                XCTAssertEqual(decoded.data.name, "hiimtmac")
+                XCTAssertEqual(decoded.data.birth.timeIntervalSince1970, date.timeIntervalSince1970)
             case .failure(let error):
                 print(error)
                 XCTFail(error.localizedDescription)
