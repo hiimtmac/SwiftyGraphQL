@@ -13,11 +13,11 @@ public protocol GraphQLFragmentRepresentable {
     static var fragmentName: String { get }
     static var attributes: [String] { get }
     
-    static var fragment: GraphQLStatement { get }
+    static var fragment: String { get }
 }
 
 extension GraphQLFragmentRepresentable {
-    public static var fragment: GraphQLStatement {
+    public static var fragment: String {
         return "fragment \(fragmentName) on \(entityName) { \(attributes.joined(separator: " ")) }"
     }
     

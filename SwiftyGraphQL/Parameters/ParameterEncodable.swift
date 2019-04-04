@@ -8,51 +8,64 @@
 
 import Foundation
 
-private let slash = #"\"#
-private let quote = "\""
-private let slashSlash = #"\\"#
-private let slashQuote = #"\""#
-
 public protocol GraphQLParameterEncodable {
-    func graphEncoded() -> String
+    func asGraphQLParameter() -> String
 }
 
 extension String: GraphQLParameterEncodable {
-    public func graphEncoded() -> String {
-        let slashEncoded = self.replacingOccurrences(of: slash, with: slashSlash)
-        let quoteEncoded = slashEncoded.replacingOccurrences(of: quote, with: slashQuote)
-        return #""\#(quoteEncoded)""#
+    public func asGraphQLParameter() -> String {
+        var escaped = ""
+        for c in self.unicodeScalars {
+            switch c {
+            case #"\"#: // \
+                escaped += #"\\"#
+            case "\"": // "
+                escaped += #"\""#
+            case "\n": // \n
+                escaped += #"\n"#
+            case "\r": // \r
+                escaped += #"\r"#
+            default:
+                if c.value < 0x20 {
+                    escaped += String(format: "\\u%04x", c.value)
+                } else {
+                    escaped.append(String(c))
+                }
+            }
+        }
+        escaped += ""
+        return #""\#(escaped)""#
     }
 }
 
 extension Int: GraphQLParameterEncodable {
-    public func graphEncoded() -> String {
+    public func asGraphQLParameter() -> String {
         return "\(self)"
     }
 }
 
 extension Double: GraphQLParameterEncodable {
-    public func graphEncoded() -> String {
+    public func asGraphQLParameter() -> String {
         return "\(self)"
     }
 }
 
 extension Float: GraphQLParameterEncodable {
-    public func graphEncoded() -> String {
+    public func asGraphQLParameter() -> String {
         return "\(self)"
     }
 }
 
 extension Bool: GraphQLParameterEncodable {
-    public func graphEncoded() -> String {
+    public func asGraphQLParameter() -> String {
         return "\(self)"
     }
 }
 
 extension GraphQLParameters: GraphQLParameterEncodable {
-    public func graphEncoded() -> String {
+    public func asGraphQLParameter() -> String {
         let parametersEncoded = parameters
-            .map { "\($0.key): \($0.value.graphEncoded())" }
+            .map { "\($0.key): \($0.value.asGraphQLParameter())" }
             .sorted()
             .joined(separator: ", ")
         
@@ -61,9 +74,9 @@ extension GraphQLParameters: GraphQLParameterEncodable {
 }
 
 extension Array: GraphQLParameterEncodable where Element: GraphQLParameterEncodable {
-    public func graphEncoded() -> String {
+    public func asGraphQLParameter() -> String {
         let parametersEncoded = self
-            .map { $0.graphEncoded() }
+            .map { $0.asGraphQLParameter() }
             .sorted()
             .joined(separator: ", ")
         
@@ -72,8 +85,8 @@ extension Array: GraphQLParameterEncodable where Element: GraphQLParameterEncoda
 }
 
 extension Optional: GraphQLParameterEncodable where Wrapped == GraphQLParameterEncodable {
-    public func graphEncoded() -> String {
+    public func asGraphQLParameter() -> String {
         guard let self = self else { return "null" }
-        return self.graphEncoded()
+        return self.asGraphQLParameter()
     }
 }

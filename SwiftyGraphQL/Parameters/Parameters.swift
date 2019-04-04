@@ -15,10 +15,10 @@ public struct GraphQLParameters {
         self.parameters = parameters
     }
     
-    public var statement: GraphQLStatement {
+    public var statement: String {
         guard !parameters.isEmpty else { return "" }
         let parametersEncoded = parameters
-            .map { "\($0.key): \($0.value.graphEncoded())" }
+            .map { "\($0.key): \($0.value.asGraphQLParameter())" }
             .sorted()
             .joined(separator: ", ")
         

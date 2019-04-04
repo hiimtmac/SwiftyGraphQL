@@ -49,26 +49,5 @@ class ResponseTests: XCTestCase {
             ]
         }
         """
-        
-        struct ErrorType: Decodable {
-            let code: Int
-            let name: String
-        }
-        
-        struct ObjectType: Decodable {
-            let name: String
-            let age: Int
-        }
-        
-        let data = json.data(using: .utf8)!
-        
-        let response = try JSONDecoder().decode(GraphQLResponseCustomErrorType<[ObjectType], [ErrorType]>.self, from: data)
-        XCTAssertEqual(response.data.count, 1)
-        XCTAssertEqual(response.data.first?.name, "taylor")
-        XCTAssertEqual(response.data.first?.age, 666)
-        
-        XCTAssertEqual(response.errors?.count, 1)
-        XCTAssertEqual(response.errors?.first?.code, 666)
-        XCTAssertEqual(response.errors?.first?.name, "fatal error occurred")
     }
 }

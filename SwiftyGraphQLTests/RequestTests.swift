@@ -28,7 +28,7 @@ class RequestTests: XCTestCase {
         components.host = "graphql.com"
         components.path = "/graphql"
         
-        let node = GraphQLNode.node(nil, "me", nil, [.fragment(MockObject.self)])
+        let node = GraphQLNode.node(nil, "me", nil, [.fragment(Frag2.self)])
         let query = GraphQLQuery(returning: node)
         request = TestRequest(query: query, headers: ["Content-Type":"application/json"])
         
@@ -36,9 +36,9 @@ class RequestTests: XCTestCase {
     }
     
     struct TestRequest: GraphQLRequest {
+        typealias GraphQLReturn = Frag2
         var query: GraphQLQuery
-        var headers: [String : String]?
-        typealias GraphQLReturn = MockObject
+        var headers: [String: String]?
     }
     
     func testRequestCreation() throws {
@@ -48,7 +48,7 @@ class RequestTests: XCTestCase {
         XCTAssertEqual(urlRequest.httpMethod, "POST")
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["Content-Type"], "application/json")
         
-        let compare = #"{"query":"{ me: me { ...mockobject } } fragment mockobject on Mockobject { name age birthday }"}"#
+        let compare = #"{"query":"{ me: me { ...frag2 } } fragment frag2 on Frag2 { address birthday }"}"#
         
         guard let data = urlRequest.httpBody, let string = String(data: data, encoding: .utf8) else {
             XCTFail("no/bad data")
@@ -66,8 +66,7 @@ class RequestTests: XCTestCase {
         let data = """
         {
             "data": {
-                "name":"hiimtmac",
-                "age":27,
+                "address": "hiimtmac",
                 "birth":568011600
             }
         }
@@ -80,9 +79,8 @@ class RequestTests: XCTestCase {
         network.perform(headers: [:], request: request) { result in
             switch result {
             case .success(let decoded):
-                XCTAssertEqual(decoded.data.age, 27)
-                XCTAssertEqual(decoded.data.name, "hiimtmac")
-                XCTAssertEqual(decoded.data.birth.timeIntervalSince1970, date.timeIntervalSince1970)
+                XCTAssertEqual(decoded.data.address, "hiimtmac")
+                XCTAssertEqual(decoded.data.birthday.timeIntervalSince1970, date.timeIntervalSince1970)
             case .failure(let error):
                 print(error)
                 XCTFail(error.localizedDescription)
@@ -118,9 +116,8 @@ class RequestTests: XCTestCase {
         network.perform(headers: [:], request: request, decoder: decoder) { result in
             switch result {
             case .success(let decoded):
-                XCTAssertEqual(decoded.data.age, 27)
-                XCTAssertEqual(decoded.data.name, "hiimtmac")
-                XCTAssertEqual(decoded.data.birth.timeIntervalSince1970, date.timeIntervalSince1970)
+                XCTAssertEqual(decoded.data.address, "hiimtmac")
+                XCTAssertEqual(decoded.data.birthday.timeIntervalSince1970, date.timeIntervalSince1970)
             case .failure(let error):
                 print(error)
                 XCTFail(error.localizedDescription)
