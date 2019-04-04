@@ -12,22 +12,32 @@ import Foundation
 /// for URLSession
 public struct GraphQLQuery: Encodable {
     public let query: String
+    public let variables: GraphQLVariables?
     public let operationName: String?
-//    public let variables: [String: GraphQLParameterEncodable?]?
     
-    public init(returning: GraphQLRepresentable, operationName: String? = nil) {
-        self.query = "{ \(returning.rawQuery) } \(returning.fragments)"
+    public init(returning: GraphQLRepresentable, variables: GraphQLVariables? = nil, operationName: String? = nil) {
+        
+        self.query = "query\(variables?.statement ?? "") { \(returning.rawQuery) } \(returning.fragments)"
         self.operationName = operationName
+        self.variables = variables
     }
     
-    public init(mutation: String, returning: GraphQLRepresentable, operationName: String? = nil) {
-        self.query = "mutation { \(mutation) { \(returning.rawQuery) } } \(returning.fragments)"
+    public init(mutation: GraphQLMutation, returning: GraphQLRepresentable, variables: GraphQLVariables? = nil, operationName: String? = nil) {
+        self.query = "mutation\(variables?.statement ?? "") { \(mutation.statement) { \(returning.rawQuery) } } \(returning.fragments)"
         self.operationName = operationName
+        self.variables = variables
     }
     
-    public init(mutation: GraphQLMutation, returning: GraphQLRepresentable, operationName: String? = nil) {
-        self.query = "mutation { \(mutation.statement) { \(returning.rawQuery) } } \(returning.fragments)"
-        self.operationName = operationName
+    enum QueryType {
+        case query
+        case mutation(GraphQLMutation)
+        
+        var type: String {
+            switch self {
+            case .query: return "query"
+            case .mutation: return "mutation"
+            }
+        }
     }
 }
 
@@ -38,6 +48,11 @@ public struct GraphQLMutation {
     public init(title: String, parameters: GraphQLParameters) {
         self.title = title
         self.parameters = parameters
+    }
+    
+    public init(title: String, parameters: [String: GraphQLArgument?]) {
+        self.title = title
+        self.parameters = GraphQLParameters(parameters)
     }
     
     public var statement: String {

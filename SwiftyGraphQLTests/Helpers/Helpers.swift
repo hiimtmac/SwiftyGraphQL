@@ -26,11 +26,15 @@ struct Frag2: GraphQLFragmentRepresentable, Codable, Equatable {
 }
 
 struct TestRequest<T: Encodable>: Encodable {
-    let data: T
-    let errors: [String]?
+    let data: T?
+    let errors: [TestError]?
     
-    init(data: T, errors: [GraphQLError]?) {
+    init(data: T?, errors: [TestError]?) {
         self.data = data
-        self.errors = nil
+        self.errors = errors
+    }
+    
+    struct TestError: Encodable {
+        let message: String
     }
 }

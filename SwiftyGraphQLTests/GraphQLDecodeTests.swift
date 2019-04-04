@@ -1,16 +1,70 @@
 //
-//  GraphQLDecodeableTests.swift
+//  ResponseTests.swift
 //  SwiftyGraphQLTests
 //
-//  Created by Taylor McIntyre on 2018-10-24.
-//  Copyright © 2018 hiimtmac. All rights reserved.
+//  Created by Taylor McIntyre on 2018-10-09.
+//  Copyright © 2018 hiimtmac All rights reserved.
 //
 
 import XCTest
 @testable import SwiftyGraphQL
 
-class GraphQLDecodeableTests: XCTestCase {
-
+class GraphQLDecodeTests: XCTestCase {
+    
+    func testNoErrors() throws {
+        let obj = TestRequest(data: ["hello", "hi"],
+                              errors: nil
+        )
+        
+        let data = try JSONEncoder().encode(obj)
+        
+        let response = try JSONDecoder().graphQLDecode(GraphQLResponse<[String]>.self, from: data)
+        XCTAssertEqual(response.data.count, 2)
+        XCTAssertNil(response.errors)
+        XCTAssertNil(response.error)
+    }
+    
+    func testSucceedsWithErrors() throws {
+        let obj = TestRequest(data: ["hello", "hi"],
+                              errors: [
+                                TestRequest.TestError(message: "wow bad"),
+                                TestRequest.TestError(message: "so bad")
+            ]
+        )
+        
+        let data = try JSONEncoder().encode(obj)
+        
+        let response = try JSONDecoder().graphQLDecode(GraphQLResponse<[String]>.self, from: data)
+        XCTAssertEqual(response.data.count, 2)
+        XCTAssertEqual(response.errors?.count, 2)
+        XCTAssertEqual(response.error?.errors.count, 2)
+    }
+    
+    func testFails() throws {
+        let obj = TestRequest<[String]>(data: nil,
+                                        errors: [
+                                            TestRequest.TestError(message: "wow bad"),
+                                            TestRequest.TestError(message: "so bad")
+            ]
+        )
+        
+        let data = try JSONEncoder().encode(obj)
+        
+        print(String(data: data, encoding: .utf8)!)
+        
+        do {
+            let _ = try JSONDecoder().graphQLDecode(GraphQLResponse<[String]>.self, from: data)
+            XCTFail("should not continue")
+        } catch {
+            guard let error = error as? GraphQLErrors else {
+                XCTFail("wrong error")
+                return
+            }
+            
+            XCTAssertEqual(error.errors.count, 2)
+        }
+    }
+    
     struct TypeOne: Decodable {
         let name: String
     }
@@ -18,11 +72,11 @@ class GraphQLDecodeableTests: XCTestCase {
     struct TypeTwo: Decodable {
         let name: String
     }
-
+    
     func testDecodesNormally() throws {
         let payload = ["name":"hiimtmac"]
         let data = try JSONSerialization.data(withJSONObject: payload, options: [])
-
+        
         let decoded = try? JSONDecoder().decode(TypeOne.self, from: data)
         XCTAssertNotNil(decoded)
     }
@@ -30,7 +84,7 @@ class GraphQLDecodeableTests: XCTestCase {
     func testDecodesGraphQLDecodeableNormal() throws {
         let payload = ["name":"hiimtmac"]
         let data = try JSONSerialization.data(withJSONObject: payload, options: [])
-
+        
         let decoded = try? JSONDecoder().decode(TypeTwo.self, from: data)
         XCTAssertNotNil(decoded)
     }

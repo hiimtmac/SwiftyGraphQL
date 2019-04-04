@@ -1,5 +1,5 @@
 //
-//  VariableEncoded.swift
+//  Object.swift
 //  SwiftyGraphQL
 //
 //  Created by Taylor McIntyre on 2019-04-04.
@@ -8,6 +8,6 @@
 
 import Foundation
 
-public protocol GraphQLVariableEncodable: GraphQLArgument {
-    
+public protocol GraphQLObject {
+    static var entityName: String { get }
 }

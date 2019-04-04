@@ -40,7 +40,7 @@ class NodeTests: XCTestCase {
     func testOneLevelFragment() {
         let node = GraphQLNode.node(nil, "myNode", nil, [.attributes(["hello", "hi"]), .fragment(Frag2.self)])
         XCTAssertEqual(node.rawQuery, "myNode: myNode { hello hi ...frag2 }")
-        XCTAssertEqual(node.fragments, "fragment frag2 on Frag2 { birthday address }")
+        XCTAssertEqual(node.fragments, "fragment frag2 on Frag2 { address birthday }")
         XCTAssertEqual(node.fragmentTypes.count, 1)
     }
     
@@ -49,7 +49,7 @@ class NodeTests: XCTestCase {
         let two = GraphQLNode.node(nil, "two", nil, [.attributes(["no", "maybe"]), one, .fragment(Frag2.self)])
         let node = GraphQLNode.node(nil, "myNode", nil, [.attributes(["hello", "hi"]), two])
         XCTAssertEqual(node.rawQuery, "myNode: myNode { hello hi two: two { no maybe one: one { hi yes ...fragment1 } ...frag2 } }")
-        XCTAssertEqual(node.fragments, "fragment frag2 on Frag2 { birthday address } fragment fragment1 on Fragment1 { name age }")
+        XCTAssertEqual(node.fragments, "fragment frag2 on Frag2 { address birthday } fragment fragment1 on Fragment1 { age name }")
         XCTAssertEqual(node.fragmentTypes.count, 2)
     }
     
@@ -58,7 +58,7 @@ class NodeTests: XCTestCase {
         let two = GraphQLNode.node(nil, "two", nil, [.attributes(["no", "maybe"]), .fragment(Frag2.self)])
         let nodes = [one, two]
         XCTAssertEqual(nodes.rawQuery, "one: one { ...fragment1 } two: two { no maybe ...frag2 }")
-        XCTAssertEqual(nodes.fragments, "fragment frag2 on Frag2 { birthday address } fragment fragment1 on Fragment1 { name age }")
+        XCTAssertEqual(nodes.fragments, "fragment frag2 on Frag2 { address birthday } fragment fragment1 on Fragment1 { age name }")
     }
     
     func testEmptyNode() {
@@ -72,6 +72,6 @@ class NodeTests: XCTestCase {
         let two = GraphQLNode.node(nil, "two", nil, [.attributes(["no", "maybe"]), .fragment(Frag2.self)])
         let nodes = [one, two]
         XCTAssertEqual(nodes.rawQuery, "one: one two: two { no maybe ...frag2 }")
-        XCTAssertEqual(nodes.fragments, "fragment frag2 on Frag2 { birthday address }")
+        XCTAssertEqual(nodes.fragments, "fragment frag2 on Frag2 { address birthday }")
     }
 }

@@ -17,8 +17,8 @@ class GraphQLErrorTests: XCTestCase {
     }
     
     func testFailureReason() {
-        let error = GraphQLError(message: "hello there", locations: nil, fields: nil, errorType: nil, validationErrorType: nil)
-        XCTAssertEqual(error.failureReason, "A GraphQL© query/mutation has been incorrectly constructed.")
+        let error = GraphQLError(message: "hello there", locations: nil, fields: nil, errorType: "ValidationError", validationErrorType: nil)
+        XCTAssertEqual(error.failureReason, "ValidationError")
     }
     
     func testRecoverySuggestion() {

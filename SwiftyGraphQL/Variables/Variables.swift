@@ -8,27 +8,22 @@
 
 import Foundation
 
-public struct GraphQLVariables {
+public struct GraphQLVariables: Encodable {
     var variables: [String: GraphQLVariable]
     
     public init(_ variables: [String: GraphQLVariable] = [:]) {
         self.variables = variables
     }
     
-    public var queryParameters: String {
-        guard !variables.isEmpty else { return "" }
-        let variableEncoded = variables
-            .map { "\($0.key): \($0.value.variableParameter)" }
-            .sorted()
-            .joined(separator: ", ")
-        
-        return "(\(variableEncoded))"
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(variables.map { $0.value })
     }
     
     public var statement: String {
         guard !variables.isEmpty else { return "" }
         let variableEncoded = variables
-            .map { "\($0.key): \($0.value.asGraphQLParameter())" }
+            .map { "\($0.key): \($0.value.graphQLEncoded())" }
             .sorted()
             .joined(separator: ", ")
         

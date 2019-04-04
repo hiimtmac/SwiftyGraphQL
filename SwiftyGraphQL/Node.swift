@@ -45,7 +45,7 @@ public enum GraphQLNode: GraphQLRepresentable {
     
     public var fragments: String {
         let fragments = fragmentTypes
-            .map { $0.fragment }
+            .map { $0.fragmentStatement }
         
         let set = Set(fragments).sorted()
         return set.joined(separator: " ")
@@ -63,7 +63,7 @@ extension Array: GraphQLRepresentable where Iterator.Element == GraphQLNode {
     public var fragments: String {
         let fragments = self
             .reduce([GraphQLFragmentRepresentable.Type](), { $0 + $1.fragmentTypes })
-            .map { $0.fragment }
+            .map { $0.fragmentStatement }
         
         let set = Set(fragments).sorted()
         return set.joined(separator: " ")

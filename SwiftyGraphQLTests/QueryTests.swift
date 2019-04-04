@@ -14,13 +14,15 @@ class QueryTests: XCTestCase {
     func testWithoutFragment() {
         let node = GraphQLNode.node(nil, "allNodes", nil, [GraphQLNode.attributes(["hi", "ok"])])
         let query = GraphQLQuery(returning: node)
-        XCTAssertEqual(query.query, "{ allNodes: allNodes { hi ok } } ")
+        let compare = #"query { allNodes: allNodes { hi ok } } "#
+        XCTAssertEqual(query.query, compare)
     }
     
     func testWithFragment() {
         let node = GraphQLNode.node(nil, "allNodes", nil, [GraphQLNode.fragment(Frag2.self)])
         let query = GraphQLQuery(returning: node)
-        XCTAssertEqual(query.query, "{ allNodes: allNodes { ...frag2 } } fragment frag2 on Frag2 { birthday address }")
+        let compare = #"query { allNodes: allNodes { ...frag2 } } fragment frag2 on Frag2 { address birthday }"#
+        XCTAssertEqual(query.query, compare)
     }
     
     func testAdvanced() {
@@ -29,7 +31,8 @@ class QueryTests: XCTestCase {
         
         let node = GraphQLNode.node(nil, "myQuery", nil, [frag2, .attributes(["thing1", "thing2"])])
         let query = GraphQLQuery(returning: node)
-        XCTAssertEqual(query.query, "{ myQuery: myQuery { frag2: frag2 { ...frag2 allFrag1s: frag1(name: \"taylor\", since: 20) { ...fragment1 } } thing1 thing2 } } fragment frag2 on Frag2 { birthday address } fragment fragment1 on Fragment1 { name age }")
+        let compare = #"query { myQuery: myQuery { frag2: frag2 { ...frag2 allFrag1s: frag1(name: "taylor", since: 20) { ...fragment1 } } thing1 thing2 } } fragment frag2 on Frag2 { address birthday } fragment fragment1 on Fragment1 { age name }"#
+        XCTAssertEqual(query.query, compare)
     }
     
     func testWithArray() {
@@ -37,7 +40,8 @@ class QueryTests: XCTestCase {
         let two = GraphQLNode.node(nil, "two", nil, [.attributes(["no", "maybe"]), .fragment(Frag2.self)])
         
         let query = GraphQLQuery(returning: [one, two])
-        XCTAssertEqual(query.query, "{ one: one { ...fragment1 } two: two { no maybe ...frag2 } } fragment frag2 on Frag2 { birthday address } fragment fragment1 on Fragment1 { name age }")
+        let compare = #"query { one: one { ...fragment1 } two: two { no maybe ...frag2 } } fragment frag2 on Frag2 { address birthday } fragment fragment1 on Fragment1 { age name }"#
+        XCTAssertEqual(query.query, compare)
     }
     
     func testWithArrayWithEmptyNode() {
@@ -45,6 +49,7 @@ class QueryTests: XCTestCase {
         let two = GraphQLNode.node(nil, "two", nil, [.attributes(["no", "maybe"]), .fragment(Frag2.self)])
         
         let query = GraphQLQuery(returning: [one, two])
-        XCTAssertEqual(query.query, "{ one: one two: two { no maybe ...frag2 } } fragment frag2 on Frag2 { birthday address }")
+        let compare = #"query { one: one two: two { no maybe ...frag2 } } fragment frag2 on Frag2 { address birthday }"#
+        XCTAssertEqual(query.query, compare)
     }
 }
