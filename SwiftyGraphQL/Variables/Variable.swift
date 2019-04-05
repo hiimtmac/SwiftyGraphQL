@@ -9,6 +9,25 @@
 import Foundation
 
 public struct GraphQLVariable {
+    let type: String
     let value: GraphQLVariableRepresentable?
-    let `default`: GraphQLVariableRepresentable?
+    let defaultValue: GraphQLVariableRepresentable?
+    
+    init<T>(value: T?, defaultValue: T) where T: GraphQLDefaultVariableRepresentable {
+        self.type = "\(T.self.variableType) = \(defaultValue.parameterValue)"
+        self.value = value
+        self.defaultValue = defaultValue
+    }
+    
+    init<T>(value: T?) where T: GraphQLVariableRepresentable {
+        self.type = "\(T.self.variableType)"
+        self.value = value
+        self.defaultValue = nil
+    }
+    
+    init<T>(value: T) where T: GraphQLVariableRepresentable {
+        self.type = "\(T.self.variableType)!"
+        self.value = value
+        self.defaultValue = nil
+    }
 }

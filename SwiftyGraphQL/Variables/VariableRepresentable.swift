@@ -8,74 +8,44 @@
 
 import Foundation
 
-public protocol GraphQLVariableRepresentable: Encodable {
-//    associatedtype Sub: Encodable
+public protocol GraphQLVariableRepresentable: Encodable, GraphQLObject {
     static var variableType: String { get }
 }
 
-extension GraphQLVariableRepresentable {
-//    public typealias Sub = Self
-    public var parameterValue: String {
-        return "$"
-    }
-}
+public protocol GraphQLDefaultVariableRepresentable: GraphQLVariableRepresentable, GraphQLParameterRepresentable {}
 
-extension GraphQLObject where Self: GraphQLVariableRepresentable {
+extension GraphQLVariableRepresentable {
     public static var variableType: String {
         return entityName
     }
 }
 
-extension String: GraphQLVariableRepresentable {
+extension String: GraphQLDefaultVariableRepresentable {
     public static var variableType: String {
         return "String"
     }
 }
 
-extension Int: GraphQLVariableRepresentable {
+extension Int: GraphQLDefaultVariableRepresentable {
     public static var variableType: String {
         return "Integer"
     }
 }
 
-extension Double: GraphQLVariableRepresentable {
+extension Double: GraphQLDefaultVariableRepresentable {
     public static var variableType: String {
         return "Float"
     }
 }
 
-extension Float: GraphQLVariableRepresentable {
+extension Float: GraphQLDefaultVariableRepresentable {
     public static var variableType: String {
         return "Float"
     }
 }
 
-extension Bool: GraphQLVariableRepresentable {
+extension Bool: GraphQLDefaultVariableRepresentable {
     public static var variableType: String {
         return "Boolean"
     }
 }
-
-
-//extension Array: GraphQLVariableRepresentable where Element: GraphQLVariableRepresentable {
-//    public func graphQLEncoded() -> String {
-//        let parametersEncoded = self
-//            .map { $0.graphQLEncoded() }
-//            .sorted()
-//            .joined(separator: ", ")
-//        
-//        return "[ \(parametersEncoded) ]"
-//    }
-//}
-//
-//extension Dictionary: GraphQLArgument where Key == String, Value: GraphQLArgument {
-//    public func graphQLEncoded() -> String {
-//        let parametersEncoded = self
-//            .map { #""\#($0.key)": \#($0.value.graphQLEncoded())"# }
-//            .sorted()
-//            .joined(separator: ", ")
-//        
-//        return "{ \(parametersEncoded) }"
-//    }
-//}
-//

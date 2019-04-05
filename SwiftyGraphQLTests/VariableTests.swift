@@ -10,145 +10,195 @@ import XCTest
 @testable import SwiftyGraphQL
 
 class VariableTests: XCTestCase {
-    /*
+    
     var int: GraphQLVariable!
-    var optInt: GraphQLVariable!
-    var optIntDef: GraphQLVariable!
+    var intOpt: GraphQLVariable!
+    var intOptDef: GraphQLVariable!
+    
+    var bool: GraphQLVariable!
+    var boolOpt: GraphQLVariable!
+    var boolOptDef: GraphQLVariable!
+    
+    var float: GraphQLVariable!
+    var floatOpt: GraphQLVariable!
+    var floatOptDef: GraphQLVariable!
+    
+    var double: GraphQLVariable!
+    var doubleOpt: GraphQLVariable!
+    var doubleOptDef: GraphQLVariable!
     
     var string: GraphQLVariable!
-    var optString: GraphQLVariable!
-    var optStringDef: GraphQLVariable!
+    var stringOpt: GraphQLVariable!
+    var stringOptDef: GraphQLVariable!
     
     var obj: GraphQLVariable!
-    var optObj: GraphQLVariable!
-    var optObjDef: GraphQLVariable!
+    var objOpt: GraphQLVariable!
+    
+    var objC: GraphQLVariable!
+    var objCOpt: GraphQLVariable!
 
-    struct Object: GraphQLVariableRepresentable {
+    struct ObjectDefault: GraphQLVariableRepresentable {
         let name: String
+    }
+    
+    struct ObjectCustom: GraphQLVariableRepresentable {
+        let name: String
+        
+        static var entityName: String {
+            return "MyCoolObject"
+        }
     }
     
     override func setUp() {
         super.setUp()
         
-        let intVal: Int = 7
-        int = GraphQLVariable(key: "int", value: intVal, type: Int.self)
+        int = GraphQLVariable(value: 7)
+        let intValOpt: Int? = 7
+        intOpt = GraphQLVariable(value: intValOpt)
+        intOptDef = GraphQLVariable(value: nil, defaultValue: 7)
         
-        let stringVal: String = "hi"
-        string = GraphQLVariable(key: "string", value: stringVal, type: String.self)
+        bool = GraphQLVariable(value: true)
+        let boolValOpt: Bool? = false
+        boolOpt = GraphQLVariable(value: boolValOpt)
+        boolOptDef = GraphQLVariable(value: nil, defaultValue: true)
         
-        let objVal: Object = Object(name: "hiimtmac")
-        obj = GraphQLVariable(key: "obj", value: objVal, type: Object.self)
+        let floatVal: Float = 7
+        float = GraphQLVariable(value: floatVal)
+        let floatValOpt: Float? = 7.3
+        floatOpt = GraphQLVariable(value: floatValOpt)
+        let floatValDef: Float? = nil
+        floatOptDef = GraphQLVariable(value: floatValDef, defaultValue: 3.6)
         
-        let optIntVal: Int? = 7
-        optInt = GraphQLVariable(key: "intOpt", value: optIntVal, type: Int.self)
+        double = GraphQLVariable(value: 8.1)
+        let doubleValOpt: Double? = 7.6
+        doubleOpt = GraphQLVariable(value: doubleValOpt)
+        doubleOptDef = GraphQLVariable(value: nil, defaultValue: 2.5)
         
-        let optStringVal: String? = "hi"
-        optString = GraphQLVariable(key: "stringOpt", value: optStringVal, type: String.self)
+        string = GraphQLVariable(value: "hi")
+        let stringValOpt: String? = "hi"
+        stringOpt = GraphQLVariable(value: stringValOpt)
+        stringOptDef = GraphQLVariable(value: nil, defaultValue: "hello")
         
-        let optObjVal: Object? = Object(name: "hiimtmac")
-        optObj = GraphQLVariable(key: "objOpt", value: optObjVal, type: Object.self)
+        obj = GraphQLVariable(value: ObjectDefault(name: "hiimtmac"))
+        let objValOpt: ObjectDefault? = ObjectDefault(name: "hiimtmac")
+        objOpt = GraphQLVariable(value: objValOpt)
         
-        let optIntDefVal: Int? = nil
-        optIntDef = GraphQLVariable(key: "intOptDef", value: optIntDefVal, type: Int.self, default: 3)
-        
-        let optStringDefVal: String? = nil
-        optStringDef = GraphQLVariable(key: "stringOptDef", value: optStringDefVal, type: String.self, default: "eh")
-        
-        let optObjDefVal: Object? = nil
-        optObjDef = GraphQLVariable(key: "objOptDef", value: optObjDefVal, type: Object.self, default: Object(name: "taylor"))
+        objC = GraphQLVariable(value: ObjectCustom(name: "hiimtmac"))
+        let objCValOpt: ObjectCustom? = ObjectCustom(name: "hiimtmac")
+        objCOpt = GraphQLVariable(value: objCValOpt)
     }
 
     func testVariables() {
-        XCTAssertEqual(int.variableParameter, "Int!")
-        XCTAssertEqual(optInt.variableParameter, "Int")
-        XCTAssertEqual(optIntDef.variableParameter, "Int = 3")
+        XCTAssertEqual(int.type, "Integer!")
+        XCTAssertEqual(intOpt.type, "Integer")
+        XCTAssertEqual(intOptDef.type, "Integer = 7")
         
-        XCTAssertEqual(string.variableParameter, "String!")
-        XCTAssertEqual(optString.variableParameter, "String")
-        XCTAssertEqual(optStringDef.variableParameter, #"String = "eh""#)
+        XCTAssertEqual(bool.type, "Boolean!")
+        XCTAssertEqual(boolOpt.type, "Boolean")
+        XCTAssertEqual(boolOptDef.type, "Boolean = true")
         
-        XCTAssertEqual(obj.variableParameter, "Object!")
-        XCTAssertEqual(optObj.variableParameter, "Object")
-        XCTAssertEqual(optObjDef.variableParameter, #"Object = "eh""#)
-    }
-    
-    func testVariablesEncodingArray() {
-        let variables = GraphQLVariables([int, optInt, optIntDef, string, optString, optStringDef])
-        let compare = #"($int: Int!, $intOpt: Int, $intOptDef: Int = 3, $string: String!, $stringOpt: String, $stringOptDef: String = "eh")"#
-        XCTAssertEqual(variables.statement, compare)
-    }
-    
-    func testVariablesEncodingDict() {
-        let variables = GraphQLVariables(["int": int, "intOpt": optInt, "intOptDef": optIntDef, "string": string, "stringOpt": optString, "stringOptDef": optStringDef])
-        let compare = #"($int: Int!, $intOpt: Int, $intOptDef: Int = 3, $string: String!, $stringOpt: String, $stringOptDef: String = "eh")"#
-        XCTAssertEqual(variables.statement, compare)
-    }
-    
-    func testVariableEncoding() throws {
-        let variables = GraphQLVariables([int, optStringDef])
+        XCTAssertEqual(float.type, "Float!")
+        XCTAssertEqual(floatOpt.type, "Float")
+        XCTAssertEqual(floatOptDef.type, "Float = 3.6")
         
-        let encode = try JSONEncoder().encode(variables)
-        print(String(data: encode, encoding: .utf8)!)
+        XCTAssertEqual(double.type, "Float!")
+        XCTAssertEqual(doubleOpt.type, "Float")
+        XCTAssertEqual(doubleOptDef.type, "Float = 2.5")
         
-    }
- */
-    
-    struct Test: GraphQLObject, GraphQLVariableRepresentable, Equatable, Decodable {
-        let ok: String
-        let age: Int
-    }
-    
-    func testMe() {
-        let variableType = Test.self.variableType
-        XCTAssertEqual(variableType, "Test")
+        XCTAssertEqual(string.type, "String!")
+        XCTAssertEqual(stringOpt.type, "String")
+        XCTAssertEqual(stringOptDef.type, #"String = "hello""#)
+        
+        XCTAssertEqual(obj.type, "ObjectDefault!")
+        XCTAssertEqual(objOpt.type, "ObjectDefault")
+        
+        XCTAssertEqual(objC.type, "MyCoolObject!")
+        XCTAssertEqual(objCOpt.type, "MyCoolObject")
     }
     
-    func testSimpleVariablesJSONEncoding() throws {
-        let variables = GraphQLVariables([
-            "string": "hello",
-            "int": 7
+    func testVariableStatment() {
+        let ints = GraphQLVariables([
+            "int": int,
+            "intOpt": intOpt,
+            "intOptDef": intOptDef
             ])
+        XCTAssertEqual(ints.statement, #"($int: Integer!, $intOpt: Integer, $intOptDef: Integer = 7)"#)
         
-        let data = try JSONEncoder().encode(variables)
-        let string = String(data: data, encoding: .utf8)!
-        XCTAssertEqual(string, #"{"int":7,"string":"hello"}"#)
-    }
-    
-    func testCustomVariablesJSONEncoding() throws {
-        let obj = Test(ok: "yes", age: 27)
-        
-        let variables = GraphQLVariables([
-            "obj": obj
+        let bools = GraphQLVariables([
+            "bool": bool,
+            "boolOpt": boolOpt,
+            "boolOptDef": boolOptDef
             ])
+        XCTAssertEqual(bools.statement, #"($bool: Boolean!, $boolOpt: Boolean, $boolOptDef: Boolean = true)"#)
         
-        struct Variables: Decodable {
-            let obj: Test
-        }
+        let floats = GraphQLVariables([
+            "float": float,
+            "floatOpt": floatOpt,
+            "floatOptDef": floatOptDef
+            ])
+        XCTAssertEqual(floats.statement, #"($float: Float!, $floatOpt: Float, $floatOptDef: Float = 3.6)"#)
         
-        let data = try JSONEncoder().encode(variables)
-        let decoded = try JSONDecoder().decode(Variables.self, from: data)
-        XCTAssertEqual(obj, decoded.obj)
-    }
-    
-    func testMixedVariablesJSONEncoding() throws {
-        let obj = Test(ok: "yes", age: 27)
+        let doubles = GraphQLVariables([
+            "double": double,
+            "doubleOpt": doubleOpt,
+            "doubleOptDef": doubleOptDef
+            ])
+        XCTAssertEqual(doubles.statement, #"($double: Float!, $doubleOpt: Float, $doubleOptDef: Float = 2.5)"#)
+        
+        let strings = GraphQLVariables([
+            "string": string,
+            "stringOpt": stringOpt,
+            "stringOptDef": stringOptDef
+            ])
+        XCTAssertEqual(strings.statement, #"($string: String!, $stringOpt: String, $stringOptDef: String = "hello")"#)
+        
+        let objs = GraphQLVariables([
+            "obj": obj,
+            "objOpt": objOpt
+            ])
+        XCTAssertEqual(objs.statement, #"($obj: ObjectDefault!, $objOpt: ObjectDefault)"#)
 
+        let objCs = GraphQLVariables([
+            "objC": objC,
+            "objCOpt": objCOpt
+            ])
+        XCTAssertEqual(objCs.statement, #"($objC: MyCoolObject!, $objCOpt: MyCoolObject)"#)
+    }
+
+    func testMixedVariableStatement() {
         let variables = GraphQLVariables([
-            "string": "hello",
-            "int": 7,
-            "obj": obj
+            "int": int,
+            "boolOpt": boolOpt,
+            "floatOptDef": floatOptDef,
+            "double": double,
+            "stringOptDef": stringOptDef,
+            "objOpt": objOpt,
+            "objC": objC
+            ])
+        XCTAssertEqual(variables.statement, #"($boolOpt: Boolean, $double: Float!, $floatOptDef: Float = 3.6, $int: Integer!, $objC: MyCoolObject!, $objOpt: ObjectDefault, $stringOptDef: String = "hello")"#)
+    }
+    
+    func testVariableJSONEncoding() throws {
+        let thing: String? = nil
+        let variables = GraphQLVariables([
+            "int": int,
+            "boolOpt": boolOpt,
+            "floatOptDef": floatOptDef,
+            "double": double,
+            "stringOptDef": stringOptDef,
+            "cool": GraphQLVariable(value: thing),
+            "objOpt": objOpt,
+            "objC": objC
             ])
         
-        struct Variables: Decodable {
-            let string: String
-            let int: Int
-            let obj: Test
-        }
-        
-        let data = try JSONEncoder().encode(variables)
-        let decoded = try JSONDecoder().decode(Variables.self, from: data)
-        XCTAssertEqual(decoded.obj, obj)
-        XCTAssertEqual(decoded.int, 7)
-        XCTAssertEqual(decoded.string, "hello")
+        let encoded = try JSONEncoder().encode(variables)
+        let strComp = String(data: encoded, encoding: .utf8)?.dropFirst().dropLast().components(separatedBy: ",").sorted()
+        XCTAssertEqual(strComp?[0], #""boolOpt":false"#)
+        XCTAssertEqual(strComp?[1], #""double":8.0999999999999996"#)
+        XCTAssertEqual(strComp?[2], #""floatOptDef":3.5999999046325684"#)
+        XCTAssertEqual(strComp?[3], #""int":7"#)
+        XCTAssertEqual(strComp?[4], #""objC":{"name":"hiimtmac"}"#)
+        XCTAssertEqual(strComp?[5], #""objOpt":{"name":"hiimtmac"}"#)
+        XCTAssertEqual(strComp?[6], #""stringOptDef":"hello""#)
     }
 }

@@ -53,7 +53,18 @@ class QueryTests: XCTestCase {
         XCTAssertEqual(query.query, compare)
     }
     
-    func testWithVariables() {
-        XCTFail()
+    func testWithVariables() throws {
+        let node = GraphQLNode.node(nil, "allNodes", nil, [GraphQLNode.attributes(["hi", "ok"])])
+        let var1 = GraphQLVariable(value: 8)
+        let var2 = GraphQLVariable(value: nil, defaultValue: false)
+        let val: Bool? = nil
+        let var3 = GraphQLVariable(value: val)
+        let variables = GraphQLVariables(["var1": var1, "var2": var2, "var3": var3])
+        
+        let query = GraphQLQuery(returning: node, variables: variables)
+        
+        let encoded = try JSONEncoder().encode(query)
+        let strComp = String(data: encoded, encoding: .utf8)?.dropFirst().dropLast()
+        XCTAssertEqual(strComp, "\"query\":\"query($var1: Integer!, $var2: Boolean = false, $var3: Boolean) { allNodes: allNodes { hi ok } } \",\"variables\":{\"var2\":false,\"var1\":8}")
     }
 }

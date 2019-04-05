@@ -9,22 +9,22 @@
 import Foundation
 
 public struct GraphQLVariables: Encodable {
-    var variables: [String: GraphQLVariableRepresentable]
+    var variables: [String: GraphQLVariable]
     
-    public init(_ variables: [String: GraphQLVariableRepresentable] = [:]) {
+    public init(_ variables: [String: GraphQLVariable] = [:]) {
         self.variables = variables
     }
     
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
-        let wrappedDict = variables.mapValues(EncodableWrapper.init)
+        let wrappedDict = variables.compactMapValues(EncodableWrapper.init)
         try container.encode(wrappedDict)
     }
     
     public var statement: String {
         guard !variables.isEmpty else { return "" }
         let variableEncoded = variables
-            .map { "$\($0.key): \(type(of: $0.value).variableType)" }
+            .map { "$\($0.key): \($0.value.type)" }
             .sorted()
             .joined(separator: ", ")
         
@@ -36,17 +36,17 @@ public struct GraphQLVariables: Encodable {
         return GraphQLVariables(contents)
     }
     
-    public mutating func set(_ variables: [String: GraphQLVariableRepresentable?]) {
+    public mutating func set(_ variables: [String: GraphQLVariable?]) {
         for variable in variables {
             self.set(key: variable.key, value: variable.value)
         }
     }
     
-    public mutating func set(key: String, value: GraphQLVariableRepresentable?) {
+    public mutating func set(key: String, value: GraphQLVariable?) {
         self.variables[key] = value
     }
     
-    public subscript(key: String) -> GraphQLVariableRepresentable? {
+    public subscript(key: String) -> GraphQLVariable? {
         get {
             return self.variables[key]
         }
@@ -56,11 +56,18 @@ public struct GraphQLVariables: Encodable {
     }
     
     private struct EncodableWrapper: Encodable {
-        let wrapped: Encodable
+        let value: Encodable?
+        let defaultValue: Encodable?
+        
+        init?(_ variable: GraphQLVariable) {
+            if variable.value == nil && variable.defaultValue == nil { return nil }
+            self.value = variable.value
+            self.defaultValue = variable.defaultValue
+        }
         
         func encode(to encoder: Encoder) throws {
             var container = encoder.singleValueContainer()
-            try self.wrapped.encode(to: &container)
+            try (value ?? defaultValue)?.encode(to: &container)
         }
     }
 }

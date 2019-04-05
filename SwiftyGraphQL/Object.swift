@@ -14,7 +14,6 @@ public protocol GraphQLObject {
 
 extension GraphQLObject {
     public static var entityName: String {
-        let name = "\(Self.self)"
-        return name.capitalized
+        return "\(Self.self)"
     }
 }
