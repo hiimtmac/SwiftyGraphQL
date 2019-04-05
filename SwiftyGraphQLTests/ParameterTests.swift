@@ -58,19 +58,19 @@ class ParameterTests: XCTestCase {
     }
     
     func testQuoteEscaped() {
-        let val = #"thing"thing"#.graphEncoded()
+        let val = #"thing"thing"#.parameterValue
         let compare = #""thing\"thing""#
         XCTAssertEqual(val, compare)
     }
     
     func testSlashEscaped() {
-        let val = #"thing\thing"#.graphEncoded()
+        let val = #"thing\thing"#.parameterValue
         let compare = #""thing\\thing""#
         XCTAssertEqual(val, compare)
     }
     
     func testSlashQuoteEscaped() {
-        let val = #"thing\"thing"#.graphEncoded()
+        let val = #"thing\"thing"#.parameterValue
         let compare = #""thing\\\"thing""#
         XCTAssertEqual(val, compare)
     }
@@ -100,6 +100,16 @@ class ParameterTests: XCTestCase {
         let p4 = GraphQLParameters(["ok": [p1, p2, p3]])
         
         let compare = #"(ok: [ { ok: "maybe" }, { ok: "no" }, { ok: "yes" } ])"#
+        XCTAssertEqual(p4.statement, compare)
+    }
+    
+    func testDictionaryParameters() {
+        let p1 = GraphQLParameters(["ok": "yes"])
+        let p2 = GraphQLParameters(["ok": "no"])
+        let p3 = GraphQLParameters(["ok": "maybe"])
+        let p4 = GraphQLParameters(["ok": ["p1": p1, "p2": p2, "p3": p3]])
+        
+        let compare = #"(ok: { "p1": { ok: "yes" }, "p2": { ok: "no" }, "p3": { ok: "maybe" } })"#
         XCTAssertEqual(p4.statement, compare)
     }
     
@@ -139,7 +149,7 @@ class ParameterTests: XCTestCase {
         let parameters = GraphQLParameters(["since": 20, "name": "taylor"])
         let name = parameters["name"]
         
-        XCTAssertEqual(name.graphEncoded(), #""taylor""#)
+        XCTAssertEqual(name.parameterValue, #""taylor""#)
     }
     
     func testSubcriptSet() {

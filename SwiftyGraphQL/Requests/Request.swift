@@ -9,7 +9,7 @@
 import Foundation
 
 public protocol GraphQLRequest {
-    associatedtype GraphQLReturn: GraphQLDecodable
+    associatedtype GraphQLReturn: Decodable
     var query: GraphQLQuery { get set }
     var headers: [String: String]? { get set }
 }

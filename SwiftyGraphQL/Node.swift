@@ -9,8 +9,8 @@
 import Foundation
 
 public protocol GraphQLRepresentable {
-    var rawQuery: GraphQLStatement { get }
-    var fragments: GraphQLStatement { get }
+    var rawQuery: String { get }
+    var fragments: String { get }
 }
 
 public enum GraphQLNode: GraphQLRepresentable {
@@ -18,7 +18,7 @@ public enum GraphQLNode: GraphQLRepresentable {
     case attributes([String])
     case fragment(GraphQLFragmentRepresentable.Type)
     
-    public var rawQuery: GraphQLStatement {
+    public var rawQuery: String {
         switch self {
         case .node(let label, let name, let parameters, let nodes):
             let nodeString = nodes
@@ -43,9 +43,9 @@ public enum GraphQLNode: GraphQLRepresentable {
         }
     }
     
-    public var fragments: GraphQLStatement {
+    public var fragments: String {
         let fragments = fragmentTypes
-            .map { $0.fragment }
+            .map { $0.fragmentStatement }
         
         let set = Set(fragments).sorted()
         return set.joined(separator: " ")
@@ -53,17 +53,17 @@ public enum GraphQLNode: GraphQLRepresentable {
 }
 
 extension Array: GraphQLRepresentable where Iterator.Element == GraphQLNode {
-    public var rawQuery: GraphQLStatement {
+    public var rawQuery: String {
         return self
             .map { $0.rawQuery }
             .sorted()
             .joined(separator: " ")
     }
     
-    public var fragments: GraphQLStatement {
+    public var fragments: String {
         let fragments = self
             .reduce([GraphQLFragmentRepresentable.Type](), { $0 + $1.fragmentTypes })
-            .map { $0.fragment }
+            .map { $0.fragmentStatement }
         
         let set = Set(fragments).sorted()
         return set.joined(separator: " ")
