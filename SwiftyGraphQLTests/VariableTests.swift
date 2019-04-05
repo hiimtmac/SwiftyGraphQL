@@ -10,7 +10,7 @@ import XCTest
 @testable import SwiftyGraphQL
 
 class VariableTests: XCTestCase {
-    
+    /*
     var int: GraphQLVariable!
     var optInt: GraphQLVariable!
     var optIntDef: GraphQLVariable!
@@ -90,5 +90,15 @@ class VariableTests: XCTestCase {
         let encode = try JSONEncoder().encode(variables)
         print(String(data: encode, encoding: .utf8)!)
         
+    }
+ */
+    
+    struct Test: GraphQLObject, GraphQLVariableRepresentable {
+        
+    }
+    
+    func testMe() {
+        let variableType = Test.self.variableType
+        XCTAssertEqual(variableType, "Test")
     }
 }

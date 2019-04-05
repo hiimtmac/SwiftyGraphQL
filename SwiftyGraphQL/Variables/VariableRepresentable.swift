@@ -8,43 +8,55 @@
 
 import Foundation
 
-public protocol GraphQLVariableRepresentable: GraphQLObject, GraphQLArgument, Encodable {
-
+/*
+public protocol GraphQLVariableRepresentable: Encodable {
+    associatedtype Sub: Encodable
+    static var variableType: String { get }
 }
 
 extension GraphQLVariableRepresentable {
-    func graphQLEncoded() -> String {
-        return "$\(Self.entityName.lowercased())HAHAH"
+    public typealias Sub = Self
+    public var parameterValue: String {
+        return "$"
+    }
+}
+
+extension GraphQLObject where Self: GraphQLVariableRepresentable {
+    public static var variableType: String {
+        return entityName
     }
 }
 
 extension String: GraphQLVariableRepresentable {
-
+    public static var variableType: String {
+        return "String"
+    }
 }
 
 extension Int: GraphQLVariableRepresentable {
-    public static var entityName: String {
+    public static var variableType: String {
         return "Integer"
     }
 }
 
 extension Double: GraphQLVariableRepresentable {
-    public static var entityName: String {
+    public static var variableType: String {
         return "Float"
     }
 }
 
 extension Float: GraphQLVariableRepresentable {
-    public static var entityName: String {
+    public static var variableType: String {
         return "Float"
     }
 }
 
 extension Bool: GraphQLVariableRepresentable {
-    public static var entityName: String {
+    public static var variableType: String {
         return "Boolean"
     }
 }
+
 
 //extension Array: GraphQLVariableRepresentable where Element: GraphQLVariableRepresentable {
 //    public func graphQLEncoded() -> String {
@@ -68,9 +80,4 @@ extension Bool: GraphQLVariableRepresentable {
 //    }
 //}
 //
-//extension Optional: GraphQLArgument where Wrapped == GraphQLArgument {
-//    public func graphQLEncoded() -> String {
-//        guard let self = self else { return "null" }
-//        return self.graphQLEncoded()
-//    }
-//}
+*/

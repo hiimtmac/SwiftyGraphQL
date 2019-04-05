@@ -37,7 +37,7 @@ public struct GraphQLMutation {
         self.parameters = parameters
     }
     
-    public init(title: String, parameters: [String: GraphQLArgument?]) {
+    public init(title: String, parameters: [String: GraphQLParameterRepresentable?]) {
         self.title = title
         self.parameters = GraphQLParameters(parameters)
     }

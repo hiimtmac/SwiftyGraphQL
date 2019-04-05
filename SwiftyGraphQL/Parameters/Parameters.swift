@@ -9,16 +9,16 @@
 import Foundation
 
 public struct GraphQLParameters {
-    var parameters: [String: GraphQLArgument?]
+    var parameters: [String: GraphQLParameterRepresentable?]
     
-    public init(_ parameters: [String: GraphQLArgument?] = [:]) {
+    public init(_ parameters: [String: GraphQLParameterRepresentable?] = [:]) {
         self.parameters = parameters
     }
     
     public var statement: String {
         guard !parameters.isEmpty else { return "" }
         let parametersEncoded = parameters
-            .map { "\($0.key): \($0.value.graphQLEncoded())" }
+            .map { "\($0.key): \($0.value.parameterValue)" }
             .sorted()
             .joined(separator: ", ")
         
@@ -30,17 +30,17 @@ public struct GraphQLParameters {
         return GraphQLParameters(contents)
     }
     
-    public mutating func set(_ parameters: [String: GraphQLArgument?]) {
+    public mutating func set(_ parameters: [String: GraphQLParameterRepresentable?]) {
         for parameter in parameters {
             self.set(key: parameter.key, value: parameter.value)
         }
     }
     
-    public mutating func set(key: String, value: GraphQLArgument?) {
+    public mutating func set(key: String, value: GraphQLParameterRepresentable?) {
         self.parameters[key] = value
     }
     
-    public subscript(key: String) -> GraphQLArgument? {
+    public subscript(key: String) -> GraphQLParameterRepresentable? {
         get {
             return self.parameters[key]
         }
@@ -50,10 +50,10 @@ public struct GraphQLParameters {
     }
 }
 
-extension GraphQLParameters: GraphQLArgument {
-    public func graphQLEncoded() -> String {
+extension GraphQLParameters: GraphQLParameterRepresentable {
+    public var parameterValue: String {
         let parametersEncoded = parameters
-            .map { "\($0.key): \($0.value.graphQLEncoded())" }
+            .map { "\($0.key): \($0.value.parameterValue)" }
             .sorted()
             .joined(separator: ", ")
         

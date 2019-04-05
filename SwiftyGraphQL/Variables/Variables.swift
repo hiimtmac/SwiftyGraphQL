@@ -9,29 +9,23 @@
 import Foundation
 
 public struct GraphQLVariables: Encodable {
-    var variables: [String: GraphQLVariable]
+    var statement: String { return "hi" }
+    /*
+    var variables: [String: GraphQLVariableRepresentable]
     
-    public init(_ variables: [GraphQLVariable] = []) {
-        var dict = [String: GraphQLVariable]()
-        for variable in variables {
-            dict[variable.key] = variable
-        }
-        self.variables = dict
-    }
-    
-    public init(_ variables: [String: GraphQLVariable] = [:]) {
+    public init(_ variables: [String: GraphQLVariableRepresentable] = [:]) {
         self.variables = variables
     }
     
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.unkeyedContainer()
-        try container.encode("variables.map { $0.value }")
+        var _ = encoder.singleValueContainer()
+//        try container.encode(variables)
     }
     
     public var statement: String {
         guard !variables.isEmpty else { return "" }
         let variableEncoded = variables
-            .map { "$\($0.key): \($0.value.variableParameter)" }
+            .map { "$\($0.key): \(type(of: $0.value).variableType)" }
             .sorted()
             .joined(separator: ", ")
         
@@ -43,17 +37,17 @@ public struct GraphQLVariables: Encodable {
         return GraphQLVariables(contents)
     }
     
-    public mutating func set(_ variables: [GraphQLVariable]) {
+    public mutating func set(_ variables: [String: GraphQLVariableRepresentable?]) {
         for variable in variables {
-            self.set(key: variable.key, value: variable)
+            self.set(key: variable.key, value: variable.value)
         }
     }
     
-    public mutating func set(key: String, value: GraphQLVariable) {
+    public mutating func set(key: String, value: GraphQLVariableRepresentable?) {
         self.variables[key] = value
     }
     
-    public subscript(key: String) -> GraphQLVariable? {
+    public subscript(key: String) -> GraphQLVariableRepresentable? {
         get {
             return self.variables[key]
         }
@@ -61,4 +55,5 @@ public struct GraphQLVariables: Encodable {
             self.variables[key] = newValue
         }
     }
+ */
 }

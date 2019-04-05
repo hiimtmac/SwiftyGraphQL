@@ -58,19 +58,19 @@ class ParameterTests: XCTestCase {
     }
     
     func testQuoteEscaped() {
-        let val = #"thing"thing"#.graphQLEncoded()
+        let val = #"thing"thing"#.parameterValue
         let compare = #""thing\"thing""#
         XCTAssertEqual(val, compare)
     }
     
     func testSlashEscaped() {
-        let val = #"thing\thing"#.graphQLEncoded()
+        let val = #"thing\thing"#.parameterValue
         let compare = #""thing\\thing""#
         XCTAssertEqual(val, compare)
     }
     
     func testSlashQuoteEscaped() {
-        let val = #"thing\"thing"#.graphQLEncoded()
+        let val = #"thing\"thing"#.parameterValue
         let compare = #""thing\\\"thing""#
         XCTAssertEqual(val, compare)
     }
@@ -149,7 +149,7 @@ class ParameterTests: XCTestCase {
         let parameters = GraphQLParameters(["since": 20, "name": "taylor"])
         let name = parameters["name"]
         
-        XCTAssertEqual(name.graphQLEncoded(), #""taylor""#)
+        XCTAssertEqual(name.parameterValue, #""taylor""#)
     }
     
     func testSubcriptSet() {
