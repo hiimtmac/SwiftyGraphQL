@@ -103,6 +103,16 @@ class ParameterTests: XCTestCase {
         XCTAssertEqual(p4.statement, compare)
     }
     
+    func testDictionaryParameters() {
+        let p1 = GraphQLParameters(["ok": "yes"])
+        let p2 = GraphQLParameters(["ok": "no"])
+        let p3 = GraphQLParameters(["ok": "maybe"])
+        let p4 = GraphQLParameters(["ok": ["p1": p1, "p2": p2, "p3": p3]])
+        
+        let compare = #"(ok: { "p1": { ok: "yes" }, "p2": { ok: "no" }, "p3": { ok: "maybe" } })"#
+        XCTAssertEqual(p4.statement, compare)
+    }
+    
     func testSingleAppend() {
         var parameters = GraphQLParameters(["since": 20, "name": "taylor"])
         parameters.set(key: "age", value: 12.5)

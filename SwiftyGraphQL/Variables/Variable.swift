@@ -8,14 +8,16 @@
 
 import Foundation
 
-public struct GraphQLVariable: Encodable {
+public struct GraphQLVariable {
     let key: String
-    let value: GraphQLVariableEncodable?
+    let value: GraphQLArgument?
+    let `default`: GraphQLArgument?
     let variableParameter: String
     
-    init<T>(key: String, value: T?, type: T.Type, default: T? = nil) where T: GraphQLVariableEncodable {
+    init<T>(key: String, value: T?, type: T.Type, default: T? = nil) where T: GraphQLArgument {
         self.key = key
         self.value = value
+        self.default = `default`
         if let def = `default` {
             self.variableParameter = "\(type.self) = \(def.graphQLEncoded())"
         } else {
@@ -23,15 +25,11 @@ public struct GraphQLVariable: Encodable {
         }
     }
     
-    init<T>(key: String, value: T, type: T.Type) where T: GraphQLVariableEncodable {
+    init<T>(key: String, value: T, type: T.Type) where T: GraphQLArgument {
         self.key = key
         self.value = value
         self.variableParameter = "\(type.self)!"
-    }
-    
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.unkeyedContainer()
-        try container.encode(value?.graphQLEncoded())
+        self.default = nil
     }
 }
 

@@ -11,19 +11,27 @@ import Foundation
 public struct GraphQLVariables: Encodable {
     var variables: [String: GraphQLVariable]
     
+    public init(_ variables: [GraphQLVariable] = []) {
+        var dict = [String: GraphQLVariable]()
+        for variable in variables {
+            dict[variable.key] = variable
+        }
+        self.variables = dict
+    }
+    
     public init(_ variables: [String: GraphQLVariable] = [:]) {
         self.variables = variables
     }
     
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
-        try container.encode(variables.map { $0.value })
+        try container.encode("variables.map { $0.value }")
     }
     
     public var statement: String {
         guard !variables.isEmpty else { return "" }
         let variableEncoded = variables
-            .map { "\($0.key): \($0.value.graphQLEncoded())" }
+            .map { "$\($0.key): \($0.value.variableParameter)" }
             .sorted()
             .joined(separator: ", ")
         

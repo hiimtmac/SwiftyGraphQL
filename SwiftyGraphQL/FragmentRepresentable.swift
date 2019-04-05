@@ -20,11 +20,6 @@ extension GraphQLFragmentRepresentable {
         return "fragment \(fragmentName) on \(entityName) { \(attributes.sorted().joined(separator: " ")) }"
     }
     
-    public static var entityName: String {
-        let name = "\(Self.self)"
-        return name.capitalized
-    }
-    
     public static var fragmentName: String {
         let name = "\(Self.self)"
         return name.lowercased()

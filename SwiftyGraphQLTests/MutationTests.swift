@@ -62,4 +62,8 @@ class MutationTests: XCTestCase {
         let compare = #"mutation { testMutation(thing: "ok") { one: one two: two { no maybe ...frag2 } } } fragment frag2 on Frag2 { address birthday }"#
         XCTAssertEqual(graphmutation.query, compare)
     }
+    
+    func testWithVariables() {
+        XCTFail()
+    }
 }

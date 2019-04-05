@@ -11,3 +11,10 @@ import Foundation
 public protocol GraphQLObject {
     static var entityName: String { get }
 }
+
+extension GraphQLObject {
+    public static var entityName: String {
+        let name = "\(Self.self)"
+        return name.capitalized
+    }
+}

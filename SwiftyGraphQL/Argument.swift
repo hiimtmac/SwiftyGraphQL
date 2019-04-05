@@ -73,6 +73,17 @@ extension Array: GraphQLArgument where Element: GraphQLArgument {
     }
 }
 
+extension Dictionary: GraphQLArgument where Key == String, Value: GraphQLArgument {
+    public func graphQLEncoded() -> String {
+        let parametersEncoded = self
+            .map { #""\#($0.key)": \#($0.value.graphQLEncoded())"# }
+            .sorted()
+            .joined(separator: ", ")
+        
+        return "{ \(parametersEncoded) }"
+    }
+}
+
 extension Optional: GraphQLArgument where Wrapped == GraphQLArgument {
     public func graphQLEncoded() -> String {
         guard let self = self else { return "null" }

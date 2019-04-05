@@ -20,9 +20,9 @@
 		D798D13A2256601C0095DF8E /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = D798D1392256601C0095DF8E /* Network.swift */; };
 		D798D13C225660310095DF8E /* URLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D798D13B225660310095DF8E /* URLProtocol.swift */; };
 		D798D13E225661540095DF8E /* Variable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D798D13D225661540095DF8E /* Variable.swift */; };
-		D798D141225661900095DF8E /* VariableEncoded.swift in Sources */ = {isa = PBXBuildFile; fileRef = D798D140225661900095DF8E /* VariableEncoded.swift */; };
 		D798D146225674F50095DF8E /* VariableRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D798D145225674F50095DF8E /* VariableRepresentable.swift */; };
 		D798D1482256756E0095DF8E /* Object.swift in Sources */ = {isa = PBXBuildFile; fileRef = D798D1472256756E0095DF8E /* Object.swift */; };
+		D798D14A22569C100095DF8E /* VariableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D798D14922569C100095DF8E /* VariableTests.swift */; };
 		D7E5B2C5216CE52F004CA6C4 /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E5B2C4216CE52F004CA6C4 /* Response.swift */; };
 		D7E5B2C7216CEC0B004CA6C4 /* NodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E5B2C6216CEC0B004CA6C4 /* NodeTests.swift */; };
 		D7E5B2C9216CEC13004CA6C4 /* FragmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E5B2C8216CEC13004CA6C4 /* FragmentTests.swift */; };
@@ -65,9 +65,9 @@
 		D798D1392256601C0095DF8E /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		D798D13B225660310095DF8E /* URLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLProtocol.swift; sourceTree = "<group>"; };
 		D798D13D225661540095DF8E /* Variable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Variable.swift; sourceTree = "<group>"; };
-		D798D140225661900095DF8E /* VariableEncoded.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariableEncoded.swift; sourceTree = "<group>"; };
 		D798D145225674F50095DF8E /* VariableRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariableRepresentable.swift; sourceTree = "<group>"; };
 		D798D1472256756E0095DF8E /* Object.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Object.swift; sourceTree = "<group>"; };
+		D798D14922569C100095DF8E /* VariableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariableTests.swift; sourceTree = "<group>"; };
 		D7E5B2C4216CE52F004CA6C4 /* Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
 		D7E5B2C6216CEC0B004CA6C4 /* NodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodeTests.swift; sourceTree = "<group>"; };
 		D7E5B2C8216CEC13004CA6C4 /* FragmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FragmentTests.swift; sourceTree = "<group>"; };
@@ -133,10 +133,11 @@
 				D724F913216C9F9000342F5A /* Info.plist */,
 				D724F929216C9F9A00342F5A /* Node.swift */,
 				D798D1472256756E0095DF8E /* Object.swift */,
-				D724F92B216C9FA000342F5A /* FragmentRepresentable.swift */,
-				D798D145225674F50095DF8E /* VariableRepresentable.swift */,
 				D724F92F216C9FAC00342F5A /* Query.swift */,
 				D7ED5DCE218101B0005E5CDB /* Argument.swift */,
+				D724F92B216C9FA000342F5A /* FragmentRepresentable.swift */,
+				D798D145225674F50095DF8E /* VariableRepresentable.swift */,
+				D7ED5DD621811450005E5CDB /* Parameters.swift */,
 				D776D327224EB37E00460389 /* Requests */,
 				D798D13F2256616C0095DF8E /* Variables */,
 				D7ED5DD521811346005E5CDB /* Decodable */,
@@ -156,6 +157,7 @@
 				D7F588CE2180D4D400BDD411 /* GraphQLErrorTests.swift */,
 				D7ED5DD321810A27005E5CDB /* ParameterTests.swift */,
 				D776D32A224EB58000460389 /* RequestTests.swift */,
+				D798D14922569C100095DF8E /* VariableTests.swift */,
 				D798D138225660130095DF8E /* Helpers */,
 				D724F91F216C9F9000342F5A /* Info.plist */,
 			);
@@ -184,8 +186,6 @@
 		D798D13F2256616C0095DF8E /* Variables */ = {
 			isa = PBXGroup;
 			children = (
-				D7ED5DD621811450005E5CDB /* Parameters.swift */,
-				D798D140225661900095DF8E /* VariableEncoded.swift */,
 				D798D13222564F9D0095DF8E /* Variables.swift */,
 				D798D13D225661540095DF8E /* Variable.swift */,
 			);
@@ -328,7 +328,6 @@
 				D7F588C52180CEE800BDD411 /* Error.swift in Sources */,
 				D776D329224EB39100460389 /* Request.swift in Sources */,
 				D7ED5DD721811450005E5CDB /* Parameters.swift in Sources */,
-				D798D141225661900095DF8E /* VariableEncoded.swift in Sources */,
 				D798D13322564F9D0095DF8E /* Variables.swift in Sources */,
 				D776D32D224EBD3600460389 /* StateMachine.swift in Sources */,
 				D724F92C216C9FA000342F5A /* FragmentRepresentable.swift in Sources */,
@@ -350,6 +349,7 @@
 				D798D13A2256601C0095DF8E /* Network.swift in Sources */,
 				D776D32B224EB58000460389 /* RequestTests.swift in Sources */,
 				D7E5B2CB216CEC1A004CA6C4 /* MutationTests.swift in Sources */,
+				D798D14A22569C100095DF8E /* VariableTests.swift in Sources */,
 				D7E5B2CF216CEC2A004CA6C4 /* GraphQLDecodeTests.swift in Sources */,
 				D798D13C225660310095DF8E /* URLProtocol.swift in Sources */,
 				D7F588CF2180D4D400BDD411 /* GraphQLErrorTests.swift in Sources */,

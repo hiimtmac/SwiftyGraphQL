@@ -16,7 +16,6 @@ public struct GraphQLQuery: Encodable {
     public let operationName: String?
     
     public init(returning: GraphQLRepresentable, variables: GraphQLVariables? = nil, operationName: String? = nil) {
-        
         self.query = "query\(variables?.statement ?? "") { \(returning.rawQuery) } \(returning.fragments)"
         self.operationName = operationName
         self.variables = variables
@@ -26,18 +25,6 @@ public struct GraphQLQuery: Encodable {
         self.query = "mutation\(variables?.statement ?? "") { \(mutation.statement) { \(returning.rawQuery) } } \(returning.fragments)"
         self.operationName = operationName
         self.variables = variables
-    }
-    
-    enum QueryType {
-        case query
-        case mutation(GraphQLMutation)
-        
-        var type: String {
-            switch self {
-            case .query: return "query"
-            case .mutation: return "mutation"
-            }
-        }
     }
 }
 

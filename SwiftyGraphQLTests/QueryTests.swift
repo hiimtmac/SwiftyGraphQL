@@ -52,4 +52,8 @@ class QueryTests: XCTestCase {
         let compare = #"query { one: one two: two { no maybe ...frag2 } } fragment frag2 on Frag2 { address birthday }"#
         XCTAssertEqual(query.query, compare)
     }
+    
+    func testWithVariables() {
+        XCTFail()
+    }
 }
