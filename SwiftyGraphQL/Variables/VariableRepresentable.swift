@@ -8,14 +8,13 @@
 
 import Foundation
 
-/*
 public protocol GraphQLVariableRepresentable: Encodable {
-    associatedtype Sub: Encodable
+//    associatedtype Sub: Encodable
     static var variableType: String { get }
 }
 
 extension GraphQLVariableRepresentable {
-    public typealias Sub = Self
+//    public typealias Sub = Self
     public var parameterValue: String {
         return "$"
     }
@@ -80,4 +79,3 @@ extension Bool: GraphQLVariableRepresentable {
 //    }
 //}
 //
-*/

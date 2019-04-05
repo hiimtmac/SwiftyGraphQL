@@ -22,6 +22,8 @@
 		D798D146225674F50095DF8E /* VariableRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D798D145225674F50095DF8E /* VariableRepresentable.swift */; };
 		D798D1482256756E0095DF8E /* Object.swift in Sources */ = {isa = PBXBuildFile; fileRef = D798D1472256756E0095DF8E /* Object.swift */; };
 		D798D14A22569C100095DF8E /* VariableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D798D14922569C100095DF8E /* VariableTests.swift */; };
+		D7C7A4C5225788E1001BF4AD /* JSONEncoder+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C7A4C4225788E1001BF4AD /* JSONEncoder+Extensions.swift */; };
+		D7C7A4C822578DCA001BF4AD /* Encodable+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C7A4C722578DCA001BF4AD /* Encodable+Extensions.swift */; };
 		D7E5B2C5216CE52F004CA6C4 /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E5B2C4216CE52F004CA6C4 /* Response.swift */; };
 		D7E5B2C7216CEC0B004CA6C4 /* NodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E5B2C6216CEC0B004CA6C4 /* NodeTests.swift */; };
 		D7E5B2C9216CEC13004CA6C4 /* FragmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E5B2C8216CEC13004CA6C4 /* FragmentTests.swift */; };
@@ -67,6 +69,8 @@
 		D798D145225674F50095DF8E /* VariableRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariableRepresentable.swift; sourceTree = "<group>"; };
 		D798D1472256756E0095DF8E /* Object.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Object.swift; sourceTree = "<group>"; };
 		D798D14922569C100095DF8E /* VariableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariableTests.swift; sourceTree = "<group>"; };
+		D7C7A4C4225788E1001BF4AD /* JSONEncoder+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JSONEncoder+Extensions.swift"; sourceTree = "<group>"; };
+		D7C7A4C722578DCA001BF4AD /* Encodable+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Encodable+Extensions.swift"; sourceTree = "<group>"; };
 		D7E5B2C4216CE52F004CA6C4 /* Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
 		D7E5B2C6216CEC0B004CA6C4 /* NodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodeTests.swift; sourceTree = "<group>"; };
 		D7E5B2C8216CEC13004CA6C4 /* FragmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FragmentTests.swift; sourceTree = "<group>"; };
@@ -139,6 +143,7 @@
 				D776D327224EB37E00460389 /* Requests */,
 				D798D13F2256616C0095DF8E /* Variables */,
 				D7ED5DD521811346005E5CDB /* Decodable */,
+				D7C7A4C6225788E5001BF4AD /* Extensions */,
 				D798D1442256715C0095DF8E /* Error */,
 			);
 			path = SwiftyGraphQL;
@@ -200,10 +205,19 @@
 			path = Error;
 			sourceTree = "<group>";
 		};
-		D7ED5DD521811346005E5CDB /* Decodable */ = {
+		D7C7A4C6225788E5001BF4AD /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
 				D7F588C62180D27B00BDD411 /* JSONDecoder+Extensions.swift */,
+				D7C7A4C4225788E1001BF4AD /* JSONEncoder+Extensions.swift */,
+				D7C7A4C722578DCA001BF4AD /* Encodable+Extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		D7ED5DD521811346005E5CDB /* Decodable */ = {
+			isa = PBXGroup;
+			children = (
 				D7E5B2C4216CE52F004CA6C4 /* Response.swift */,
 			);
 			path = Decodable;
@@ -340,9 +354,11 @@
 				D798D13322564F9D0095DF8E /* Variables.swift in Sources */,
 				D776D32D224EBD3600460389 /* StateMachine.swift in Sources */,
 				D724F92C216C9FA000342F5A /* FragmentRepresentable.swift in Sources */,
+				D7C7A4C5225788E1001BF4AD /* JSONEncoder+Extensions.swift in Sources */,
 				D7F588C72180D27B00BDD411 /* JSONDecoder+Extensions.swift in Sources */,
 				D7E5B2C5216CE52F004CA6C4 /* Response.swift in Sources */,
 				D798D1482256756E0095DF8E /* Object.swift in Sources */,
+				D7C7A4C822578DCA001BF4AD /* Encodable+Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

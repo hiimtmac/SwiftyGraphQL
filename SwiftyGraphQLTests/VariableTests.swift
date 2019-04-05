@@ -93,12 +93,62 @@ class VariableTests: XCTestCase {
     }
  */
     
-    struct Test: GraphQLObject, GraphQLVariableRepresentable {
-        
+    struct Test: GraphQLObject, GraphQLVariableRepresentable, Equatable, Decodable {
+        let ok: String
+        let age: Int
     }
     
     func testMe() {
         let variableType = Test.self.variableType
         XCTAssertEqual(variableType, "Test")
+    }
+    
+    func testSimpleVariablesJSONEncoding() throws {
+        let variables = GraphQLVariables([
+            "string": "hello",
+            "int": 7
+            ])
+        
+        let data = try JSONEncoder().encode(variables)
+        let string = String(data: data, encoding: .utf8)!
+        XCTAssertEqual(string, #"{"int":7,"string":"hello"}"#)
+    }
+    
+    func testCustomVariablesJSONEncoding() throws {
+        let obj = Test(ok: "yes", age: 27)
+        
+        let variables = GraphQLVariables([
+            "obj": obj
+            ])
+        
+        struct Variables: Decodable {
+            let obj: Test
+        }
+        
+        let data = try JSONEncoder().encode(variables)
+        let decoded = try JSONDecoder().decode(Variables.self, from: data)
+        XCTAssertEqual(obj, decoded.obj)
+    }
+    
+    func testMixedVariablesJSONEncoding() throws {
+        let obj = Test(ok: "yes", age: 27)
+
+        let variables = GraphQLVariables([
+            "string": "hello",
+            "int": 7,
+            "obj": obj
+            ])
+        
+        struct Variables: Decodable {
+            let string: String
+            let int: Int
+            let obj: Test
+        }
+        
+        let data = try JSONEncoder().encode(variables)
+        let decoded = try JSONDecoder().decode(Variables.self, from: data)
+        XCTAssertEqual(decoded.obj, obj)
+        XCTAssertEqual(decoded.int, 7)
+        XCTAssertEqual(decoded.string, "hello")
     }
 }

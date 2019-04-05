@@ -8,6 +8,7 @@
 
 import Foundation
 
-public protocol GraphQLVariable: Encodable {
-    
+public struct GraphQLVariable {
+    let value: GraphQLVariableRepresentable?
+    let `default`: GraphQLVariableRepresentable?
 }

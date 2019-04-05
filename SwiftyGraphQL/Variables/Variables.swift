@@ -9,8 +9,6 @@
 import Foundation
 
 public struct GraphQLVariables: Encodable {
-    var statement: String { return "hi" }
-    /*
     var variables: [String: GraphQLVariableRepresentable]
     
     public init(_ variables: [String: GraphQLVariableRepresentable] = [:]) {
@@ -18,8 +16,9 @@ public struct GraphQLVariables: Encodable {
     }
     
     public func encode(to encoder: Encoder) throws {
-        var _ = encoder.singleValueContainer()
-//        try container.encode(variables)
+        var container = encoder.singleValueContainer()
+        let wrappedDict = variables.mapValues(EncodableWrapper.init)
+        try container.encode(wrappedDict)
     }
     
     public var statement: String {
@@ -55,5 +54,13 @@ public struct GraphQLVariables: Encodable {
             self.variables[key] = newValue
         }
     }
- */
+    
+    private struct EncodableWrapper: Encodable {
+        let wrapped: Encodable
+        
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.singleValueContainer()
+            try self.wrapped.encode(to: &container)
+        }
+    }
 }
