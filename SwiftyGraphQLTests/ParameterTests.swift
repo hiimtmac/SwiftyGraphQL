@@ -159,4 +159,24 @@ class ParameterTests: XCTestCase {
         let compare = #"(age: 12.5, name: "taylor", since: 20)"#
         XCTAssertEqual(parameters.statement, compare)
     }
+    
+    func testGraphQLParameterable() {
+        struct Test: GraphQLParameterable {
+            let int: Int
+            let string: String
+            let bool: Bool
+            
+            func graphQLParameterEncode() -> GraphQLParameters {
+                return GraphQLParameters([
+                    "int": int,
+                    "string": string,
+                    "bool": bool
+                ])
+            }
+        }
+        
+        let parameters = Test(int: 20, string: "taylor", bool: true).graphQLParameterEncode()
+        let compare = #"(bool: true, int: 20, string: "taylor")"#
+        XCTAssertEqual(parameters.statement, compare)
+    }
 }

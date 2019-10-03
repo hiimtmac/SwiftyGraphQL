@@ -26,13 +26,13 @@ public struct GraphQLParameters {
     }
     
     public static func +(lhs: GraphQLParameters, rhs: GraphQLParameters) -> GraphQLParameters {
-        let contents = lhs.parameters.merging(rhs.parameters) { (_, new) in new }
+        let contents = lhs.parameters.merging(rhs.parameters) { $1 }
         return GraphQLParameters(contents)
     }
     
     public mutating func set(_ parameters: [String: GraphQLParameterRepresentable?]) {
-        for parameter in parameters {
-            self.set(key: parameter.key, value: parameter.value)
+        parameters.forEach {
+            self.set(key: $0.key, value: $0.value)
         }
     }
     

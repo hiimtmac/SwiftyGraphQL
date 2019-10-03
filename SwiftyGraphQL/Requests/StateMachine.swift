@@ -15,4 +15,5 @@ public class SwiftyGraphQL {
     public var graphQLEndpoint: URL!
     public var queryEncoder: JSONEncoder?
     public var responseDecoder: JSONDecoder?
+    public var defaultHeaders: [String: String?]?
 }
