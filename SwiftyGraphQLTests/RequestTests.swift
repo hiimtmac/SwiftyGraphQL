@@ -30,7 +30,7 @@ class RequestTests: XCTestCase {
         
         let node = GraphQLNode.node(nil, "me", nil, [.fragment(Frag2.self)])
         let query = GraphQLQuery(returning: node)
-        request = TestGraphRequest(query: query, headers: ["Content-Type":"application/json"])
+        request = TestGraphRequest(query: query, requestHeaders: ["Accept":"application/json", "Content-Type":"application/json"])
         
         SwiftyGraphQL.shared.graphQLEndpoint = components.url!
     }
@@ -38,7 +38,7 @@ class RequestTests: XCTestCase {
     struct TestGraphRequest: GraphQLRequest {
         typealias GraphQLReturn = Frag2
         var query: GraphQLQuery
-        var headers: [String: String]?
+        var requestHeaders: [String: String?]?
     }
     
     func testRequestCreation() throws {
@@ -47,6 +47,7 @@ class RequestTests: XCTestCase {
         XCTAssertEqual(urlRequest.url?.absoluteString, "https://graphql.com/graphql")
         XCTAssertEqual(urlRequest.httpMethod, "POST")
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["Content-Type"], "application/json")
+        XCTAssertEqual(urlRequest.allHTTPHeaderFields?["Accept"], "application/json")
         
         let compare = #"{"query":"query { me: me { ...frag2 } } fragment frag2 on Frag2 { address birthday }"}"#
         
@@ -56,6 +57,28 @@ class RequestTests: XCTestCase {
         }
         
         XCTAssertEqual(string, compare)
+    }
+    
+    func testRequestHeaders() throws {
+        struct HeaderRequest: GraphQLRequest {
+            typealias GraphQLReturn = String
+            var query: GraphQLQuery
+            var requestHeaders: [String : String?]?
+        }
+        
+        let query = GraphQLQuery(returning: GraphQLNode.node(nil, "hi", nil, [.attributes(["hi"])]))
+        
+        SwiftyGraphQL.shared.defaultHeaders = ["one":"default", "two":"default", "three":"default", "four":"default", "five":"default"]
+        let request = HeaderRequest(query: query, requestHeaders: ["one":nil, "two":"request", "three":"request", "four":"request", "six":"request"])
+        let urlRequest = try request.urlRequest(headers: ["three":"flight", "four": nil, "seven":"flight"])
+        
+        XCTAssertEqual(urlRequest.allHTTPHeaderFields?["one"], nil)
+        XCTAssertEqual(urlRequest.allHTTPHeaderFields?["two"], "request")
+        XCTAssertEqual(urlRequest.allHTTPHeaderFields?["three"], "flight")
+        XCTAssertEqual(urlRequest.allHTTPHeaderFields?["four"], nil)
+        XCTAssertEqual(urlRequest.allHTTPHeaderFields?["five"], "default")
+        XCTAssertEqual(urlRequest.allHTTPHeaderFields?["six"], "request")
+        XCTAssertEqual(urlRequest.allHTTPHeaderFields?["seven"], "flight")
     }
     
     func testRequestDefaultDecoder() throws {
