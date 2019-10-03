@@ -8,10 +8,6 @@
 
 import Foundation
 
-public protocol GraphQLParameterable {
-    func graphQLParameterEncode() -> GraphQLParameters
-}
-
 public struct GraphQLParameters {
     var parameters: [String: GraphQLParameterRepresentable?]
     

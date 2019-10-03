@@ -24,6 +24,7 @@
 		D798D14A22569C100095DF8E /* VariableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D798D14922569C100095DF8E /* VariableTests.swift */; };
 		D7C7A4C5225788E1001BF4AD /* JSONEncoder+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C7A4C4225788E1001BF4AD /* JSONEncoder+Extensions.swift */; };
 		D7C7A4C822578DCA001BF4AD /* Encodable+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C7A4C722578DCA001BF4AD /* Encodable+Extensions.swift */; };
+		D7DA3DDD23465FCD00C098E8 /* Parameterable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DA3DDC23465FCD00C098E8 /* Parameterable.swift */; };
 		D7E5B2C5216CE52F004CA6C4 /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E5B2C4216CE52F004CA6C4 /* Response.swift */; };
 		D7E5B2C7216CEC0B004CA6C4 /* NodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E5B2C6216CEC0B004CA6C4 /* NodeTests.swift */; };
 		D7E5B2C9216CEC13004CA6C4 /* FragmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E5B2C8216CEC13004CA6C4 /* FragmentTests.swift */; };
@@ -71,6 +72,7 @@
 		D798D14922569C100095DF8E /* VariableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariableTests.swift; sourceTree = "<group>"; };
 		D7C7A4C4225788E1001BF4AD /* JSONEncoder+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JSONEncoder+Extensions.swift"; sourceTree = "<group>"; };
 		D7C7A4C722578DCA001BF4AD /* Encodable+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Encodable+Extensions.swift"; sourceTree = "<group>"; };
+		D7DA3DDC23465FCD00C098E8 /* Parameterable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parameterable.swift; sourceTree = "<group>"; };
 		D7E5B2C4216CE52F004CA6C4 /* Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
 		D7E5B2C6216CEC0B004CA6C4 /* NodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodeTests.swift; sourceTree = "<group>"; };
 		D7E5B2C8216CEC13004CA6C4 /* FragmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FragmentTests.swift; sourceTree = "<group>"; };
@@ -228,6 +230,7 @@
 			children = (
 				D7FE5C9D2256EF3F00B0EEE3 /* ParameterRepresentable.swift */,
 				D7ED5DD621811450005E5CDB /* Parameters.swift */,
+				D7DA3DDC23465FCD00C098E8 /* Parameterable.swift */,
 			);
 			path = Parameters;
 			sourceTree = "<group>";
@@ -351,6 +354,7 @@
 				D7F588C52180CEE800BDD411 /* Error.swift in Sources */,
 				D776D329224EB39100460389 /* Request.swift in Sources */,
 				D7ED5DD721811450005E5CDB /* Parameters.swift in Sources */,
+				D7DA3DDD23465FCD00C098E8 /* Parameterable.swift in Sources */,
 				D798D13322564F9D0095DF8E /* Variables.swift in Sources */,
 				D776D32D224EBD3600460389 /* StateMachine.swift in Sources */,
 				D724F92C216C9FA000342F5A /* FragmentRepresentable.swift in Sources */,
