@@ -14,7 +14,7 @@ public protocol GraphQLRepresentable {
 }
 
 public enum GraphQLNode: GraphQLRepresentable {
-    indirect case node(String?, String, GraphQLParameters?, [GraphQLNode])
+    indirect case node(label: String? = nil, name: String, parameters: GraphQLParameters? = nil, [GraphQLNode])
     case attributes([String])
     case fragment(GraphQLFragmentRepresentable.Type)
     
@@ -52,7 +52,7 @@ public enum GraphQLNode: GraphQLRepresentable {
     }
 }
 
-extension Array: GraphQLRepresentable where Iterator.Element == GraphQLNode {
+extension Array: GraphQLRepresentable where Element == GraphQLNode {
     public var rawQuery: String {
         return self
             .map { $0.rawQuery }

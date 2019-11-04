@@ -12,7 +12,7 @@ import XCTest
 class RequestTests: XCTestCase {
     
     var network: MockNetwork!
-    var request: TestGraphRequest!
+    var request: GraphQLRequest<Frag2>!
     
     override func setUp() {
         super.setUp()
@@ -28,17 +28,12 @@ class RequestTests: XCTestCase {
         components.host = "graphql.com"
         components.path = "/graphql"
         
-        let node = GraphQLNode.node(nil, "me", nil, [.fragment(Frag2.self)])
+        let node = GraphQLNode.node(name: "me", [.fragment(Frag2.self)])
         let query = GraphQLQuery(returning: node)
-        request = TestGraphRequest(query: query, requestHeaders: ["Accept":"application/json", "Content-Type":"application/json"])
+        let headers = HTTPHeaders([HTTPHeader(name: .contentEncoding, value: .json)])
+        request = GraphQLRequest(query: query, headers: headers)
         
         SwiftyGraphQL.shared.graphQLEndpoint = components.url!
-    }
-    
-    struct TestGraphRequest: GraphQLRequest {
-        typealias GraphQLReturn = Frag2
-        var query: GraphQLQuery
-        var requestHeaders: [String: String?]?
     }
     
     func testRequestCreation() throws {
@@ -46,8 +41,8 @@ class RequestTests: XCTestCase {
         
         XCTAssertEqual(urlRequest.url?.absoluteString, "https://graphql.com/graphql")
         XCTAssertEqual(urlRequest.httpMethod, "POST")
-        XCTAssertEqual(urlRequest.allHTTPHeaderFields?["Content-Type"], "application/json")
-        XCTAssertEqual(urlRequest.allHTTPHeaderFields?["Accept"], "application/json")
+        XCTAssertEqual(urlRequest.allHTTPHeaderFields?["Content-Type"], "application/json; charset=utf-8")
+        XCTAssertEqual(urlRequest.allHTTPHeaderFields?["Accept"], "application/json; charset=utf-8")
         
         let compare = #"{"query":"query { me: me { ...frag2 } } fragment frag2 on Frag2 { address birthday }"}"#
         
@@ -60,22 +55,33 @@ class RequestTests: XCTestCase {
     }
     
     func testRequestHeaders() throws {
-        struct HeaderRequest: GraphQLRequest {
-            typealias GraphQLReturn = String
-            var query: GraphQLQuery
-            var requestHeaders: [String : String?]?
-        }
+        let query = GraphQLQuery(returning: GraphQLNode.node(name: "hi", [.attributes(["hi"])]))
         
-        let query = GraphQLQuery(returning: GraphQLNode.node(nil, "hi", nil, [.attributes(["hi"])]))
+        SwiftyGraphQL.shared.defaultHeaders = HTTPHeaders([
+            .init(name: .init("one"), value: "default"),
+            .init(name: .init("two"), value: "default"),
+            .init(name: .init("three"), value: "default"),
+            .init(name: .init("four"), value: "default"),
+            .init(name: .init("five"), value: "asdasd"),
+            .init(name: .init("five"), value: "default")
+        ])
+        let request = GraphQLRequest<String>(query: query, headers: HTTPHeaders([
+            .init(name: .init("one"), value: "nil"),
+            .init(name: .init("two"), value: "request"),
+            .init(name: .init("three"), value: "request"),
+            .init(name: .init("four"), value: "request"),
+            .init(name: .init("six"), value: "request")
+        ]))
+        let urlRequest = try request.urlRequest(headers: HTTPHeaders([
+            .init(name: .init("three"), value: "flight"),
+            .init(name: .init("four"), value: "nil"),
+            .init(name: .init("seven"), value: "flight")
+        ]))
         
-        SwiftyGraphQL.shared.defaultHeaders = ["one":"default", "two":"default", "three":"default", "four":"default", "five":"default"]
-        let request = HeaderRequest(query: query, requestHeaders: ["one":nil, "two":"request", "three":"request", "four":"request", "six":"request"])
-        let urlRequest = try request.urlRequest(headers: ["three":"flight", "four": nil, "seven":"flight"])
-        
-        XCTAssertEqual(urlRequest.allHTTPHeaderFields?["one"], nil)
+        XCTAssertEqual(urlRequest.allHTTPHeaderFields?["one"], "nil")
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["two"], "request")
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["three"], "flight")
-        XCTAssertEqual(urlRequest.allHTTPHeaderFields?["four"], nil)
+        XCTAssertEqual(urlRequest.allHTTPHeaderFields?["four"], "nil")
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["five"], "default")
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["six"], "request")
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["seven"], "flight")
@@ -92,7 +98,7 @@ class RequestTests: XCTestCase {
             return (HTTPURLResponse(), data)
         }
         
-        network.perform(headers: [:], request: request) { result in
+        network.perform(request: request) { result in
             switch result {
             case .success(let decoded):
                 XCTAssertEqual(decoded.data.address, "place")
@@ -123,7 +129,7 @@ class RequestTests: XCTestCase {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
         
-        network.perform(headers: [:], request: request, decoder: decoder) { result in
+        network.perform(request: request, decoder: decoder) { result in
             switch result {
             case .success(let decoded):
                 XCTAssertEqual(decoded.data.address, "place")
@@ -148,7 +154,7 @@ class RequestTests: XCTestCase {
             return (HTTPURLResponse(), data)
         }
         
-        network.perform(headers: [:], request: request) { result in
+        network.perform(request: request) { result in
             switch result {
             case .success:
                 XCTFail("should not succeed")
@@ -159,5 +165,24 @@ class RequestTests: XCTestCase {
             exp.fulfill()
         }
         wait(for: [exp], timeout: 1)
+    }
+    
+    func testCombineHeaders() {
+        let one = HTTPHeaders([
+            .init(name: .accept, value: "chaff"),
+            .init(name: .accept, value: .json),
+            .init(name: .contentEncoding, value: .any)
+        ])
+        
+        let two = HTTPHeaders([
+            .init(name: .contentType, value: .json),
+            .init(name: .contentEncoding, value: .plainText)
+        ])
+        
+        let combine = one + two
+        XCTAssertEqual(combine.headers.count, 3)
+        XCTAssertEqual(combine[.accept], "application/json; charset=utf-8")
+        XCTAssertEqual(combine[.contentEncoding], "text/plain; charset=utf-8")
+        XCTAssertEqual(combine[.contentType], "application/json; charset=utf-8")
     }
 }

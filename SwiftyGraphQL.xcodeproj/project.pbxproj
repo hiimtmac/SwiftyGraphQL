@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D719766F23708F3E00FF4D3F /* MediaType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719766E23708F3E00FF4D3F /* MediaType.swift */; };
+		D71976712370909800FF4D3F /* HTTPHeaderName.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71976702370909800FF4D3F /* HTTPHeaderName.swift */; };
+		D719767323709EC400FF4D3F /* HTTPHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719767223709EC400FF4D3F /* HTTPHeader.swift */; };
+		D71976752370AD4700FF4D3F /* HTTPHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71976742370AD4700FF4D3F /* HTTPHeaders.swift */; };
 		D724F919216C9F9000342F5A /* SwiftyGraphQL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D724F90F216C9F9000342F5A /* SwiftyGraphQL.framework */; };
 		D724F920216C9F9000342F5A /* SwiftyGraphQL.h in Headers */ = {isa = PBXBuildFile; fileRef = D724F912216C9F9000342F5A /* SwiftyGraphQL.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D724F92A216C9F9A00342F5A /* Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = D724F929216C9F9A00342F5A /* Node.swift */; };
@@ -52,6 +56,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D719766E23708F3E00FF4D3F /* MediaType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaType.swift; sourceTree = "<group>"; };
+		D71976702370909800FF4D3F /* HTTPHeaderName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPHeaderName.swift; sourceTree = "<group>"; };
+		D719767223709EC400FF4D3F /* HTTPHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPHeader.swift; sourceTree = "<group>"; };
+		D71976742370AD4700FF4D3F /* HTTPHeaders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPHeaders.swift; sourceTree = "<group>"; };
 		D724F90F216C9F9000342F5A /* SwiftyGraphQL.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftyGraphQL.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D724F912216C9F9000342F5A /* SwiftyGraphQL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftyGraphQL.h; sourceTree = "<group>"; };
 		D724F913216C9F9000342F5A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -111,6 +119,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D719766923708B4700FF4D3F /* HTTPHeaders */ = {
+			isa = PBXGroup;
+			children = (
+				D719766E23708F3E00FF4D3F /* MediaType.swift */,
+				D71976702370909800FF4D3F /* HTTPHeaderName.swift */,
+				D719767223709EC400FF4D3F /* HTTPHeader.swift */,
+				D71976742370AD4700FF4D3F /* HTTPHeaders.swift */,
+			);
+			path = HTTPHeaders;
+			sourceTree = "<group>";
+		};
 		D724F905216C9F9000342F5A = {
 			isa = PBXGroup;
 			children = (
@@ -141,6 +160,7 @@
 				D798D1472256756E0095DF8E /* Object.swift */,
 				D724F92F216C9FAC00342F5A /* Query.swift */,
 				D724F92B216C9FA000342F5A /* FragmentRepresentable.swift */,
+				D719766923708B4700FF4D3F /* HTTPHeaders */,
 				D7FE5C9F2256F8A200B0EEE3 /* Parameters */,
 				D776D327224EB37E00460389 /* Requests */,
 				D798D13F2256616C0095DF8E /* Variables */,
@@ -351,12 +371,16 @@
 				D7FE5C9E2256EF3F00B0EEE3 /* ParameterRepresentable.swift in Sources */,
 				D7FE5CA12256FA2600B0EEE3 /* Variable.swift in Sources */,
 				D798D146225674F50095DF8E /* VariableRepresentable.swift in Sources */,
+				D719766F23708F3E00FF4D3F /* MediaType.swift in Sources */,
 				D7F588C52180CEE800BDD411 /* Error.swift in Sources */,
+				D719767323709EC400FF4D3F /* HTTPHeader.swift in Sources */,
 				D776D329224EB39100460389 /* Request.swift in Sources */,
+				D71976752370AD4700FF4D3F /* HTTPHeaders.swift in Sources */,
 				D7ED5DD721811450005E5CDB /* Parameters.swift in Sources */,
 				D7DA3DDD23465FCD00C098E8 /* Parameterable.swift in Sources */,
 				D798D13322564F9D0095DF8E /* Variables.swift in Sources */,
 				D776D32D224EBD3600460389 /* StateMachine.swift in Sources */,
+				D71976712370909800FF4D3F /* HTTPHeaderName.swift in Sources */,
 				D724F92C216C9FA000342F5A /* FragmentRepresentable.swift in Sources */,
 				D7C7A4C5225788E1001BF4AD /* JSONEncoder+Extensions.swift in Sources */,
 				D7F588C72180D27B00BDD411 /* JSONDecoder+Extensions.swift in Sources */,
@@ -525,9 +549,10 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 467S4RZC6U;
+				DEVELOPMENT_TEAM = 3K7UN759DD;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -538,7 +563,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.7.1;
+				MARKETING_VERSION = 0.8.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hiimtmac.SwiftyGraphQL;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -553,9 +578,10 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 467S4RZC6U;
+				DEVELOPMENT_TEAM = 3K7UN759DD;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -566,7 +592,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.7.1;
+				MARKETING_VERSION = 0.8.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hiimtmac.SwiftyGraphQL;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;

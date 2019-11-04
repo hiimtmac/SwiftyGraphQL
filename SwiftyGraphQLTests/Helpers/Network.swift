@@ -22,11 +22,13 @@ class MockNetwork {
         self.session = session
     }
     
-    func perform<T, U>(headers: [String: String],
-                       request: T, decoder: JSONDecoder? = nil,
-                       completion: @escaping (Result<GraphQLResponse<U>, Error>) -> Void) where T: GraphQLRequest, U == T.GraphQLReturn {
+    func perform<T>(request: GraphQLRequest<T>,
+                    headers: HTTPHeaders = .init(),
+                    encoder: JSONEncoder? = nil,
+                    decoder: JSONDecoder? = nil,
+                    completion: @escaping (Result<GraphQLResponse<T>, Error>) -> Void) {
         
-        guard let urlRequest = try? request.urlRequest(headers: headers) else {
+        guard let urlRequest = try? request.urlRequest(headers: headers, encoder: encoder) else {
             completion(.failure(MockError.noURL))
             return
         }
@@ -43,6 +45,6 @@ class MockNetwork {
             }
             
             completion(Result.success(decoded))
-            }.resume()
+        }.resume()
     }
 }
