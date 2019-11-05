@@ -9,8 +9,8 @@
 import Foundation
 
 public struct HTTPHeader {
-    let name: HTTPHeaderName
-    let value: String
+    public let name: HTTPHeaderName
+    public let value: String
     
     public init(name: HTTPHeaderName, value: String) {
         self.name = name

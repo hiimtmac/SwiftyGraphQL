@@ -9,9 +9,9 @@
 import Foundation
 
 public struct MediaType: Hashable {
-    let type: String
-    let subType: String
-    let parameters: [String: String]
+    public let type: String
+    public let subType: String
+    public let parameters: [String: String]
     
     public init(type: String, subType: String, parameters: [String: String] = [:]) {
         self.type = type
