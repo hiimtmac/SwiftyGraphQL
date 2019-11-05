@@ -16,10 +16,6 @@ extension GraphQLVariableRepresentable {
     public static var variableType: String {
         return entityName
     }
-    
-    var variableType: String {
-        return Self.variableType
-    }
 }
 
 extension String: GraphQLVariableRepresentable {

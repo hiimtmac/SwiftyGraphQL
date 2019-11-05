@@ -97,7 +97,8 @@ class GraphQLTests: XCTestCase {
             static var fragmentName: String { "comparisonFields" }
             static var fragmentContent: GraphQLRepresentable {
                 let attributes = GraphQLNode.attributes(["name"])
-                let friends = GraphQLNode.node(name: "friendsConnection", arguments: ["first": GraphQLVariable(name: "first", value: "first")], [
+                let first = GraphQLVariable(name: "first", value: 8)
+                let friends = GraphQLNode.node(name: "friendsConnection", arguments: ["first": first], [
                     .attributes(["totalCount"]),
                     .node(name: "edges", [
                         .node(name: "node", [
@@ -116,9 +117,9 @@ class GraphQLTests: XCTestCase {
             .fragment(Character.self)
         ])
         
-        let compare = #"query HeroComparison($first: Int) { leftComparison: hero(episode: "EMPIRE") { ...comparisonFields } rightComparison: hero(episode: "JEDI") { ...comparisonFields } } fragment comparisonFields on Character { name friendsConnection(first: $first) { totalCount edges { node { name } } } }"#
-        
-        let first = GraphQLVariable(name: "first", value: 8)
+        let compare = #"query HeroComparison($first: Int!) { leftComparison: hero(episode: "EMPIRE") { ...comparisonFields } rightComparison: hero(episode: "JEDI") { ...comparisonFields } } fragment comparisonFields on Character { name friendsConnection(first: $first) { totalCount edges { node { name } } } }"#
+        let first = GraphQLVariable(name: "first", value: 3)
+
         XCTAssertEqual(GraphQLQuery(query: [node1, node2], variables: [first], operationName: "HeroComparison").query, compare)
     }
     
@@ -137,6 +138,36 @@ class GraphQLTests: XCTestCase {
     
     // https://graphql.org/learn/queries/#variables
     func testVariables1() throws {
+        let str: String? = nil
+        let arg = GraphQLVariable.init(name: "episode", value: str)
+        
+        let node = GraphQLNode.node(name: "hero", arguments: ["episode": arg], [
+            .attributes(["name"]),
+            .node(name: "friends", [
+                .attributes(["name"])
+            ])
+        ])
+        
+        let query = GraphQLQuery(query: node, variables: [arg], operationName: "HeroNameAndFriends")
+        let compare = #"query HeroNameAndFriends($episode: String) { hero(episode: $episode) { name friends { name } } }"#
+        
+        struct Decode: Decodable {
+            let query: String
+            let variables: Variables
+            
+            struct Variables: Decodable {
+                let episode: String?
+            }
+        }
+        
+        let encoded = try JSONEncoder().encode(query)
+        let decoded = try JSONDecoder().decode(Decode.self, from: encoded)
+        XCTAssertEqual(decoded.query, compare)
+        XCTAssertNil(decoded.variables.episode)
+    }
+    
+    // https://graphql.org/learn/queries/#default-variables
+    func testVariable2() throws {
         let arg = GraphQLVariable(name: "episode", value: "JEDI")
         
         let node = GraphQLNode.node(name: "hero", arguments: ["episode": arg], [
@@ -147,11 +178,11 @@ class GraphQLTests: XCTestCase {
         ])
         
         let query = GraphQLQuery(query: node, variables: [arg], operationName: "HeroNameAndFriends")
-        let compare = #"query HeroNameAndFriends($episode: String) { hero(episode: $episode) { name friends { name } } }"#
+        let compare = #"query HeroNameAndFriends($episode: String!) { hero(episode: $episode) { name friends { name } } }"#
         
         struct Decode: Decodable {
             let query: String
-            let variables: Variables
+            let variables: Variables?
             
             struct Variables: Decodable {
                 let episode: String
@@ -161,36 +192,7 @@ class GraphQLTests: XCTestCase {
         let encoded = try JSONEncoder().encode(query)
         let decoded = try JSONDecoder().decode(Decode.self, from: encoded)
         XCTAssertEqual(decoded.query, compare)
-        XCTAssertEqual(decoded.variables.episode, "JEDI")
-    }
-    
-    // https://graphql.org/learn/queries/#default-variables
-    func testVariable2() throws {
-        let arg = GraphQLVariable(name: "episode", value: nil, default: "JEDI")
-        
-        let node = GraphQLNode.node(name: "hero", arguments: ["episode": arg], [
-            .attributes(["name"]),
-            .node(name: "friends", [
-                .attributes(["name"])
-            ])
-        ])
-        
-        let query = GraphQLQuery(query: node, variables: [arg], operationName: "HeroNameAndFriends")
-        let compare = #"query HeroNameAndFriends($episode: String) { hero(episode: $episode) { name friends { name } } }"#
-        
-        struct Decode: Decodable {
-            let query: String
-            let variables: Variables
-            
-            struct Variables: Decodable {
-                let episode: String
-            }
-        }
-        
-        let encoded = try JSONEncoder().encode(query)
-        let decoded = try JSONDecoder().decode(Decode.self, from: encoded)
-        XCTAssertEqual(decoded.query, compare)
-        XCTAssertEqual(decoded.variables.episode, "JEDI")
+        XCTAssertEqual(decoded.variables?.episode, "JEDI")
     }
     
     // https://graphql.org/learn/queries/#directives
@@ -206,7 +208,7 @@ class GraphQLTests: XCTestCase {
         ])
         
         let query = GraphQLQuery(query: node, variables: [arg1, arg2], operationName: "HeroNameAndFriends")
-        let compare = #"query HeroNameAndFriends($episode: String, $withFriends: Boolean) { hero(episode: $episode) { name friends @include(if: $withFriends) { name } } }"#
+        let compare = #"query HeroNameAndFriends($episode: String!, $withFriends: Boolean!) { hero(episode: $episode) { name friends @include(if: $withFriends) { name } } }"#
         
         struct Decode: Decodable {
             let query: String
@@ -240,7 +242,7 @@ class GraphQLTests: XCTestCase {
         ])
         
         let query = GraphQLQuery(mutation: node, variables: [episode, review], operationName: "CreateReviewForEpisode")
-        let compare = #"mutation CreateReviewForEpisode($ep: String, $review: ReviewInput) { createReview(episode: $ep, review: $review) { commentary stars } }"#
+        let compare = #"mutation CreateReviewForEpisode($ep: String!, $review: ReviewInput!) { createReview(episode: $ep, review: $review) { commentary stars } }"#
         
         struct Decode: Decodable {
             let query: String

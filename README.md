@@ -94,7 +94,7 @@ myObject: object {
 
 ### Fragment
 
-The protocol `GraphQLFragmentRepresentable` can allow objects to easily be encoded into a query or request.
+The protocol `GraphQLFragment` can allow objects to easily be encoded into a query or request.
 
 ```swift
 struct Object {
@@ -102,9 +102,9 @@ struct Object {
     let age: Int
 }
 
-extension Object: GraphQLFragmentRepresentable {
+extension Object: GraphQLFragment {
     // required
-    static var attributes: [String] { return ["name", "age"] }
+    static var fragmentContent: GraphQLRepresentable { return GraphQLNode.attributes(["name", "age"]) }
     // optional - will be synthesized from object Type name if not implemented
     static var entityName: String { return "MyObject" }
     static var fragmentName: String { return "myobject" }
@@ -207,6 +207,13 @@ fragment frag2 on Frag2 {
 ### Variables
 
 The `GraphQLVariables` object handles options passed to the query/mutation in the format of a `[String: GraphQLVariable]` dictionary. Anything conforming to `GraphQLVariableRepresentable` can be put into the `GraphQLVariable`.
+
+Variables work a bit different than in weak languanges. The various combinations of optionality could be:
+* `($myVar: String!)`
+* `($myVar: String)`
+* `($myVar: String = "hi")`
+
+For our purposes, you would provide an optional variable, and then provide a default with `?? default` and there is no point encoding it in the arguments as `= default`, we will just include it in the variables and treat it as if it is the original value.
 
 #### Conforming Types
 
