@@ -26,7 +26,7 @@ class QueryTests: XCTestCase {
     }
     
     func testAdvanced() {
-        let frag1 = GraphQLNode.node(alias: "allFrag1s", name: "frag1", arguments: ["since": 20, "name": "taylor"], [.fragment(Frag1.self)])
+        let frag1 = GraphQLNode.node(name: "frag1", alias: "allFrag1s", arguments: ["since": 20, "name": "taylor"], [.fragment(Frag1.self)])
         let frag2 = GraphQLNode.node(name: "frag2", [.fragment(Frag2.self), frag1])
         
         let node = GraphQLNode.node(name: "myQuery", [frag2, .attributes(["thing1", "thing2"])])
@@ -37,7 +37,7 @@ class QueryTests: XCTestCase {
     
     func testWithArray() {
         let one = GraphQLNode.node(name: "one", [.fragment(Frag1.self)])
-        let two = GraphQLNode.node(name: "two", [.attributes(["no", "maybe"]), .fragment(Frag2.self)])
+        let two = GraphQLNode.node(name: "two", [.attributes("no", "maybe"), .fragment(Frag2.self)])
         
         let query = GraphQLQuery(query: [one, two])
         let compare = #"query { one { ...fragment1 } two { maybe no ...frag2 } } fragment frag2 on Frag2 { address birthday } fragment fragment1 on Fragment1 { age name }"#
@@ -46,7 +46,7 @@ class QueryTests: XCTestCase {
     
     func testWithArrayWithEmptyNode() {
         let one = GraphQLNode.node(name: "one", [])
-        let two = GraphQLNode.node(name: "two", [.attributes(["no", "maybe"]), .fragment(Frag2.self)])
+        let two = GraphQLNode.node(name: "two", [.attributes("no", "maybe"), .fragment(Frag2.self)])
         
         let query = GraphQLQuery(query: [one, two])
         let compare = #"query { one two { maybe no ...frag2 } } fragment frag2 on Frag2 { address birthday }"#

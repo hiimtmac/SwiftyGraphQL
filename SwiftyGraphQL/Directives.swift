@@ -8,7 +8,16 @@
 
 import Foundation
 
-public enum Directive {
-    case include(if: Bool)
-    case skip(if: Bool)
+public struct Directive {
+    let parameter: String
+    
+    public static func skip(if: GraphQLVariable) -> Directive {
+        let parameter = "@skip(if: \(`if`.parameterValue))"
+        return Directive(parameter: parameter)
+    }
+    
+    public static func include(if: GraphQLVariable) -> Directive {
+        let parameter = "@include(if: \(`if`.parameterValue))"
+        return Directive(parameter: parameter)
+    }
 }

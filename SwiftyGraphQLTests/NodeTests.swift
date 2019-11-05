@@ -32,7 +32,7 @@ class NodeTests: XCTestCase {
     }
     
     func testWithAlias() {
-        let node = GraphQLNode.node(alias: "alias", name: "myNode", [.attributes(["hello", "hi"])])
+        let node = GraphQLNode.node(name: "myNode", alias: "alias", [.attributes(["hello", "hi"])])
         XCTAssertEqual(node.rawQuery, "alias: myNode { hello hi }")
         XCTAssert(node.fragmentTypes.isEmpty)
     }
