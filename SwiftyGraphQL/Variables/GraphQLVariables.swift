@@ -22,7 +22,7 @@ public struct GraphQLVariables {
     public var statement: String {
         guard !storage.isEmpty else { return "" }
         let variableEncoded = storage
-            .map { "$\($0.name): \($0.value.variableType)" }
+            .map { $0.parameter }
             .sorted()
             .joined(separator: ", ")
         
@@ -55,20 +55,24 @@ extension GraphQLVariables: Encodable {
         let sequence = storage.map { ($0.name, $0.value) }
         let wrappedDict = Dictionary
             .init(uniqueKeysWithValues: sequence)
-            .compactMapValues(EncodableWrapper.init)
+            .mapValues(EncodableWrapper.init)
         try container.encode(wrappedDict)
     }
     
     private struct EncodableWrapper: Encodable {
-        let storage: Encodable
+        let storage: Encodable?
         
-        init(_ variable: GraphQLVariableRepresentable) {
+        init(_ variable: GraphQLVariableRepresentable?) {
             self.storage = variable
         }
         
         func encode(to encoder: Encoder) throws {
             var container = encoder.singleValueContainer()
-            try storage.encode(to: &container)
+            if let storage = storage {
+                try storage.encode(to: &container)
+            } else {
+                try container.encodeNil()
+            }
         }
     }
 }

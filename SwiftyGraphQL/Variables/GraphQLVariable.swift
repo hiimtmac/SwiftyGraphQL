@@ -10,16 +10,21 @@ import Foundation
 
 public struct GraphQLVariable {
     public let name: String
-    public let value: GraphQLVariableRepresentable
+    let type: String
+    public let value: GraphQLVariableRepresentable?
     
-    public init(name: String, value: GraphQLVariableRepresentable) {
+    public init<T: GraphQLVariableRepresentable>(name: String, value: T?) {
         self.name = name
         self.value = value
+        self.type = T.variableType
     }
     
-    public init(name: String, value: GraphQLVariableRepresentable?, default: GraphQLVariableRepresentable) {
-        self.name = name
-        self.value = value ?? `default`
+    var parameter: String {
+        if value != nil {
+            return "$\(name): \(type)!"
+        } else {
+            return "$\(name): \(type)"
+        }
     }
 }
 
