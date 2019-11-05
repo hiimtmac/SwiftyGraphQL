@@ -17,21 +17,16 @@ class FragmentTests: XCTestCase {
     }
     
     func testWithoutDefaultValues() {
-        struct Test: GraphQLFragmentRepresentable {
+        struct Test: GraphQLFragment {
             let yes: String
             let no: String
             
-            static var attributes: [String] {
-                return ["yes", "no"]
+            static var fragmentContent: GraphQLRepresentable {
+                return GraphQLNode.attributes(["no", "yes"])
             }
             
-            static var entityName: String {
-                return "CoolFragment"
-            }
-            
-            static var fragmentName: String {
-                return "myNeatFragment"
-            }
+            static var entityName: String { return "CoolFragment" }
+            static var fragmentName: String { return "myNeatFragment" }
         }
         
         let fragment = Test.self.fragmentStatement

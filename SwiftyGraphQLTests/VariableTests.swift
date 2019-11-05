@@ -10,7 +10,8 @@ import XCTest
 @testable import SwiftyGraphQL
 
 class VariableTests: XCTestCase {
-    
+   
+    /*
     var int: GraphQLVariable!
     var intOpt: GraphQLVariable!
     var intOptDef: GraphQLVariable!
@@ -177,28 +178,22 @@ class VariableTests: XCTestCase {
             ])
         XCTAssertEqual(variables.statement, #"($boolOpt: Boolean, $double: Float!, $floatOptDef: Float = 3.6, $int: Integer!, $objC: MyCoolObject!, $objOpt: ObjectDefault, $stringOptDef: String = "hello")"#)
     }
+    */
     
     func testVariableJSONEncoding() throws {
-        let thing: String? = nil
         let variables = GraphQLVariables([
-            "int": int,
-            "boolOpt": boolOpt,
-            "floatOptDef": floatOptDef,
-            "double": double,
-            "stringOptDef": stringOptDef,
-            "cool": GraphQLVariable(value: thing),
-            "objOpt": objOpt,
-            "objC": objC
-            ])
+            GraphQLVariable(name: "int", value: 7),
+            GraphQLVariable(name: "bool", value: false)
+        ])
+        
+        struct Decode: Decodable {
+            let int: Int
+            let bool: Bool
+        }
         
         let encoded = try JSONEncoder().encode(variables)
-        let strComp = String(data: encoded, encoding: .utf8)?.dropFirst().dropLast().components(separatedBy: ",").sorted()
-        XCTAssertEqual(strComp?[0], #""boolOpt":false"#)
-        XCTAssertEqual(strComp?[1], #""double":8.0999999999999996"#)
-        XCTAssertEqual(strComp?[2], #""floatOptDef":3.5999999046325684"#)
-        XCTAssertEqual(strComp?[3], #""int":7"#)
-        XCTAssertEqual(strComp?[4], #""objC":{"name":"hiimtmac"}"#)
-        XCTAssertEqual(strComp?[5], #""objOpt":{"name":"hiimtmac"}"#)
-        XCTAssertEqual(strComp?[6], #""stringOptDef":"hello""#)
+        let decoded = try JSONDecoder().decode(Decode.self, from: encoded)
+        XCTAssertEqual(decoded.int, 7)
+        XCTAssertEqual(decoded.bool, false)
     }
 }

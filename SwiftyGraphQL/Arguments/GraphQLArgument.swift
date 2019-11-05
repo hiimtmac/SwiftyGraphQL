@@ -8,11 +8,11 @@
 
 import Foundation
 
-public protocol GraphQLParameterRepresentable {
+public protocol GraphQLArgument {
     var parameterValue: String { get }
 }
 
-extension String: GraphQLParameterRepresentable {
+extension String: GraphQLArgument {
     public var parameterValue: String {
         var escaped = ""
         for c in self.unicodeScalars {
@@ -38,31 +38,31 @@ extension String: GraphQLParameterRepresentable {
     }
 }
 
-extension Int: GraphQLParameterRepresentable {
+extension Int: GraphQLArgument {
     public var parameterValue: String {
         return "\(self)"
     }
 }
 
-extension Double: GraphQLParameterRepresentable {
+extension Double: GraphQLArgument {
     public var parameterValue: String {
         return "\(self)"
     }
 }
 
-extension Float: GraphQLParameterRepresentable {
+extension Float: GraphQLArgument {
     public var parameterValue: String {
         return "\(self)"
     }
 }
 
-extension Bool: GraphQLParameterRepresentable {
+extension Bool: GraphQLArgument {
     public var parameterValue: String {
         return "\(self)"
     }
 }
 
-extension Array: GraphQLParameterRepresentable where Element: GraphQLParameterRepresentable {
+extension Array: GraphQLArgument where Element: GraphQLArgument {
     public var parameterValue: String {
         let parametersEncoded = self
             .map { $0.parameterValue }
@@ -73,7 +73,7 @@ extension Array: GraphQLParameterRepresentable where Element: GraphQLParameterRe
     }
 }
 
-extension Dictionary: GraphQLParameterRepresentable where Key == String, Value: GraphQLParameterRepresentable {
+extension Dictionary: GraphQLArgument where Key == String, Value: GraphQLArgument {
     public var parameterValue: String {
         let parametersEncoded = self
             .map { #""\#($0.key)": \#($0.value.parameterValue)"# }
@@ -84,7 +84,7 @@ extension Dictionary: GraphQLParameterRepresentable where Key == String, Value: 
     }
 }
 
-extension Optional: GraphQLParameterRepresentable where Wrapped == GraphQLParameterRepresentable {
+extension Optional: GraphQLArgument where Wrapped == GraphQLArgument {
     public var parameterValue: String {
         guard let self = self else { return "null" }
         return self.parameterValue

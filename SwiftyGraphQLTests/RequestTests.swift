@@ -29,7 +29,7 @@ class RequestTests: XCTestCase {
         components.path = "/graphql"
         
         let node = GraphQLNode.node(name: "me", [.fragment(Frag2.self)])
-        let query = GraphQLQuery(returning: node)
+        let query = GraphQLQuery(query: node)
         let headers = HTTPHeaders([HTTPHeader(name: .contentEncoding, value: .json)])
         request = GraphQLRequest(query: query, headers: headers)
         
@@ -44,7 +44,7 @@ class RequestTests: XCTestCase {
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["Content-Type"], "application/json; charset=utf-8")
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["Accept"], "application/json; charset=utf-8")
         
-        let compare = #"{"query":"query { me: me { ...frag2 } } fragment frag2 on Frag2 { address birthday }"}"#
+        let compare = #"{"query":"query { me { ...frag2 } } fragment frag2 on Frag2 { address birthday }"}"#
         
         guard let data = urlRequest.httpBody, let string = String(data: data, encoding: .utf8) else {
             XCTFail("no/bad data")
@@ -55,7 +55,7 @@ class RequestTests: XCTestCase {
     }
     
     func testRequestHeaders() throws {
-        let query = GraphQLQuery(returning: GraphQLNode.node(name: "hi", [.attributes(["hi"])]))
+        let query = GraphQLQuery(query: GraphQLNode.node(name: "hi", [.attributes(["hi"])]))
         
         SwiftyGraphQL.shared.defaultHeaders = HTTPHeaders([
             .init(name: .init("one"), value: "default"),
