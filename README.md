@@ -9,291 +9,6 @@ This small library helps to make typesafe(er) graphql queries & mutations
 
 - Swift 5.1+
 
-## Examples
-
-From the graphql website:
-
-```swift
-// https://graphql.org/learn/queries/#fields
-let node = GraphQLNode.node(name: "hero", [
-    .attributes(["name"])
-])
-let query = GraphQLQuery(query: node)
-/*
-{
-  hero {
-    name
-  }
-}
-*/
-
-let node = GraphQLNode.node(name: "hero", [
-    .node(name: "friends", [
-        .attributes(["name"])
-    ]),
-    .attributes(["name"])
-])
-let query = GraphQLQuery(query: node)
-/*
-{
-  hero {
-    name
-    # Queries can have comments!
-    friends {
-      name
-    }
-  }
-}
-*/
-
-// https://graphql.org/learn/queries/#arguments
-let node = GraphQLNode.node(name: "human", arguments: ["id":"1000"], [
-    .attributes(["name","height"])
-])
-let query = GraphQLQuery(query: node)
-/*
-{
-  human(id: "1000") {
-    name
-    height
-  }
-}
-*/
-
-let node = GraphQLNode.node(name: "human", arguments: ["id":"1000"], [
-   .attributes(["name"]),
-   .node(name: "height", arguments: ["unit":"FOOT"])
-])
-let query = GraphQLQuery(query: node)
-/*
-{
-  human(id: "1000") {
-    name
-    height(unit: "FOOT")
-  }
-}
-*/
-
-// https://graphql.org/learn/queries/#aliases
-let node1 = GraphQLNode.node(alias: "empireHero", name: "hero", arguments: ["episode": "EMPIRE"], [
-    .attributes(["name"])
-])
-let node2 = GraphQLNode.node(alias: "jediHero", name: "hero", arguments: ["episode": "JEDI"], [
-    .attributes(["name"])
-])
-let query = GraphQLQuery(query: [node1, node2])
-/*
-{
-  empireHero: hero(episode: "EMPIRE") {
-    name
-  }
-  jediHero: hero(episode: "JEDI") {
-    name
-  }
-}
-*/
-
-// https://graphql.org/learn/queries/#fragments
-struct Character: GraphQLFragment {
-    static var fragmentName: String { "comparisonFields" }
-    static var fragmentContent: GraphQLRepresentable {
-        let attributes = GraphQLNode.attributes(["appearsIn", "name"])
-        let friends = GraphQLNode.node(name: "friends", [
-            .attributes(["name"])
-        ])
-        return [attributes, friends]
-    }
-}
-
-let node1 = GraphQLNode.node(alias: "leftComparison", name: "hero", arguments: ["episode": "EMPIRE"], [
-    .fragment(Character.self)
-])
-let node2 = GraphQLNode.node(alias: "rightComparison", name: "hero", arguments: ["episode": "JEDI"], [
-    .fragment(Character.self)
-])
-let query = GraphQLQuery(query: [node1, node2])
-/*
-{
-  leftComparison: hero(episode: EMPIRE) {
-    ...comparisonFields
-  }
-  rightComparison: hero(episode: JEDI) {
-    ...comparisonFields
-  }
-}
-
-fragment comparisonFields on Character {
-  name
-  appearsIn
-  friends {
-    name
-  }
-}
-*/
-
-let arg = GraphQLVariable(name: "first", value: 3)
-struct Character: GraphQLFragment {
-    static var entityName: String { "Character" }
-    static var fragmentName: String { "comparisonFields" }
-    static var fragmentContent: GraphQLRepresentable {
-        let attributes = GraphQLNode.attributes(["name"])
-        let friends = GraphQLNode.node(name: "friendsConnection", arguments: ["first": arg], [
-            .attributes(["totalCount"]),
-            .node(name: "edges", [
-                .node(name: "node", [
-                    .attributes(["name"])
-                ])
-            ])
-        ])
-        return [attributes, friends]
-    }
-}
-
-let node1 = GraphQLNode.node(alias: "leftComparison", name: "hero", arguments: ["episode": "EMPIRE"], [
-    .fragment(Character.self)
-])
-let node2 = GraphQLNode.node(alias: "rightComparison", name: "hero", arguments: ["episode": "JEDI"], [
-    .fragment(Character.self)
-])
-let query = GraphQLQuery(query: [node1, node2], variables: [arg], operationName: "HeroComparison").query, compare)
-/*
-// NOTE: we dont need default like in real example (HeroComparison($first: Int = 3)
-//       because swift ensure we will have a value there
-//       there is a variable init that can take an optional with a default
-query HeroComparison($first: Int) {  
-  leftComparison: hero(episode: EMPIRE) {
-    ...comparisonFields
-  }
-  rightComparison: hero(episode: JEDI) {
-    ...comparisonFields
-  }
-}
-
-fragment comparisonFields on Character {
-  name
-  friendsConnection(first: $first) {
-    totalCount
-    edges {
-      node {
-        name
-      }
-    }
-  }
-}
-*/
-
-// https://graphql.org/learn/queries/#operation-name
-func testOperationName() {
-let node = GraphQLNode.node(name: "hero", [
-    .attributes(["name"]),
-    .node(name: "friends", [
-        .attributes(["name"])
-    ])
-])
-let query = GraphQLQuery(query: node, operationName: "HeroNameAndFriends")
-/*
-query HeroNameAndFriends {
-  hero {
-    name
-    friends {
-      name
-    }
-  }
-}
-*/
-
-// https://graphql.org/learn/queries/#variables
-let arg = GraphQLVariable(name: "episode", value: "JEDI")
-
-let node = GraphQLNode.node(name: "hero", arguments: ["episode": arg], [
-    .attributes(["name"]),
-    .node(name: "friends", [
-        .attributes(["name"])
-    ])
-])
-let query = GraphQLQuery(query: node, variables: [arg], operationName: "HeroNameAndFriends")
-/*
-query HeroNameAndFriends($episode: Episode) {
-  hero(episode: $episode) {
-    name
-    friends {
-      name
-    }
-  }
-}
-
-variables:
-{
-  "episode": "JEDI"
-}
-*/
-
-
-// https://graphql.org/learn/queries/#default-variables
-let arg = GraphQLVariable(name: "episode", value: nil, default: "JEDI")
-
-let node = GraphQLNode.node(name: "hero", arguments: ["episode": arg], [
-    .attributes(["name"]),
-    .node(name: "friends", [
-        .attributes(["name"])
-    ])
-])
-
-let query = GraphQLQuery(query: node, variables: [arg], operationName: "HeroNameAndFriends")
-/*
-query HeroNameAndFriends($episode: Episode = JEDI) {
-  hero(episode: $episode) {
-    name
-    friends {
-      name
-    }
-  }
-}
-
-variables:
-{
-  "episode": "JEDI"
-}
-*/
-
-// https://graphql.org/learn/queries/#directives
-TODO: Implement this
-
-// https://graphql.org/learn/queries/#mutations
-struct ReviewInput: GraphQLVariableRepresentable, Decodable {
-    let stars = 5
-    let commentary = "This is a great movie!"
-}
-
-let episode = GraphQLVariable(name: "ep", value: "JEDI")
-let review = GraphQLVariable(name: "review", value: ReviewInput())
-
-let node = GraphQLNode.node(name: "createReview", arguments: ["episode": episode, "review": review], [
-    .attributes(["stars","commentary"])
-])
-let query = GraphQLQuery(mutation: node, variables: [episode, review], operationName: "CreateReviewForEpisode")
-/*
-mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) {
-  createReview(episode: $ep, review: $review) {
-    stars
-    commentary
-  }
-}
-
-variables:
-{
-  "ep": "JEDI",
-  "review": {
-    "stars": 5,
-    "commentary": "This is a great movie!"
-  }
-}
-*/
-
-// https://graphql.org/learn/queries/#inline-fragments
-TODO: implement
-```
-
 ## Usage
 
 The main object of this framework is the `GraphQLNode` enumeration. It is used to create nodes and the contents within each node. It will create the raw query object string as well as synthesize any fragment types (conforming to `GraphQLFragmentRepresentable`) and create a fragment string.
@@ -678,3 +393,287 @@ Could decode a response that looks like:
 ```
 
 Additionaly, if decoding cannot be completed, the decoder will try to decode a `GraphQLErrors` which graphql will return if there is an error in your query/mutation/schema. `GraphQLErrors` conforms to `Error` and is made up of an array of `GraphQLError`.
+
+## Examples
+
+From the graphql website:
+
+```swift
+// https://graphql.org/learn/queries/#fields
+let node = GraphQLNode.node(name: "hero", [
+    .attributes(["name"])
+])
+let query = GraphQLQuery(query: node)
+/*
+{
+  hero {
+    name
+  }
+}
+*/
+
+let node = GraphQLNode.node(name: "hero", [
+    .node(name: "friends", [
+        .attributes(["name"])
+    ]),
+    .attributes(["name"])
+])
+let query = GraphQLQuery(query: node)
+/*
+{
+  hero {
+    name
+    friends {
+      name
+    }
+  }
+}
+*/
+
+// https://graphql.org/learn/queries/#arguments
+let node = GraphQLNode.node(name: "human", arguments: ["id":"1000"], [
+    .attributes(["name","height"])
+])
+let query = GraphQLQuery(query: node)
+/*
+{
+  human(id: "1000") {
+    name
+    height
+  }
+}
+*/
+
+let node = GraphQLNode.node(name: "human", arguments: ["id":"1000"], [
+   .attributes(["name"]),
+   .node(name: "height", arguments: ["unit":"FOOT"])
+])
+let query = GraphQLQuery(query: node)
+/*
+{
+  human(id: "1000") {
+    name
+    height(unit: "FOOT")
+  }
+}
+*/
+
+// https://graphql.org/learn/queries/#aliases
+let node1 = GraphQLNode.node(alias: "empireHero", name: "hero", arguments: ["episode": "EMPIRE"], [
+    .attributes(["name"])
+])
+let node2 = GraphQLNode.node(alias: "jediHero", name: "hero", arguments: ["episode": "JEDI"], [
+    .attributes(["name"])
+])
+let query = GraphQLQuery(query: [node1, node2])
+/*
+{
+  empireHero: hero(episode: "EMPIRE") {
+    name
+  }
+  jediHero: hero(episode: "JEDI") {
+    name
+  }
+}
+*/
+
+// https://graphql.org/learn/queries/#fragments
+struct Character: GraphQLFragment {
+    static var fragmentName: String { "comparisonFields" }
+    static var fragmentContent: GraphQLRepresentable {
+        let attributes = GraphQLNode.attributes(["appearsIn", "name"])
+        let friends = GraphQLNode.node(name: "friends", [
+            .attributes(["name"])
+        ])
+        return [attributes, friends]
+    }
+}
+
+let node1 = GraphQLNode.node(alias: "leftComparison", name: "hero", arguments: ["episode": "EMPIRE"], [
+    .fragment(Character.self)
+])
+let node2 = GraphQLNode.node(alias: "rightComparison", name: "hero", arguments: ["episode": "JEDI"], [
+    .fragment(Character.self)
+])
+let query = GraphQLQuery(query: [node1, node2])
+/*
+{
+  leftComparison: hero(episode: "EMPIRE") {
+    ...comparisonFields
+  }
+  rightComparison: hero(episode: "JEDI") {
+    ...comparisonFields
+  }
+}
+
+fragment comparisonFields on Character {
+  name
+  appearsIn
+  friends {
+    name
+  }
+}
+*/
+
+let arg = GraphQLVariable(name: "first", value: 3)
+struct Character: GraphQLFragment {
+    static var entityName: String { "Character" }
+    static var fragmentName: String { "comparisonFields" }
+    static var fragmentContent: GraphQLRepresentable {
+        let attributes = GraphQLNode.attributes(["name"])
+        let friends = GraphQLNode.node(name: "friendsConnection", arguments: ["first": arg], [
+            .attributes(["totalCount"]),
+            .node(name: "edges", [
+                .node(name: "node", [
+                    .attributes(["name"])
+                ])
+            ])
+        ])
+        return [attributes, friends]
+    }
+}
+
+let node1 = GraphQLNode.node(alias: "leftComparison", name: "hero", arguments: ["episode": "EMPIRE"], [
+    .fragment(Character.self)
+])
+let node2 = GraphQLNode.node(alias: "rightComparison", name: "hero", arguments: ["episode": "JEDI"], [
+    .fragment(Character.self)
+])
+let query = GraphQLQuery(query: [node1, node2], variables: [arg], operationName: "HeroComparison").query, compare)
+/*
+// NOTE: we dont need default like in real example (HeroComparison($first: Int = 3)
+//       because swift ensure we will have a value there
+//       there is a variable init that can take an optional with a default
+query HeroComparison($first: Int) {  
+  leftComparison: hero(episode: "EMPIRE") {
+    ...comparisonFields
+  }
+  rightComparison: hero(episode: "JEDI") {
+    ...comparisonFields
+  }
+}
+
+fragment comparisonFields on Character {
+  name
+  friendsConnection(first: $first) {
+    totalCount
+    edges {
+      node {
+        name
+      }
+    }
+  }
+}
+*/
+
+// https://graphql.org/learn/queries/#operation-name
+func testOperationName() {
+let node = GraphQLNode.node(name: "hero", [
+    .attributes(["name"]),
+    .node(name: "friends", [
+        .attributes(["name"])
+    ])
+])
+let query = GraphQLQuery(query: node, operationName: "HeroNameAndFriends")
+/*
+query HeroNameAndFriends {
+  hero {
+    name
+    friends {
+      name
+    }
+  }
+}
+*/
+
+// https://graphql.org/learn/queries/#variables
+let arg = GraphQLVariable(name: "episode", value: "JEDI")
+
+let node = GraphQLNode.node(name: "hero", arguments: ["episode": arg], [
+    .attributes(["name"]),
+    .node(name: "friends", [
+        .attributes(["name"])
+    ])
+])
+let query = GraphQLQuery(query: node, variables: [arg], operationName: "HeroNameAndFriends")
+/*
+query HeroNameAndFriends($episode: Episode) {
+  hero(episode: $episode) {
+    name
+    friends {
+      name
+    }
+  }
+}
+
+variables:
+{
+  "episode": "JEDI"
+}
+*/
+
+
+// https://graphql.org/learn/queries/#default-variables
+let arg = GraphQLVariable(name: "episode", value: nil, default: "JEDI")
+
+let node = GraphQLNode.node(name: "hero", arguments: ["episode": arg], [
+    .attributes(["name"]),
+    .node(name: "friends", [
+        .attributes(["name"])
+    ])
+])
+
+let query = GraphQLQuery(query: node, variables: [arg], operationName: "HeroNameAndFriends")
+/*
+query HeroNameAndFriends($episode: Episode = JEDI) {
+  hero(episode: $episode) {
+    name
+    friends {
+      name
+    }
+  }
+}
+
+variables:
+{
+  "episode": "JEDI"
+}
+*/
+
+// https://graphql.org/learn/queries/#directives
+TODO: Implement this
+
+// https://graphql.org/learn/queries/#mutations
+struct ReviewInput: GraphQLVariableRepresentable, Decodable {
+    let stars = 5
+    let commentary = "This is a great movie!"
+}
+
+let episode = GraphQLVariable(name: "ep", value: "JEDI")
+let review = GraphQLVariable(name: "review", value: ReviewInput())
+
+let node = GraphQLNode.node(name: "createReview", arguments: ["episode": episode, "review": review], [
+    .attributes(["stars","commentary"])
+])
+let query = GraphQLQuery(mutation: node, variables: [episode, review], operationName: "CreateReviewForEpisode")
+/*
+mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) {
+  createReview(episode: $ep, review: $review) {
+    stars
+    commentary
+  }
+}
+
+variables:
+{
+  "ep": "JEDI",
+  "review": {
+    "stars": 5,
+    "commentary": "This is a great movie!"
+  }
+}
+*/
+
+// https://graphql.org/learn/queries/#inline-fragments
+TODO: implement
+```
