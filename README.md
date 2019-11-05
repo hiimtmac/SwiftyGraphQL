@@ -60,13 +60,19 @@ let query = GraphQLQuery(query: node)
 }
 */
 
-TODO: Support this
+let node = GraphQLNode.node(name: "human", arguments: ["id":"1000"], [
+   .attributes(["name"]),
+   .node(name: "height", arguments: ["unit":"FOOT"])
+])
+let query = GraphQLQuery(query: node)
+/*
 {
   human(id: "1000") {
     name
-    height(unit: FOOT)
+    height(unit: "FOOT")
   }
 }
+*/
 
 // https://graphql.org/learn/queries/#aliases
 let node1 = GraphQLNode.node(alias: "empireHero", name: "hero", arguments: ["episode": "EMPIRE"], [
@@ -78,10 +84,10 @@ let node2 = GraphQLNode.node(alias: "jediHero", name: "hero", arguments: ["episo
 let query = GraphQLQuery(query: [node1, node2])
 /*
 {
-  empireHero: hero(episode: EMPIRE) {
+  empireHero: hero(episode: "EMPIRE") {
     name
   }
-  jediHero: hero(episode: JEDI) {
+  jediHero: hero(episode: "JEDI") {
     name
   }
 }

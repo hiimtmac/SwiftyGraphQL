@@ -41,19 +41,13 @@ class GraphQLTests: XCTestCase {
     }
     
     func testArguments2() {
-        // TODO: Support this
-//        {
-//          human(id: "1000") {
-//            name
-//            height(unit: FOOT)
-//          }
-//        }
-//        let node2 = GraphQLNode.node(name: "human", arguments: arg1, [
-//
-//        ])
-//        let arg2 = GraphQLArguments(["unit": "FOOT"])
-//        let compare2 = #"human: human(id: "1000") { name height() }"#
-//        XCTAssertEqual(node2.rawQuery, compare2)
+        let node = GraphQLNode.node(name: "human", arguments: ["id":"1000"], [
+            .attributes(["name"]),
+            .node(name: "height", arguments: ["unit":"FOOT"])
+        ])
+        
+        let compare = #"query { human(id: "1000") { name height(unit: "FOOT") } }"#
+        XCTAssertEqual(GraphQLQuery(query: node).query, compare)
     }
     
     // https://graphql.org/learn/queries/#aliases

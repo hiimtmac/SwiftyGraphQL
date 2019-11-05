@@ -14,7 +14,7 @@ public protocol GraphQLRepresentable {
 }
 
 public enum GraphQLNode: GraphQLRepresentable {
-    indirect case node(alias: String? = nil, name: String, arguments: GraphQLArguments? = nil, [GraphQLNode])
+    indirect case node(alias: String? = nil, name: String, arguments: GraphQLArguments? = nil, [GraphQLNode] = [])
     case attributes([String])
     case fragment(GraphQLFragment.Type)
     
