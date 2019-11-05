@@ -55,7 +55,7 @@ class RequestTests: XCTestCase {
     }
     
     func testRequestHeaders() throws {
-        let query = GraphQLQuery(query: GraphQLNode.node(name: "hi", [.attributes(["hi"])]))
+        let query = GraphQLQuery(query: GraphQLNode.node(name: "hi", [.attribute("hi")]))
         
         SwiftyGraphQL.shared.defaultHeaders = HTTPHeaders([
             .init(name: .init("one"), value: "default"),

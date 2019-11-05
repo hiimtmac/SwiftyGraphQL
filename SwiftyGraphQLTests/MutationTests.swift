@@ -36,7 +36,7 @@ class MutationTests: XCTestCase {
     func testAdvanced() {
         let node = GraphQLNode.node(name: "testMutation", arguments: ["thing": "ok"], [
             .node(name: "myQuery", [
-                .node(alias: "allFrag1s", name: "frag1", arguments: ["since": 20], [
+                .node(name: "frag1", alias: "allFrag1s", arguments: ["since": 20], [
                     .fragment(Frag1.self)
                 ]),
                 .node(name: "frag2", [

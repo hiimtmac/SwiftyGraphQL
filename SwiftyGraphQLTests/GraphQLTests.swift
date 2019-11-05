@@ -52,11 +52,11 @@ class GraphQLTests: XCTestCase {
     
     // https://graphql.org/learn/queries/#aliases
     func testAliases() {
-        let node1 = GraphQLNode.node(alias: "empireHero", name: "hero", arguments: ["episode": "EMPIRE"], [
+        let node1 = GraphQLNode.node(name: "hero", alias: "empireHero", arguments: ["episode": "EMPIRE"], [
             .attributes(["name"])
         ])
         
-        let node2 = GraphQLNode.node(alias: "jediHero", name: "hero", arguments: ["episode": "JEDI"], [
+        let node2 = GraphQLNode.node(name: "hero", alias: "jediHero", arguments: ["episode": "JEDI"], [
             .attributes(["name"])
         ])
         
@@ -79,10 +79,10 @@ class GraphQLTests: XCTestCase {
             }
         }
         
-        let node1 = GraphQLNode.node(alias: "leftComparison", name: "hero", arguments: ["episode": "EMPIRE"], [
+        let node1 = GraphQLNode.node(name: "hero", alias: "leftComparison", arguments: ["episode": "EMPIRE"], [
             .fragment(Character.self)
         ])
-        let node2 = GraphQLNode.node(alias: "rightComparison", name: "hero", arguments: ["episode": "JEDI"], [
+        let node2 = GraphQLNode.node(name: "hero", alias: "rightComparison", arguments: ["episode": "JEDI"], [
             .fragment(Character.self)
         ])
         
@@ -109,10 +109,10 @@ class GraphQLTests: XCTestCase {
             }
         }
         
-        let node1 = GraphQLNode.node(alias: "leftComparison", name: "hero", arguments: ["episode": "EMPIRE"], [
+        let node1 = GraphQLNode.node(name: "hero", alias: "leftComparison", arguments: ["episode": "EMPIRE"], [
             .fragment(Character.self)
         ])
-        let node2 = GraphQLNode.node(alias: "rightComparison", name: "hero", arguments: ["episode": "JEDI"], [
+        let node2 = GraphQLNode.node(name: "hero", alias: "rightComparison", arguments: ["episode": "JEDI"], [
             .fragment(Character.self)
         ])
         
@@ -194,8 +194,35 @@ class GraphQLTests: XCTestCase {
     }
     
     // https://graphql.org/learn/queries/#directives
-    func _testDirectives() {
+    func testDirectives() throws {
+        let arg1 = GraphQLVariable(name: "episode", value: "JEDI")
+        let arg2 = GraphQLVariable(name: "withFriends", value: false)
         
+        let node = GraphQLNode.node(name: "hero", arguments: ["episode": arg1], [
+            .attributes(["name"]),
+            .node(name: "friends", directive: .include(if: arg2), [
+                .attributes(["name"])
+            ])
+        ])
+        
+        let query = GraphQLQuery(query: node, variables: [arg1, arg2], operationName: "HeroNameAndFriends")
+        let compare = #"query HeroNameAndFriends($episode: String, $withFriends: Boolean) { hero(episode: $episode) { name friends @include(if: $withFriends) { name } } }"#
+        
+        struct Decode: Decodable {
+            let query: String
+            let variables: Variables
+            
+            struct Variables: Decodable {
+                let episode: String
+                let withFriends: Bool
+            }
+        }
+        
+        let encoded = try JSONEncoder().encode(query)
+        let decoded = try JSONDecoder().decode(Decode.self, from: encoded)
+        XCTAssertEqual(decoded.query, compare)
+        XCTAssertEqual(decoded.variables.episode, "JEDI")
+        XCTAssertEqual(decoded.variables.withFriends, false)
     }
     
     // https://graphql.org/learn/queries/#mutations

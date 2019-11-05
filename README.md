@@ -20,14 +20,14 @@ The main object of this framework is the `GraphQLNode` enumeration. It is used t
 
 ```swift
 public enum GraphQLNode {
-    indirect case node(alias: String? = nil, name: String, parameters: GraphQLParameters? = nil, [GraphQLNode])
+    indirect case node(name: String, alias: String? = nil, arguments: GraphQLArguments? = nil, directive: Directive? = nil, [GraphQLNode])
     case attributes([String])
     case fragment(GraphQLFragmentRepresentable.Type)
     ...
 }
 
-// GraphQLNode.node(`Alias`, `GraphQLEntity`, `Parameters`, `Child Nodes`)
-// GraphQLNode.node(String?, String, GraphQLParameters?, [GraphQLNode])
+// GraphQLNode.node(`GraphQLEntity`, `Alias`, `Arguments`, `Directive`, `Child Nodes`)
+// GraphQLNode.node(String, String?, GraphQLArguments?, Directive?, [GraphQLNode])
 ```
 
 Example usage:
@@ -82,7 +82,7 @@ object {
 }
 */
 
-let alias = GraphQLNode.node(alias: "myObject", name: "object", nil, [
+let alias = GraphQLNode.node(name: "object", alias: "myObject", [
     .attributes(["hi"])
 ])
 /*
@@ -172,8 +172,8 @@ Currently, the following types are valid for use in parameters:
 ```swift
 let num: Int? = nil
 let string: String? = nil
-let parameters = GraphQLParameters(["since": num, "name": string ?? "defaultValue", "other": 2, "date": "today", "zzz": nil])
-let node = GraphQLNode.node(alias: "myNode", name: "allNodes", parameters: parameters, [
+let arguments = GraphQLArguments(["since": num, "name": string ?? "defaultValue", "other": 2, "date": "today", "zzz": nil])
+let node = GraphQLNode.node(name: "allNodes", alias: "myNode", arguments: arguments, [
     .node(nil, "frag", nil, [
         .fragment(Frag2.self)
     ]), 
@@ -230,7 +230,7 @@ let object = Object(name: "hiimtmac")
 let variable = GraphQLVariable(name: "object", value: object)
 
 let vairables = GraphQLVariables([variable])
-let node = GraphQLNode.node(name: "allNodes", parameters: ["obj": object], [
+let node = GraphQLNode.node(name: "allNodes", arguments: ["obj": object], [
     .node(name: "frag", [
         .fragment(Frag2.self)
     ]), 
@@ -304,8 +304,8 @@ fragment frag2 on Frag2 {
 `GraphQLQuery` also has an initializer for a mutation. Generally you would include the `operationName: String` field for a mutation.
 
 ```swift
-let parameters = GraphQLParameters(["id": "123", "name": "taylor", "age": 666])
-let node = GraphQLNode.node(name: "newPerson", parameters: parameters, [
+let arguments = GraphQLArguments(["id": "123", "name": "taylor", "age": 666])
+let node = GraphQLNode.node(name: "newPerson", arguments: arguments, [
     .node(alias: "createdPerson", name: "person", [
         .fragment(Frag2.self)
     ])
@@ -644,7 +644,32 @@ variables:
 */
 
 // https://graphql.org/learn/queries/#directives
-TODO: Implement this
+let arg1 = GraphQLVariable(name: "episode", value: "JEDI")
+let arg2 = GraphQLVariable(name: "withFriends", value: false)
+
+let node = GraphQLNode.node(name: "hero", arguments: ["episode": arg1], [
+    .attributes(["name"]),
+    .node(name: "friends", directive: .include(if: arg2), [
+        .attributes(["name"])
+    ])
+])
+let query = GraphQLQuery(query: node, variables: [arg1, arg2], operationName: "HeroNameAndFriends")
+/*
+query Hero($episode: Episode, $withFriends: Boolean) {
+  hero(episode: $episode) {
+    name
+    friends @include(if: $withFriends) {
+      name
+    }
+  }
+}
+
+variables:
+{
+  "episode": "JEDI",
+  "withFriends": false
+}
+*/
 
 // https://graphql.org/learn/queries/#mutations
 struct ReviewInput: GraphQLVariableRepresentable, Decodable {
