@@ -8,16 +8,15 @@
 
 import Foundation
 
-public protocol GraphQLFragmentRepresentable: GraphQLObject {
+public protocol GraphQLFragment: GraphQLObject {
     static var fragmentName: String { get }
-    static var attributes: [String] { get }
-    
+    static var fragmentContent: GraphQLRepresentable { get }
     static var fragmentStatement: String { get }
 }
 
-extension GraphQLFragmentRepresentable {
+extension GraphQLFragment {
     public static var fragmentStatement: String {
-        return "fragment \(fragmentName) on \(entityName) { \(attributes.sorted().joined(separator: " ")) }"
+        return "fragment \(fragmentName) on \(entityName) { \(fragmentContent.rawQuery) }"
     }
     
     public static var fragmentName: String {
