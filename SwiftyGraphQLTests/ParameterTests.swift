@@ -18,11 +18,12 @@ class ParameterTests: XCTestCase {
     }
     
     func testParameterCombination() {
-        let p1 = GraphQLArguments(["since": 20, "name": "taylor"])
+        let nill: String? = nil
+        let p1 = GraphQLArguments(["since": 20, "name": "taylor", "nill": nill])
         let p2 = GraphQLArguments(["ok": true, "address": "difficult"])
         let parameters = p1 + p2
         
-        let compare = #"(address: "difficult", name: "taylor", ok: true, since: 20)"#
+        let compare = #"(address: "difficult", name: "taylor", nill: null, ok: true, since: 20)"#
         XCTAssertEqual(parameters.statement, compare)
     }
     

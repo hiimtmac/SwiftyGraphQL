@@ -45,7 +45,7 @@ public struct GraphQLArguments {
 }
 
 extension GraphQLArguments: ExpressibleByDictionaryLiteral {
-    public init(dictionaryLiteral elements: (String, GraphQLArgument)...) {
+    public init(dictionaryLiteral elements: (String, GraphQLArgument?)...) {
         self.storage = Dictionary.init(uniqueKeysWithValues: elements)
     }
 }
