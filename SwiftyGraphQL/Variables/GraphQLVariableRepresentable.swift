@@ -8,14 +8,8 @@
 
 import Foundation
 
-public protocol GraphQLVariableRepresentable: Encodable, GraphQLObject {
+public protocol GraphQLVariableRepresentable: Encodable {
     static var variableType: String { get }
-}
-
-extension GraphQLVariableRepresentable {
-    public static var variableType: String {
-        return entityName
-    }
 }
 
 extension String: GraphQLVariableRepresentable {
@@ -45,5 +39,17 @@ extension Float: GraphQLVariableRepresentable {
 extension Bool: GraphQLVariableRepresentable {
     public static var variableType: String {
         return "Boolean"
+    }
+}
+
+extension Optional: GraphQLVariableRepresentable where Wrapped: GraphQLVariableRepresentable {
+    public static var variableType: String {
+        return Wrapped.variableType
+    }
+}
+
+extension Array: GraphQLVariableRepresentable where Element: GraphQLVariableRepresentable {
+    public static var variableType: String {
+        return Element.variableType
     }
 }
