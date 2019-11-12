@@ -19,12 +19,38 @@ public struct GraphQLVariable {
         self.type = T.variableType
     }
     
+    public init<T: GraphQLVariableRepresentable>(name: String, value: T) {
+        self.name = name
+        self.value = value
+        self.type = "\(T.variableType)!"
+    }
+
+    public init<T: GraphQLVariableRepresentable>(name: String, value: [T]?) {
+        self.name = name
+        self.value = value
+        self.type = "[\(T.variableType)!]"
+    }
+
+    public init<T: GraphQLVariableRepresentable>(name: String, value: [T]) {
+        self.name = name
+        self.value = value
+        self.type = "[\(T.variableType)!]!"
+    }
+
+    public init<T: GraphQLVariableRepresentable>(name: String, value: [T?]?) {
+        self.name = name
+        self.value = value
+        self.type = "[\(T.variableType)]"
+    }
+
+    public init<T: GraphQLVariableRepresentable>(name: String, value: [T?]) {
+        self.name = name
+        self.value = value
+        self.type = "[\(T.variableType)]!"
+    }
+    
     var parameter: String {
-        if value != nil {
-            return "$\(name): \(type)!"
-        } else {
-            return "$\(name): \(type)"
-        }
+        return "$\(name): \(type)"
     }
 }
 
@@ -32,7 +58,7 @@ extension GraphQLVariable: Hashable {
     public static func == (lhs: GraphQLVariable, rhs: GraphQLVariable) -> Bool {
         return lhs.name == rhs.name
     }
-    
+
     public func hash(into hasher: inout Hasher) {
         hasher.combine(name)
     }

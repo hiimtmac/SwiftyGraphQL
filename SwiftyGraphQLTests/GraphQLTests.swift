@@ -230,6 +230,8 @@ class GraphQLTests: XCTestCase {
     // https://graphql.org/learn/queries/#mutations
     func testMutation() throws {
         struct ReviewInput: GraphQLVariableRepresentable, Decodable {
+            static let variableType: String = "ReviewInput"
+            
             let stars = 5
             let commentary = "This is a great movie!"
         }
