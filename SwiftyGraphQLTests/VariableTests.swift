@@ -83,17 +83,32 @@ class VariableTests: XCTestCase {
     func testVariableJSONEncoding() throws {
         let variables = GraphQLVariables([
             GraphQLVariable(name: "int", value: 7),
-            GraphQLVariable(name: "bool", value: false)
+            GraphQLVariable(name: "intOpt", value: nil as Int?),
+            GraphQLVariable(name: "bool", value: false),
+            GraphQLVariable(name: "array", value: [1,2,3]),
+            GraphQLVariable(name: "arrayOpt", value: nil as [Int]?),
+            GraphQLVariable(name: "arrayElementOpt", value: [nil as Int?, 2] as [Int?]),
+            GraphQLVariable(name: "arrayOptElementOpt", value: nil as [Int?]?)
         ])
         
         struct Decode: Decodable {
             let int: Int
+            let intOpt: Int?
             let bool: Bool
+            let array: [Int]
+            let arrayOpt: [Int]?
+            let arrayElementOpt: [Int?]
+            let arrayOptElementOpt: [Int?]?
         }
         
         let encoded = try JSONEncoder().encode(variables)
         let decoded = try JSONDecoder().decode(Decode.self, from: encoded)
         XCTAssertEqual(decoded.int, 7)
         XCTAssertEqual(decoded.bool, false)
+        XCTAssertEqual(decoded.array, [1,2,3])
+        XCTAssertNil(decoded.arrayOpt)
+        XCTAssertEqual(decoded.arrayElementOpt, [nil, 2])
+        XCTAssertNil(decoded.arrayOptElementOpt)
+        XCTAssertEqual(variables.statement, #"($array: [Int!]!, $arrayElementOpt: [Int]!, $arrayOpt: [Int!], $arrayOptElementOpt: [Int], $bool: Boolean!, $int: Int!, $intOpt: Int)"#)
     }
 }
