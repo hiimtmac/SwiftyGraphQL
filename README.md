@@ -356,10 +356,11 @@ public struct GraphQLRequest<T: Decodable> {
     public let query: GraphQLQuery
     public var headers: HTTPHeaders
     public var encoder: JSONEncoder?
+    public var encodePlugins: [(inout URLRequest) -> Void]
     public var decoder: JSONDecoder?
     
-    public func urlRequest(headers: HTTPHeaders = .init(), encoder: JSONEncoder? = nil) throws -> URLRequest { ... }
-    public func decode(data: Data, decoder: JSONDecoder? = nil) throws -> GraphQLResponse<T> { ... }
+    public func urlRequest() throws -> URLRequest { ... }
+    public func decode(data: Data) throws -> GraphQLResponse<T> { ... }
 }
 ```
 
@@ -382,8 +383,8 @@ extension JSONDecoder {
 }
 
 extension GraphQLRequest {
-    public func decode(data: Data, decoder: JSONDecoder? = nil) throws -> GraphQLResponse<T> {
-        let decoder = decoder ?? self.decoder ?? SwiftyGraphQL.shared.responseDecoder
+    public func decode(data: Data) throws -> GraphQLResponse<T> {
+        let decoder = self.decoder ?? SwiftyGraphQL.shared.responseDecoder
         return try decoder.graphQLDecode(GraphQLResponse<T>.self, from: data)
     }
 }
