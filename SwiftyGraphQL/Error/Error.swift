@@ -8,14 +8,14 @@
 
 import Foundation
 
-public struct GraphQLError: Decodable {
+public struct GraphQLError: Codable {
     public let message: String
     public let locations: [Location]?
     public let fields: [String]?
     public let errorType: String?
     public let validationErrorType: String?
     
-    public struct Location: Decodable {
+    public struct Location: Codable {
         let line: Int
         let column: Int
         

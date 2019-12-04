@@ -10,7 +10,7 @@ import Foundation
 
 /// All graphql responses come back wrapped in a `data` object
 /// in json with an additional array of errors.
-public struct GraphQLResponse<T>: Decodable where T: Decodable {
+public struct GraphQLResponse<T> {
     public let data: T
     public let errors: [GraphQLError]?
     
@@ -23,3 +23,6 @@ public struct GraphQLResponse<T>: Decodable where T: Decodable {
         return GraphQLErrors(errors: errors)
     }
 }
+
+extension GraphQLResponse: Decodable where T: Decodable {}
+extension GraphQLResponse: Encodable where T: Encodable {}
