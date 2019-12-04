@@ -65,23 +65,28 @@ class RequestTests: XCTestCase {
             .init(name: .init("five"), value: "asdasd"),
             .init(name: .init("five"), value: "default")
         ])
-        let request = GraphQLRequest<String>(query: query, headers: HTTPHeaders([
+        var request = GraphQLRequest<String>(query: query, headers: HTTPHeaders([
             .init(name: .init("one"), value: "nil"),
             .init(name: .init("two"), value: "request"),
             .init(name: .init("three"), value: "request"),
             .init(name: .init("four"), value: "request"),
             .init(name: .init("six"), value: "request")
         ]))
-        let urlRequest = try request.urlRequest(headers: HTTPHeaders([
-            .init(name: .init("three"), value: "flight"),
-            .init(name: .init("four"), value: "nil"),
-            .init(name: .init("seven"), value: "flight")
-        ]))
+        request.addEncodePlugin { request in
+            HTTPHeaders([
+                .init(name: .init("three"), value: "flight"),
+                .init(name: .init("seven"), value: "flight")
+            ]).headers.forEach {
+                request.setValue($0.value, forHTTPHeaderField: $0.key.name)
+            }
+            request.setValue(nil, forHTTPHeaderField: "four")
+        }
+        let urlRequest = try request.urlRequest()
         
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["one"], "nil")
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["two"], "request")
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["three"], "flight")
-        XCTAssertEqual(urlRequest.allHTTPHeaderFields?["four"], "nil")
+        XCTAssertEqual(urlRequest.allHTTPHeaderFields?["four"], nil)
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["five"], "default")
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["six"], "request")
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["seven"], "flight")
@@ -129,7 +134,9 @@ class RequestTests: XCTestCase {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
         
-        network.perform(request: request, decoder: decoder) { result in
+        request.decoder = decoder
+        
+        network.perform(request: request) { result in
             switch result {
             case .success(let decoded):
                 XCTAssertEqual(decoded.data.address, "place")
@@ -184,5 +191,30 @@ class RequestTests: XCTestCase {
         XCTAssertEqual(combine[.accept], "application/json; charset=utf-8")
         XCTAssertEqual(combine[.contentEncoding], "text/plain; charset=utf-8")
         XCTAssertEqual(combine[.contentType], "application/json; charset=utf-8")
+    }
+    
+    func testRequestPlugins() throws {
+        let query = GraphQLQuery(query: GraphQLNode.node(name: "hi", [.attribute("hi")]))
+        var request = GraphQLRequest<String>(query: query)
+        let urlReq = try request.urlRequest()
+        XCTAssertEqual(urlReq.cachePolicy.rawValue, URLRequest.CachePolicy.useProtocolCachePolicy.rawValue)
+        XCTAssertEqual(urlReq.timeoutInterval, 60)
+        XCTAssertEqual(urlReq.httpMethod, "POST")
+        
+        request.encodePlugins = [
+            { $0.cachePolicy = URLRequest.CachePolicy.reloadIgnoringCacheData },
+            { $0.httpMethod = "GET" }
+        ]
+        
+        let one = try request.urlRequest()
+        XCTAssertEqual(one.cachePolicy.rawValue, URLRequest.CachePolicy.reloadIgnoringCacheData.rawValue)
+        XCTAssertEqual(one.httpMethod, "GET")
+        
+        request.addEncodePlugin { $0.timeoutInterval = 50 }
+        request.addEncodePlugin { $0.httpMethod = "PUT" }
+        
+        let two = try request.urlRequest()
+        XCTAssertEqual(two.timeoutInterval, 50)
+        XCTAssertEqual(two.httpMethod, "PUT")
     }
 }

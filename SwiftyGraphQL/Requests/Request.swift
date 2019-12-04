@@ -12,19 +12,29 @@ public struct GraphQLRequest<T: Decodable> {
     public let query: GraphQLQuery
     public var headers: HTTPHeaders
     public var encoder: JSONEncoder?
+    public var encodePlugins: [(inout URLRequest) -> Void]
     public var decoder: JSONDecoder?
     
-    public init(query: GraphQLQuery, headers: HTTPHeaders = .init(), encoder: JSONEncoder? = nil, decoder: JSONDecoder? = nil) {
+    public init(query: GraphQLQuery,
+                headers: HTTPHeaders = .init(),
+                encoder: JSONEncoder? = nil,
+                encodePlugins: [(inout URLRequest) -> Void] = [],
+                decoder: JSONDecoder? = nil) {
         self.query = query
         self.headers = headers
         self.encoder = encoder
+        self.encodePlugins = encodePlugins
         self.decoder = decoder
+    }
+    
+    public mutating func addEncodePlugin(_ plugin: @escaping (inout URLRequest) -> Void) {
+        self.encodePlugins.append(plugin)
     }
 }
 
 extension GraphQLRequest {
-    public func urlRequest(headers: HTTPHeaders = .init(), encoder: JSONEncoder? = nil) throws -> URLRequest {
-        let encoder = encoder ?? self.encoder ?? SwiftyGraphQL.shared.queryEncoder
+    public func urlRequest() throws -> URLRequest {
+        let encoder = self.encoder ?? SwiftyGraphQL.shared.queryEncoder
         
         guard let url = SwiftyGraphQL.shared.graphQLEndpoint else {
             fatalError("No url configured, please set `SwiftyGraphQL.shared.graphQLEndpoint`")
@@ -34,15 +44,17 @@ extension GraphQLRequest {
         request.httpMethod = "POST"
         request.httpBody = try encoder.encode(query)
         
-        (SwiftyGraphQL.shared.defaultHeaders + self.headers + headers).headers.forEach {
+        (SwiftyGraphQL.shared.defaultHeaders + self.headers).headers.forEach {
             request.setValue($0.value, forHTTPHeaderField: $0.key.name)
         }
+        
+        encodePlugins.forEach { $0(&request) }
 
         return request
     }
     
-    public func decode(data: Data, decoder: JSONDecoder? = nil) throws -> GraphQLResponse<T> {
-        let decoder = decoder ?? self.decoder ?? SwiftyGraphQL.shared.responseDecoder
+    public func decode(data: Data) throws -> GraphQLResponse<T> {
+        let decoder = self.decoder ?? SwiftyGraphQL.shared.responseDecoder
         return try decoder.graphQLDecode(GraphQLResponse<T>.self, from: data)
     }
 }
