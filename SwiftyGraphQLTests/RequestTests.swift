@@ -75,18 +75,18 @@ class RequestTests: XCTestCase {
         request.addEncodePlugin { request in
             HTTPHeaders([
                 .init(name: .init("three"), value: "flight"),
-                .init(name: .init("four"), value: "nil"),
                 .init(name: .init("seven"), value: "flight")
             ]).headers.forEach {
                 request.setValue($0.value, forHTTPHeaderField: $0.key.name)
             }
+            request.setValue(nil, forHTTPHeaderField: "four")
         }
         let urlRequest = try request.urlRequest()
         
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["one"], "nil")
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["two"], "request")
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["three"], "flight")
-        XCTAssertEqual(urlRequest.allHTTPHeaderFields?["four"], "nil")
+        XCTAssertEqual(urlRequest.allHTTPHeaderFields?["four"], nil)
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["five"], "default")
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["six"], "request")
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["seven"], "flight")
