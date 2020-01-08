@@ -9,14 +9,11 @@ This small library helps to make typesafe(er) graphql queries & mutations
 
 - Swift 5.1+
 
-## TODO
-- Function builder support
-
 ## Usage
 
 The main object of this framework is the `GraphQLNode` enumeration. It is used to create nodes and the contents within each node. It will create the raw query object string as well as synthesize any fragment types (conforming to `GraphQLFragmentRepresentable`) and create a fragment string.
 
-### Node
+### GQLNode
 
 ```swift
 public enum GraphQLNode {
