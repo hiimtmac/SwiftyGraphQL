@@ -1,19 +1,19 @@
 //
-//  ParameterRepresentable.swift
+//  Argument.swift
 //  SwiftyGraphQL
 //
-//  Created by Taylor McIntyre on 2019-04-04.
-//  Copyright © 2019 hiimtmac. All rights reserved.
+//  Created by Taylor McIntyre on 2020-01-07.
+//  Copyright © 2020 hiimtmac. All rights reserved.
 //
 
 import Foundation
 
-public protocol GraphQLArgument {
-    var parameterValue: String { get }
+public protocol GQLArgument {
+    var gqlArgumentValue: String { get }
 }
 
-extension String: GraphQLArgument {
-    public var parameterValue: String {
+extension String: GQLArgument {
+    public var gqlArgumentValue: String {
         var escaped = ""
         for c in self.unicodeScalars {
             switch c {
@@ -38,34 +38,34 @@ extension String: GraphQLArgument {
     }
 }
 
-extension Int: GraphQLArgument {
-    public var parameterValue: String {
+extension Int: GQLArgument {
+    public var gqlArgumentValue: String {
         return "\(self)"
     }
 }
 
-extension Double: GraphQLArgument {
-    public var parameterValue: String {
+extension Double: GQLArgument {
+    public var gqlArgumentValue: String {
         return "\(self)"
     }
 }
 
-extension Float: GraphQLArgument {
-    public var parameterValue: String {
+extension Float: GQLArgument {
+    public var gqlArgumentValue: String {
         return "\(self)"
     }
 }
 
-extension Bool: GraphQLArgument {
-    public var parameterValue: String {
+extension Bool: GQLArgument {
+    public var gqlArgumentValue: String {
         return "\(self)"
     }
 }
 
-extension Array: GraphQLArgument where Element: GraphQLArgument {
-    public var parameterValue: String {
+extension Array: GQLArgument where Element: GQLArgument {
+    public var gqlArgumentValue: String {
         let parametersEncoded = self
-            .map { $0.parameterValue }
+            .map { $0.gqlArgumentValue }
             .sorted()
             .joined(separator: ", ")
         
@@ -73,10 +73,10 @@ extension Array: GraphQLArgument where Element: GraphQLArgument {
     }
 }
 
-extension Dictionary: GraphQLArgument where Key == String, Value: GraphQLArgument {
-    public var parameterValue: String {
+extension Dictionary: GQLArgument where Key == String, Value: GQLArgument {
+    public var gqlArgumentValue: String {
         let parametersEncoded = self
-            .map { #""\#($0.key)": \#($0.value.parameterValue)"# }
+            .map { #""\#($0.key)": \#($0.value.gqlArgumentValue)"# }
             .sorted()
             .joined(separator: ", ")
         
@@ -84,9 +84,9 @@ extension Dictionary: GraphQLArgument where Key == String, Value: GraphQLArgumen
     }
 }
 
-extension Optional: GraphQLArgument where Wrapped == GraphQLArgument {
-    public var parameterValue: String {
+extension Optional: GQLArgument where Wrapped == GQLArgument {
+    public var gqlArgumentValue: String {
         guard let self = self else { return "null" }
-        return self.parameterValue
+        return self.gqlArgumentValue
     }
 }

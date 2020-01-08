@@ -1,5 +1,5 @@
 //
-//  Query.swift
+//  Mutation.swift
 //  SwiftyGraphQL
 //
 //  Created by Taylor McIntyre on 2020-01-07.
@@ -8,8 +8,8 @@
 
 import Foundation
 
-public struct GQLQuery: GQLOperation {
-    public static let operationType = "query"
+public struct GQLMutation: GQLOperation {
+    public static let operationType = "mutation"
     public let operationName: String?
     public let variables: [String: GQLVariable]
     public let content: GraphQL
@@ -26,7 +26,7 @@ public struct GQLQuery: GQLOperation {
         self.content = content
     }
     
-    public func copy(withVariables: [String: GQLVariable]) -> GQLQuery {
+    public func copy(withVariables: [String: GQLVariable]) -> GQLMutation {
         return .init(operationName: operationName, variables: withVariables, content: content)
     }
 }

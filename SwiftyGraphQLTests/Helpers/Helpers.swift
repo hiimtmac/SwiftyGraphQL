@@ -9,23 +9,38 @@
 import Foundation
 import SwiftyGraphQL
 
-struct Frag1: GraphQLFragment, Codable, Equatable {
+struct Frag1: GQLFragmentable, Codable, Equatable {
+    static let fragmentName = "fragment1"
+    static let fragmentType = "Fragment1"
+    
     let name: String
     let age: String
     
-    static var entityName: String = "Fragment1"
-    static var fragmentName: String = "fragment1"
-    static var fragmentContent: GraphQLRepresentable {
-        return GraphQLNode.attributes(["name", "age"])
+    static var gqlContent: GraphQL {
+        GQLAttributes {
+            "name"
+            "age"
+        }
     }
 }
 
-struct Frag2: GraphQLFragment, Codable, Equatable {
+struct Frag2: GQLFragmentable, Codable, Equatable {
+    static let fragmentName = "frag2"
+    static let fragmentType = "Frag2"
+    
     let birthday: Date
     let address: String?
     
-    static var fragmentContent: GraphQLRepresentable {
-        return GraphQLNode.attributes(["birthday", "address"])
+    enum CodingKeys: String, GQLCodedKey, CaseIterable {
+        case birthday
+        case address
+    }
+    
+    static var gqlContent: GraphQL {
+        GQLAttributes {
+            "birthday"
+            "address"
+        }
     }
 }
 

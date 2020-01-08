@@ -12,7 +12,7 @@ import XCTest
 class RequestTests: XCTestCase {
     
     var network: MockNetwork!
-    var request: GraphQLRequest<Frag2>!
+    var request: GraphQLRequest<GQLQuery, Frag2>!
     
     override func setUp() {
         super.setUp()
@@ -28,8 +28,12 @@ class RequestTests: XCTestCase {
         components.host = "graphql.com"
         components.path = "/graphql"
         
-        let node = GraphQLNode.node(name: "me", [.fragment(Frag2.self)])
-        let query = GraphQLQuery(query: node)
+        let query = GQLQuery {
+            GQLNode("me") {
+                GQLFragment(Frag2.self)
+            }
+        }
+        
         let headers = HTTPHeaders([HTTPHeader(name: .contentEncoding, value: .json)])
         request = GraphQLRequest(query: query, headers: headers)
         
@@ -55,7 +59,11 @@ class RequestTests: XCTestCase {
     }
     
     func testRequestHeaders() throws {
-        let query = GraphQLQuery(query: GraphQLNode.node(name: "hi", [.attribute("hi")]))
+        let query = GQLQuery {
+            GQLNode("hi") {
+                "hi"
+            }
+        }
         
         SwiftyGraphQL.shared.defaultHeaders = HTTPHeaders([
             .init(name: .init("one"), value: "default"),
@@ -65,7 +73,7 @@ class RequestTests: XCTestCase {
             .init(name: .init("five"), value: "asdasd"),
             .init(name: .init("five"), value: "default")
         ])
-        var request = GraphQLRequest<String>(query: query, headers: HTTPHeaders([
+        var request = GraphQLRequest<GQLQuery, String>(query: query, headers: HTTPHeaders([
             .init(name: .init("one"), value: "nil"),
             .init(name: .init("two"), value: "request"),
             .init(name: .init("three"), value: "request"),
@@ -194,8 +202,12 @@ class RequestTests: XCTestCase {
     }
     
     func testRequestPlugins() throws {
-        let query = GraphQLQuery(query: GraphQLNode.node(name: "hi", [.attribute("hi")]))
-        var request = GraphQLRequest<String>(query: query)
+        let query = GQLQuery {
+            GQLNode("hi") {
+                "hi"
+            }
+        }
+        var request = GraphQLRequest<GQLQuery, String>(query: query)
         let urlReq = try request.urlRequest()
         XCTAssertEqual(urlReq.cachePolicy.rawValue, URLRequest.CachePolicy.useProtocolCachePolicy.rawValue)
         XCTAssertEqual(urlReq.timeoutInterval, 60)

@@ -1,9 +1,9 @@
 //
-//  GraphQLTests.swift
+//  BuilderTests.swift
 //  SwiftyGraphQLTests
 //
-//  Created by Taylor McIntyre on 2019-11-04.
-//  Copyright © 2019 hiimtmac. All rights reserved.
+//  Created by Taylor McIntyre on 2020-01-07.
+//  Copyright © 2020 hiimtmac. All rights reserved.
 //
 
 import XCTest
@@ -12,260 +12,294 @@ import XCTest
 class GraphQLTests: XCTestCase {
     
     // https://graphql.org/learn/queries/#fields
-    func testFields1() {
-        let node = GraphQLNode.node(name: "hero", [
-            .attributes(["name"])
-        ])
-        let compare = #"query { hero { name } }"#
-        XCTAssertEqual(GraphQLQuery(query: node).query, compare)
-    }
-    
-    func testFields2() {
-        let node = GraphQLNode.node(name: "hero", [
-            .node(name: "friends", [
-                .attributes(["name"])
-            ]),
-            .attributes(["name"])
-        ])
-        let compare = #"query { hero { friends { name } name } }"#
-        XCTAssertEqual(GraphQLQuery(query: node).query, compare)
-    }
-
-    // https://graphql.org/learn/queries/#arguments
-    func testArguments1() {
-        let node = GraphQLNode.node(name: "human", arguments: ["id":"1000"], [
-            .attributes(["name","height"])
-        ])
-        let compare = #"query { human(id: "1000") { height name } }"#
-        XCTAssertEqual(GraphQLQuery(query: node).query, compare)
-    }
-    
-    func testArguments2() {
-        let node = GraphQLNode.node(name: "human", arguments: ["id":"1000"], [
-            .attributes(["name"]),
-            .node(name: "height", arguments: ["unit":"FOOT"])
-        ])
+    func testExample1() {
+        let query = GQLQuery {
+            GQLNode("hero") {
+                "name"
+            }
+        }
         
-        let compare = #"query { human(id: "1000") { name height(unit: "FOOT") } }"#
-        XCTAssertEqual(GraphQLQuery(query: node).query, compare)
+        XCTAssertEqual(query.gqlQueryString, #"query { hero { name } }"#)
+        XCTAssertEqual(query.gqlQueryWithFragments, #"query { hero { name } }"#)
+    }
+    
+    func testExample2() {
+        let query = GQLQuery {
+            GQLNode("hero") {
+                "name"
+                GQLNode("friends") {
+                    "name"
+                }
+            }
+        }
+        
+        XCTAssertEqual(query.gqlQueryString, #"query { hero { friends { name } name } }"#)
+        XCTAssertEqual(query.gqlQueryWithFragments, #"query { hero { friends { name } name } }"#)
+    }
+    
+    // https://graphql.org/learn/queries/#arguments
+    func testExample3() {
+        let query = GQLQuery {
+            GQLNode("human") {
+                "name"
+                GQLNode("height")
+                    .withArgument(named: "unit", value: "FOOT")
+            }
+            .withArgument(named: "id", value: "1000")
+        }
+        
+        XCTAssertEqual(query.gqlQueryString, #"query { human(id: "1000") { height(unit: "FOOT") name } }"#)
+        XCTAssertEqual(query.gqlQueryWithFragments, #"query { human(id: "1000") { height(unit: "FOOT") name } }"#)
     }
     
     // https://graphql.org/learn/queries/#aliases
-    func testAliases() {
-        let node1 = GraphQLNode.node(name: "hero", alias: "empireHero", arguments: ["episode": "EMPIRE"], [
-            .attributes(["name"])
-        ])
+    func testExample4() {
+        let query = GQLQuery {
+            GQLNode("hero", alias: "empireHero") {
+                "name"
+            }
+            .withArgument(named: "episode", value: "EMPIRE")
+            GQLNode("hero", alias: "jediHero") {
+                "name"
+            }
+            .withArgument(named: "episode", value: "JEDI")
+        }
         
-        let node2 = GraphQLNode.node(name: "hero", alias: "jediHero", arguments: ["episode": "JEDI"], [
-            .attributes(["name"])
-        ])
-        
-        let nodes = [node1, node2]
-        let compare = #"query { empireHero: hero(episode: "EMPIRE") { name } jediHero: hero(episode: "JEDI") { name } }"#
-        
-        XCTAssertEqual(GraphQLQuery(query: nodes).query, compare)
+        XCTAssertEqual(query.gqlQueryString, #"query { empireHero: hero(episode: "EMPIRE") { name } jediHero: hero(episode: "JEDI") { name } }"#)
+        XCTAssertEqual(query.gqlQueryWithFragments, #"query { empireHero: hero(episode: "EMPIRE") { name } jediHero: hero(episode: "JEDI") { name } }"#)
     }
     
     // https://graphql.org/learn/queries/#fragments
-    func testFragments1() {
-        struct Character: GraphQLFragment {
-            static var fragmentName: String { "comparisonFields" }
-            static var fragmentContent: GraphQLRepresentable {
-                let attributes = GraphQLNode.attributes(["appearsIn", "name"])
-                let friends = GraphQLNode.node(name: "friends", [
-                    .attributes(["name"])
-                ])
-                return [attributes, friends]
+    func testExample5() {
+        struct Character: GQLFragmentable, GQLAttributable {
+            static let fragmentName = "comparisonFields"
+            
+            enum CodingKeys: String, CodingKey, CaseIterable {
+                case name
+            }
+            
+            static var gqlContent: GraphQL {
+                GQLAttributes {
+                    "name"
+                    "appearsIn"
+                    GQLNode("friends") {
+                        "name"
+                    }
+                }
             }
         }
         
-        let node1 = GraphQLNode.node(name: "hero", alias: "leftComparison", arguments: ["episode": "EMPIRE"], [
-            .fragment(Character.self)
-        ])
-        let node2 = GraphQLNode.node(name: "hero", alias: "rightComparison", arguments: ["episode": "JEDI"], [
-            .fragment(Character.self)
-        ])
+        let query = GQLQuery {
+            GQLNode("hero", alias: "leftComparison") {
+                GQLFragment(Character.self)
+            }
+            .withArgument(named: "episode", value: "EMPIRE")
+            GQLNode("hero", alias: "rightComparison") {
+                GQLFragment(Character.self)
+            }
+            .withArgument(named: "episode", value: "JEDI")
+        }
         
-        let compare = #"query { leftComparison: hero(episode: "EMPIRE") { ...comparisonFields } rightComparison: hero(episode: "JEDI") { ...comparisonFields } } fragment comparisonFields on Character { appearsIn name friends { name } }"#
-        
-        XCTAssertEqual(GraphQLQuery(query: [node1, node2]).query, compare)
+        XCTAssertEqual(query.gqlQueryString, #"query { leftComparison: hero(episode: "EMPIRE") { ...comparisonFields } rightComparison: hero(episode: "JEDI") { ...comparisonFields } }"#)
+        XCTAssertEqual(query.gqlFragmentString, #"fragment comparisonFields on Character { appearsIn friends { name } name }"#)
+        XCTAssertEqual(query.gqlQueryWithFragments, #"query { leftComparison: hero(episode: "EMPIRE") { ...comparisonFields } rightComparison: hero(episode: "JEDI") { ...comparisonFields } } fragment comparisonFields on Character { appearsIn friends { name } name }"#)
     }
     
-    func testFragments2() {
-        struct Character: GraphQLFragment {
-            static var entityName: String { "Character" }
-            static var fragmentName: String { "comparisonFields" }
-            static var fragmentContent: GraphQLRepresentable {
-                let attributes = GraphQLNode.attributes(["name"])
-                let first = GraphQLVariable(name: "first", value: 8)
-                let friends = GraphQLNode.node(name: "friendsConnection", arguments: ["first": first], [
-                    .attributes(["totalCount"]),
-                    .node(name: "edges", [
-                        .node(name: "node", [
-                            .attributes(["name"])
-                        ])
-                    ])
-                ])
-                return [attributes, friends]
+    func testExample6() throws {
+        struct Character: GQLFragmentable, GQLAttributable {
+            static let fragmentName = "comparisonFields"
+            
+            enum CodingKeys: String, CodingKey, CaseIterable {
+                case name
+            }
+            
+            static var gqlContent: GraphQL {
+                GQLAttributes {
+                    "name"
+                    GQLNode("friendsConnection") {
+                        "totalCount"
+                        GQLNode("edges") {
+                            GQLNode("node") {
+                                "name"
+                            }
+                        }
+                    }
+                    .withVariable(named: "first", variableName: "first")
+                }
             }
         }
         
-        let node1 = GraphQLNode.node(name: "hero", alias: "leftComparison", arguments: ["episode": "EMPIRE"], [
-            .fragment(Character.self)
-        ])
-        let node2 = GraphQLNode.node(name: "hero", alias: "rightComparison", arguments: ["episode": "JEDI"], [
-            .fragment(Character.self)
-        ])
+        let query = GQLQuery(operationName: "HeroComparison") {
+            GQLNode("hero", alias: "leftComparison") {
+                GQLFragment(Character.self)
+            }
+            .withArgument(named: "episode", value: "EMPIRE")
+            GQLNode("hero", alias: "rightComparison") {
+                GQLFragment(Character.self)
+            }
+            .withArgument(named: "episode", value: "JEDI")
+        }
+        .withVariable(named: "first", value: 5 as Int?)
         
-        let compare = #"query HeroComparison($first: Int!) { leftComparison: hero(episode: "EMPIRE") { ...comparisonFields } rightComparison: hero(episode: "JEDI") { ...comparisonFields } } fragment comparisonFields on Character { name friendsConnection(first: $first) { totalCount edges { node { name } } } }"#
-        let first = GraphQLVariable(name: "first", value: 3)
+        XCTAssertEqual(query.gqlQueryString, #"query HeroComparison($first: Int) { leftComparison: hero(episode: "EMPIRE") { ...comparisonFields } rightComparison: hero(episode: "JEDI") { ...comparisonFields } }"#)
+        XCTAssertEqual(query.gqlFragmentString, #"fragment comparisonFields on Character { friendsConnection(first: $first) { edges { node { name } } totalCount } name }"#)
+        XCTAssertEqual(query.gqlQueryWithFragments, #"query HeroComparison($first: Int) { leftComparison: hero(episode: "EMPIRE") { ...comparisonFields } rightComparison: hero(episode: "JEDI") { ...comparisonFields } } fragment comparisonFields on Character { friendsConnection(first: $first) { edges { node { name } } totalCount } name }"#)
+        
+        struct Decode: Decodable {
+            let query: String
+            let variables: Variables
+            
+            struct Variables: Decodable {
+                let first: Int
+            }
+        }
+        let encoded = try JSONEncoder().encode(query)
+        let decoded = try JSONDecoder().decode(Decode.self, from: encoded)
+        XCTAssertEqual(decoded.variables.first, 5)
+    }
 
-        XCTAssertEqual(GraphQLQuery(query: [node1, node2], variables: [first], operationName: "HeroComparison").query, compare)
-    }
-    
     // https://graphql.org/learn/queries/#operation-name
-    func testOperationName() {
-        let node = GraphQLNode.node(name: "hero", [
-            .attributes(["name"]),
-            .node(name: "friends", [
-                .attributes(["name"])
-            ])
-        ])
+    func testExample7() {
+        let query = GQLQuery(operationName: "HeroNameAndFriends") {
+            GQLNode("hero") {
+                "name"
+                GQLNode("friends") {
+                    "name"
+                }
+            }
+        }
         
-        let compare = #"query HeroNameAndFriends { hero { name friends { name } } }"#
-        XCTAssertEqual(GraphQLQuery(query: node, operationName: "HeroNameAndFriends").query, compare)
+        XCTAssertEqual(query.gqlQueryString, #"query HeroNameAndFriends { hero { friends { name } name } }"#)
+        XCTAssertEqual(query.gqlQueryWithFragments, #"query HeroNameAndFriends { hero { friends { name } name } }"#)
     }
     
     // https://graphql.org/learn/queries/#variables
-    func testVariables1() throws {
-        let str: String? = nil
-        let arg = GraphQLVariable.init(name: "episode", value: str)
+    func testExample8() throws {
+        enum Episode: String, GQLVariable, Codable {
+            case jedi = "JEDI"
+        }
         
-        let node = GraphQLNode.node(name: "hero", arguments: ["episode": arg], [
-            .attributes(["name"]),
-            .node(name: "friends", [
-                .attributes(["name"])
-            ])
-        ])
+        let query = GQLQuery(operationName: "HeroNameAndFriends") {
+            GQLNode("hero") {
+                "name"
+                GQLNode("friends") {
+                    "name"
+                }
+            }
+            .withVariable(named: "episode", variableName: "episode")
+        }
+        .withVariable(named: "episode", value: Episode.jedi as Episode?)
         
-        let query = GraphQLQuery(query: node, variables: [arg], operationName: "HeroNameAndFriends")
-        let compare = #"query HeroNameAndFriends($episode: String) { hero(episode: $episode) { name friends { name } } }"#
+        XCTAssertEqual(query.gqlQueryString, #"query HeroNameAndFriends($episode: Episode) { hero(episode: $episode) { friends { name } name } }"#)
+        XCTAssertEqual(query.gqlQueryWithFragments, #"query HeroNameAndFriends($episode: Episode) { hero(episode: $episode) { friends { name } name } }"#)
         
         struct Decode: Decodable {
             let query: String
             let variables: Variables
             
             struct Variables: Decodable {
-                let episode: String?
+                let episode: Episode
             }
         }
-        
         let encoded = try JSONEncoder().encode(query)
         let decoded = try JSONDecoder().decode(Decode.self, from: encoded)
-        XCTAssertEqual(decoded.query, compare)
-        XCTAssertNil(decoded.variables.episode)
+        XCTAssertEqual(decoded.variables.episode.rawValue, "JEDI")
     }
     
     // https://graphql.org/learn/queries/#default-variables
-    func testVariable2() throws {
-        let arg = GraphQLVariable(name: "episode", value: "JEDI")
-        
-        let node = GraphQLNode.node(name: "hero", arguments: ["episode": arg], [
-            .attributes(["name"]),
-            .node(name: "friends", [
-                .attributes(["name"])
-            ])
-        ])
-        
-        let query = GraphQLQuery(query: node, variables: [arg], operationName: "HeroNameAndFriends")
-        let compare = #"query HeroNameAndFriends($episode: String!) { hero(episode: $episode) { name friends { name } } }"#
-        
-        struct Decode: Decodable {
-            let query: String
-            let variables: Variables?
-            
-            struct Variables: Decodable {
-                let episode: String
-            }
+    func testExample9() {
+        // this example doesnt make sense, you would just provide a default value with the optional
+        enum Episode: String, GQLVariable, Codable {
+            case jedi = "JEDI"
         }
         
-        let encoded = try JSONEncoder().encode(query)
-        let decoded = try JSONDecoder().decode(Decode.self, from: encoded)
-        XCTAssertEqual(decoded.query, compare)
-        XCTAssertEqual(decoded.variables?.episode, "JEDI")
+        let optional: Episode? = nil
+        
+        let _ = GQLQuery(operationName: "HeroNameAndFriends") {
+            GQLNode("hero") {
+                "name"
+            }
+        }
+        .withVariable(named: "episode", value: optional ?? .jedi)
     }
     
     // https://graphql.org/learn/queries/#directives
-    func testDirectives() throws {
-        let arg1 = GraphQLVariable(name: "episode", value: "JEDI")
-        let arg2 = GraphQLVariable(name: "withFriends", value: false)
+    func testExample10() throws {
+        enum Episode: String, GQLVariable, Decodable {
+            case jedi = "JEDI"
+        }
         
-        let node = GraphQLNode.node(name: "hero", arguments: ["episode": arg1], [
-            .attributes(["name"]),
-            .node(name: "friends", directive: .include(if: arg2), [
-                .attributes(["name"])
-            ])
-        ])
+        let query = GQLQuery(operationName: "HeroNameAndFriends") {
+            GQLNode("hero") {
+                "name"
+                GQLNode("friends") {
+                    "name"
+                }
+                .withDirective(IncludeDirective(if: "withFriends"))
+            }
+            .withVariable(named: "episode", variableName: "episode")
+        }
+        .withVariable(named: "episode", value: Episode.jedi as Episode?)
+        .withVariable(named: "withFriends", value: false as Bool?)
         
-        let query = GraphQLQuery(query: node, variables: [arg1, arg2], operationName: "HeroNameAndFriends")
-        let compare = #"query HeroNameAndFriends($episode: String!, $withFriends: Boolean!) { hero(episode: $episode) { name friends @include(if: $withFriends) { name } } }"#
+        XCTAssertEqual(query.gqlQueryString, #"query HeroNameAndFriends($episode: Episode, $withFriends: Boolean) { hero(episode: $episode) { friends @include(if: $withFriends) { name } name } }"#)
+        XCTAssertEqual(query.gqlQueryWithFragments, #"query HeroNameAndFriends($episode: Episode, $withFriends: Boolean) { hero(episode: $episode) { friends @include(if: $withFriends) { name } name } }"#)
         
         struct Decode: Decodable {
             let query: String
             let variables: Variables
             
             struct Variables: Decodable {
-                let episode: String
+                let episode: Episode
                 let withFriends: Bool
             }
         }
-        
         let encoded = try JSONEncoder().encode(query)
         let decoded = try JSONDecoder().decode(Decode.self, from: encoded)
-        XCTAssertEqual(decoded.query, compare)
-        XCTAssertEqual(decoded.variables.episode, "JEDI")
+        XCTAssertEqual(decoded.variables.episode.rawValue, "JEDI")
         XCTAssertEqual(decoded.variables.withFriends, false)
     }
     
     // https://graphql.org/learn/queries/#mutations
-    func testMutation() throws {
-        struct ReviewInput: GraphQLVariableRepresentable, Decodable {
-            static let variableType: String = "ReviewInput"
+    func testExample11() throws {
+        struct ReviewInput: GQLVariable, Decodable {
+            let stars: Int
+            let commentary: String
             
-            let stars = 5
-            let commentary = "This is a great movie!"
+            static var stub: Self { .init(stars: 5, commentary: "This is a great movie!") }
         }
         
-        let episode = GraphQLVariable(name: "ep", value: "JEDI")
-        let review = GraphQLVariable(name: "review", value: ReviewInput())
+        enum Episode: String, GQLVariable, Decodable {
+            case jedi = "JEDI"
+        }
         
-        let node = GraphQLNode.node(name: "createReview", arguments: ["episode": episode, "review": review], [
-            .attributes(["stars","commentary"])
-        ])
+        let mutation = GQLMutation(operationName: "CreateReviewForEpisode") {
+            GQLNode("createReview") {
+                "stars"
+                "commentary"
+            }
+            .withVariable(named: "episode", variableName: "ep")
+            .withVariable(named: "review", variableName: "review")
+        }
+        .withVariable(named: "ep", value: Episode.jedi)
+        .withVariable(named: "review", value: ReviewInput.stub)
         
-        let query = GraphQLQuery(mutation: node, variables: [episode, review], operationName: "CreateReviewForEpisode")
-        let compare = #"mutation CreateReviewForEpisode($ep: String!, $review: ReviewInput!) { createReview(episode: $ep, review: $review) { commentary stars } }"#
+        XCTAssertEqual(mutation.gqlQueryString, #"mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) { createReview(episode: $ep, review: $review) { commentary stars } }"#)
+        XCTAssertEqual(mutation.gqlQueryWithFragments, #"mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) { createReview(episode: $ep, review: $review) { commentary stars } }"#)
         
         struct Decode: Decodable {
             let query: String
             let variables: Variables
             
             struct Variables: Decodable {
-                let ep: String
+                let ep: Episode
                 let review: ReviewInput
             }
         }
-        
-        let encoded = try JSONEncoder().encode(query)
+        let encoded = try JSONEncoder().encode(mutation)
         let decoded = try JSONDecoder().decode(Decode.self, from: encoded)
-        XCTAssertEqual(decoded.query, compare)
-        XCTAssertEqual(decoded.variables.ep, "JEDI")
+        XCTAssertEqual(decoded.variables.ep.rawValue, "JEDI")
         XCTAssertEqual(decoded.variables.review.stars, 5)
         XCTAssertEqual(decoded.variables.review.commentary, "This is a great movie!")
-    }
-    
-    // https://graphql.org/learn/queries/#inline-fragments
-    func _testInlineFragments() {
-    
     }
 }
