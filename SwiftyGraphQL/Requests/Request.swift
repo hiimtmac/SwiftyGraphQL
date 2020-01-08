@@ -8,14 +8,14 @@
 
 import Foundation
 
-public struct GraphQLRequest<T: Decodable> {
-    public let query: GraphQLQuery
+public struct GraphQLRequest<T: GQLOperation, U: Decodable> {
+    public let query: T
     public var headers: HTTPHeaders
     public var encoder: JSONEncoder?
     public var encodePlugins: [(inout URLRequest) -> Void]
     public var decoder: JSONDecoder?
     
-    public init(query: GraphQLQuery,
+    public init(query: T,
                 headers: HTTPHeaders = .init(),
                 encoder: JSONEncoder? = nil,
                 encodePlugins: [(inout URLRequest) -> Void] = [],
@@ -53,8 +53,8 @@ extension GraphQLRequest {
         return request
     }
     
-    public func decode(data: Data) throws -> GraphQLResponse<T> {
+    public func decode(data: Data) throws -> GraphQLResponse<U> {
         let decoder = self.decoder ?? SwiftyGraphQL.shared.responseDecoder
-        return try decoder.graphQLDecode(GraphQLResponse<T>.self, from: data)
+        return try decoder.graphQLDecode(GraphQLResponse<U>.self, from: data)
     }
 }

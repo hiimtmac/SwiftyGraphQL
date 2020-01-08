@@ -12,24 +12,25 @@ import XCTest
 class FragmentTests: XCTestCase {
 
     func testWithDefaultValues() {
-        let fragment = Frag2.self.fragmentStatement
-        XCTAssertEqual(fragment, "fragment frag2 on Frag2 { address birthday }")
+        XCTAssertEqual(Frag2.self.fragmentString, "fragment frag2 on Frag2 { address birthday }")
     }
     
     func testWithoutDefaultValues() {
-        struct Test: GraphQLFragment {
+        struct Test: GQLFragmentable {
             let yes: String
             let no: String
             
-            static var fragmentContent: GraphQLRepresentable {
-                return GraphQLNode.attributes(["no", "yes"])
+            static var gqlContent: GraphQL {
+                GQLAttributes {
+                    "no"
+                    "yes"
+                }
             }
             
-            static var entityName: String { return "CoolFragment" }
+            static var fragmentType: String { return "CoolFragment" }
             static var fragmentName: String { return "myNeatFragment" }
         }
         
-        let fragment = Test.self.fragmentStatement
-        XCTAssertEqual(fragment, "fragment myNeatFragment on CoolFragment { no yes }")
+        XCTAssertEqual(Test.self.fragmentString, "fragment myNeatFragment on CoolFragment { no yes }")
     }
 }
