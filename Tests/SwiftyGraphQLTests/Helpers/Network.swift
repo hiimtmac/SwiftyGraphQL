@@ -7,9 +7,6 @@
 //
 
 import Foundation
-#if canImport(FoundationNetworking)
-import FoundationNetworking
-#endif
 import SwiftyGraphQL
 
 enum MockError: String, Error, Equatable {

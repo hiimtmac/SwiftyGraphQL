@@ -7,11 +7,9 @@
 //
 
 import Foundation
-#if canImport(FoundationNetworking)
-import FoundationNetworking
-#endif
 import XCTest
 
+#if canImport(ObjectiveC)
 class MockURLProtocol: URLProtocol {
     static var requestHandler: ((URLRequest) throws -> (HTTPURLResponse, Data))?
     
@@ -43,3 +41,4 @@ class MockURLProtocol: URLProtocol {
         //
     }
 }
+#endif

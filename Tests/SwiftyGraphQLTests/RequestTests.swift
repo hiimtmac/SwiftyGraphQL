@@ -6,13 +6,10 @@
 //  Copyright © 2019 hiimtmac. All rights reserved.
 //
 
-import Foundation
-#if canImport(FoundationNetworking)
-import FoundationNetworking
-#endif
 import XCTest
 @testable import SwiftyGraphQL
 
+#if canImport(ObjectiveC)
 class RequestTests: XCTestCase {
     
     var network: MockNetwork!
@@ -244,3 +241,4 @@ class RequestTests: XCTestCase {
         ("testRequestPlugins", testRequestPlugins)
     ]
 }
+#endif
