@@ -17,7 +17,7 @@ public struct GraphQLBuilder {
 
 @_functionBuilder
 public struct CodingKeyBuilder {
-    public static func buildBlock<T: GQLCodedKey>(_ children: T...) -> GraphQL where T.RawValue == String {
+    public static func buildBlock<T: RawRepresentable>(_ children: T...) -> GraphQL where T.RawValue == String {
         return children
             .map { $0.rawValue }
     }

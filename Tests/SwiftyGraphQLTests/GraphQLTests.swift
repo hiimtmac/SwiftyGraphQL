@@ -388,4 +388,19 @@ class GraphQLTests: XCTestCase {
         query MyCoolQuery($cool: Boolean!, $review: String, $type1: T1!, $type2: T2!) { realFirst: first(t1: $type1) { ...myfragment hello hithere p1 p2 inner(age: 666, fraction: 2.59, name: "taylor", rev: $review) { cool @skip(if: $cool) p1 p2 supernested(t2: $type2) { ...myfragment } } there } } fragment myfragment on MyFragment { hithere p1 p2 }
         """)
     }
+    
+    static var allTests = [
+        ("testExample1", testExample1),
+        ("testExampl21", testExample2),
+        ("testExampl31", testExample3),
+        ("testExampl41", testExample4),
+        ("testExampl51", testExample5),
+        ("testExampl61", testExample6),
+        ("testExampl71", testExample7),
+        ("testExampl81", testExample8),
+        ("testExampl91", testExample9),
+        ("testExample10", testExample10),
+        ("testExample11", testExample11),
+        ("testAdvancedExample", testAdvancedExample)
+    ]
 }
