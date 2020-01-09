@@ -9,6 +9,31 @@ This small library helps to make typesafe(er) graphql queries & mutations
 
 - Swift 5.1+
 
+## Installation
+
+### [Swift Package Manager](https://github.com/apple/swift-package-manager)
+
+Create a `Package.swift` file.
+
+```swift
+import PackageDescription
+
+let package = Package(
+  name: "TestProject",
+  dependencies: [
+    .package(url: "https://github.com/hiimtmac/SwiftyGraphQL.git", from: "1.0.0")
+  ]
+)
+```
+
+### Cocoapods
+
+```ruby
+target 'MyApp' do
+  pod 'SwiftyGraphQL', '~> 1.0'
+end
+```
+
 ## Usage
 
 General usage looks as such
