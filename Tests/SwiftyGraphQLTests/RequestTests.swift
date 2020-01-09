@@ -229,4 +229,14 @@ class RequestTests: XCTestCase {
         XCTAssertEqual(two.timeoutInterval, 50)
         XCTAssertEqual(two.httpMethod, "PUT")
     }
+    
+    static var allTests = [
+        ("testRequestCreation", testRequestCreation),
+        ("testRequestHeaders", testRequestHeaders),
+        ("testRequestDefaultDecoder", testRequestDefaultDecoder),
+        ("testRequestCustomDecoder", testRequestCustomDecoder),
+        ("testRequestGraphQLError", testRequestGraphQLError),
+        ("testCombineHeaders", testCombineHeaders),
+        ("testRequestPlugins", testRequestPlugins)
+    ]
 }

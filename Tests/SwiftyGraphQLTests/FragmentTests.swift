@@ -33,4 +33,9 @@ class FragmentTests: XCTestCase {
         
         XCTAssertEqual(Test.self.fragmentString, "fragment myNeatFragment on CoolFragment { no yes }")
     }
+    
+    static var allTests = [
+        ("testWithDefaultValues", testWithDefaultValues),
+        ("testWithoutDefaultValues", testWithoutDefaultValues)
+    ]
 }

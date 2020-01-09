@@ -73,4 +73,12 @@ class QueryTests: XCTestCase {
         }
         XCTAssertEqual(query.gqlQueryWithFragments, #"query { one two { ...frag2 maybe no } } fragment frag2 on Frag2 { address birthday }"#)
     }
+    
+    static var allTests = [
+        ("testWithoutFragment", testWithoutFragment),
+        ("testWithFragment", testWithFragment),
+        ("testAdvanced", testAdvanced),
+        ("testWithArray", testWithArray),
+        ("testWithArrayWithEmptyNode", testWithArrayWithEmptyNode)
+    ]
 }

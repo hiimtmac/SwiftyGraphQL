@@ -184,4 +184,16 @@ class GraphQLDecodeTests: XCTestCase {
             XCTAssertEqual(decodeError?.localizedDescription, "Multiple unrecoverable GraphQL© queries/mutations")
         }
     }
+    
+    static var allTests = [
+        ("testNoErrors", testNoErrors),
+        ("testSucceedsWithErrors", testSucceedsWithErrors),
+        ("testFails", testFails),
+        ("testDecodesNormally", testDecodesNormally),
+        ("testDecodesGraphQLDecodeableNormal", testDecodesGraphQLDecodeableNormal),
+        ("testDecodesGraphQLDecodeableGraphable", testDecodesGraphQLDecodeableGraphable),
+        ("testDecodeFailsNormal", testDecodeFailsNormal),
+        ("testDecodeFailsGraphQLDecodeable", testDecodeFailsGraphQLDecodeable),
+        ("testDecodeFailsGraphQLDecodeableMultiple", testDecodeFailsGraphQLDecodeableMultiple)
+    ]
 }

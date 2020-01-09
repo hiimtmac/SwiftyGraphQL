@@ -48,4 +48,9 @@ class VariableTests: XCTestCase {
         XCTAssertEqual(type(of: CustomGenericClass<String>()).gqlVariableType, "CustomStringClass!")
         XCTAssertEqual(type(of: CustomGenericClass<String>() as CustomGenericClass<String>?).gqlVariableType, "CustomStringClass")
     }
+    
+    static var allTests = [
+        ("testStandard", testStandard),
+        ("testCustom", testCustom)
+    ]
 }

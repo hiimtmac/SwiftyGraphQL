@@ -47,4 +47,10 @@ class AttributeTests: XCTestCase {
         
         XCTAssertEqual(attributes.gqlQueryString, "hello there")
     }
+    
+    static var allTests = [
+        ("testStrings", testStrings),
+        ("testCodedKey", testCodedKey),
+        ("testFullFrgment", testFullFrgment)
+    ]
 }

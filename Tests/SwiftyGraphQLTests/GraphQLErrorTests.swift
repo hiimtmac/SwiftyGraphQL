@@ -25,4 +25,10 @@ class GraphQLErrorTests: XCTestCase {
         let error = GraphQLError(message: "hello there", locations: [GraphQLError.Location(line: 19, column: 2)], fields: ["mutation", "onboard"], errorType: nil, validationErrorType: nil)
         XCTAssertEqual(error.recoverySuggestion, "Locations: Ln: 19 / Col: 2 | Fields: mutation, onboard")
     }
+    
+    static var allTests = [
+        ("testLocalized", testLocalized),
+        ("testFailureReason", testFailureReason),
+        ("testRecoverySuggestion", testRecoverySuggestion)
+    ]
 }

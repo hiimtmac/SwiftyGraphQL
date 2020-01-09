@@ -64,7 +64,12 @@ class ParameterTests: XCTestCase {
         XCTAssertEqual(node.gqlQueryString, #"test(normal: "also", ok: "thing\\thing", since: "thing\"thing", sure: 4, yes: "thing\\\"thing")"#)
     }
 
-    func testObjectEncoded() {
-        
-    }
+    static var allTests = [
+        ("testParameters", testParameters),
+        ("testParameterOverride", testParameterOverride),
+        ("testQuoteEscaped", testQuoteEscaped),
+        ("testSlashEscaped", testSlashEscaped),
+        ("testSlashQuoteEscaped", testSlashQuoteEscaped),
+        ("testParametersEncoded", testParametersEncoded)
+    ]
 }
