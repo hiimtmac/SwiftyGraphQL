@@ -3,7 +3,7 @@
 [![Platform](https://img.shields.io/badge/platform-iOS-blue.svg?style=flat)](https://developer.apple.com/swift)
 [![Swift Version](https://img.shields.io/badge/swift4-compatible-4BC51D.svg?style=flat)](https://developer.apple.com/swift)
 
-This small library helps to make typesafe(er) graphql queries & mutations
+This library helps to make typesafe(er) graphql queries & mutations, for those who are scared of a library that does codegen
 
 ## Requirements
 
