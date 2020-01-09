@@ -101,7 +101,7 @@ Add arguments to a node using ` func withArgument(named: String, value: GQLArgum
 
 #### Variables
 
-Add variables to an argument using `func withVariable(named: String, variableName: String) -> Self`. Right now this just takes a string variable.
+Add variables to an argument using `func withVariable(named: String, variableName: String) -> Self`. Right now this just takes a string variable name.
 
 #### Directives
 
@@ -424,7 +424,7 @@ let query = GQLQuery {
     .withArgument(named: "episode", value: "JEDI")
 }
 /*
-{
+query {
   empireHero: hero(episode: "EMPIRE") {
     name
   }
@@ -460,7 +460,7 @@ let query = GQLQuery {
     .withArgument(named: "episode", value: "JEDI")
 }
 /*
-{
+query {
   leftComparison: hero(episode: "EMPIRE") {
     ...comparisonFields
   }
