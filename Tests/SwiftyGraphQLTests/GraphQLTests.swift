@@ -129,7 +129,7 @@ class GraphQLTests: XCTestCase {
             }
         }
         
-        let query = GQLQuery(operationName: "HeroComparison") {
+        let query = GQLQuery("HeroComparison") {
             GQLNode("hero", alias: "leftComparison") {
                 GQLFragment(Character.self)
             }
@@ -160,7 +160,7 @@ class GraphQLTests: XCTestCase {
 
     // https://graphql.org/learn/queries/#operation-name
     func testExample7() {
-        let query = GQLQuery(operationName: "HeroNameAndFriends") {
+        let query = GQLQuery("HeroNameAndFriends") {
             GQLNode("hero") {
                 "name"
                 GQLNode("friends") {
@@ -179,7 +179,7 @@ class GraphQLTests: XCTestCase {
             case jedi = "JEDI"
         }
         
-        let query = GQLQuery(operationName: "HeroNameAndFriends") {
+        let query = GQLQuery("HeroNameAndFriends") {
             GQLNode("hero") {
                 "name"
                 GQLNode("friends") {
@@ -215,7 +215,7 @@ class GraphQLTests: XCTestCase {
         
         let optional: Episode? = nil
         
-        let _ = GQLQuery(operationName: "HeroNameAndFriends") {
+        let _ = GQLQuery("HeroNameAndFriends") {
             GQLNode("hero") {
                 "name"
             }
@@ -229,7 +229,7 @@ class GraphQLTests: XCTestCase {
             case jedi = "JEDI"
         }
         
-        let query = GQLQuery(operationName: "HeroNameAndFriends") {
+        let query = GQLQuery("HeroNameAndFriends") {
             GQLNode("hero") {
                 "name"
                 GQLNode("friends") {
@@ -273,7 +273,7 @@ class GraphQLTests: XCTestCase {
             case jedi = "JEDI"
         }
         
-        let mutation = GQLMutation(operationName: "CreateReviewForEpisode") {
+        let mutation = GQLMutation("CreateReviewForEpisode") {
             GQLNode("createReview") {
                 "stars"
                 "commentary"
@@ -301,5 +301,91 @@ class GraphQLTests: XCTestCase {
         XCTAssertEqual(decoded.variables.ep.rawValue, "JEDI")
         XCTAssertEqual(decoded.variables.review.stars, 5)
         XCTAssertEqual(decoded.variables.review.commentary, "This is a great movie!")
+    }
+    
+    func testAdvancedExample() throws {
+        struct T1: GQLVariable, Decodable, Equatable {
+            let float: Float
+            let int: Int
+            let string: String
+        }
+        
+        struct T2: GQLVariable, Decodable, Equatable {
+            let nested: NestedT2
+            let temperature: Double
+            let weather: String?
+            
+            struct NestedT2: Codable, Equatable {
+                let name: String
+                let active: Bool
+            }
+        }
+        
+        struct MyFragment: GQLFragmentable, GQLAttributable {
+            enum CodingKeys: String, CodingKey, CaseIterable {
+                case p1
+                case p2
+                case p3 = "hithere"
+            }
+            
+            static var gqlContent: GraphQL {
+                GQLAttributes(Self.self)
+            }
+        }
+        
+        let t1 = T1(float: 1.5, int: 1, string: "cool name")
+        let t2 = T2(nested: .init(name: "taylor", active: true), temperature: 2.5, weather: "pretty great")
+        let rev: String? = "this is great"
+        
+        let query = GQLQuery("MyCoolQuery") {
+            GQLNode("first", alias: "realFirst") {
+                "hello"
+                "there"
+                GQLAttributes(MyFragment.self)
+                GQLFragment(MyFragment.self)
+                GQLNode("inner") {
+                    GQLAttributes(MyFragment.self) { t in
+                        t.p1
+                        t.p2
+                    }
+                    GQLNode("cool")
+                        .withDirective(SkipDirective(if: "cool"))
+                    GQLNode("supernested") {
+                        GQLFragment(MyFragment.self)
+                    }
+                    .withVariable(named: "t2", variableName: "type2")
+                }
+                .withArgument(named: "name", value: "taylor")
+                .withArgument(named: "age", value: 666)
+                .withArgument(named: "fraction", value: 2.59)
+                .withVariable(named: "rev", variableName: "review")
+            }
+            .withVariable(named: "t1", variableName: "type1")
+        }
+        .withVariable(named: "type1", value: t1)
+        .withVariable(named: "type2", value: t2)
+        .withVariable(named: "review", value: rev)
+        .withVariable(named: "cool", value: true)
+        
+        struct Decode: Decodable {
+            let query: String
+            let variables: Variables
+            
+            struct Variables: Decodable {
+                let type1: T1
+                let review: String
+                let type2: T2
+                let cool: Bool
+            }
+        }
+        
+        let encoded = try JSONEncoder().encode(query)
+        let decoded = try JSONDecoder().decode(Decode.self, from: encoded)
+        XCTAssertEqual(decoded.variables.type1, t1)
+        XCTAssertEqual(decoded.variables.type2, t2)
+        XCTAssertEqual(decoded.variables.review, rev)
+        XCTAssertEqual(decoded.query, """
+        query MyCoolQuery($cool: Boolean!, $review: String, $type1: T1!, $type2: T2!) { realFirst: first(t1: $type1) { ...myfragment hello hithere p1 p2 inner(age: 666, fraction: 2.59, name: "taylor", rev: $review) { cool @skip(if: $cool) p1 p2 supernested(t2: $type2) { ...myfragment } } there } } fragment myfragment on MyFragment { hithere p1 p2 }
+        """)
     }
 }

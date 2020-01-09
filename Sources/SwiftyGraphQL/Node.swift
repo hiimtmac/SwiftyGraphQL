@@ -15,7 +15,15 @@ public struct GQLNode: GraphQL {
     let directive: GQLDirective?
     let content: GraphQL
 
-    public init(_ name: String, alias: String? = nil, @GraphQLBuilder builder: () -> GraphQL) {
+    public init(_ name: String, @GraphQLBuilder builder: () -> GraphQL) {
+        self.name = name
+        self.alias = nil
+        self.arguments = [:]
+        self.directive = nil
+        self.content = builder()
+    }
+    
+    public init(_ name: String, alias: String, @GraphQLBuilder builder: () -> GraphQL) {
         self.name = name
         self.alias = alias
         self.arguments = [:]

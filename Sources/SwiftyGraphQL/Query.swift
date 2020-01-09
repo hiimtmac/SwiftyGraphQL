@@ -14,7 +14,13 @@ public struct GQLQuery: GQLOperation {
     public let variables: [String: GQLVariable]
     public let content: GraphQL
     
-    public init(operationName: String? = nil, @GraphQLBuilder builder: () -> GraphQL) {
+    public init(@GraphQLBuilder builder: () -> GraphQL) {
+        self.operationName = nil
+        self.variables = [:]
+        self.content = builder()
+    }
+    
+    public init(_ operationName: String, @GraphQLBuilder builder: () -> GraphQL) {
         self.operationName = operationName
         self.variables = [:]
         self.content = builder()
