@@ -17,9 +17,16 @@ public protocol GQLOperation: GraphQL, Encodable {
 }
 
 extension GQLOperation {
-    public func withVariable<T: GQLVariable>(named: String, value: T) -> Self {
+    public func withVariable(named: String, value: GQLVariable) -> Self {
         var varCopy = variables
         varCopy[named] = value
+        
+        return copy(withVariables: varCopy)
+    }
+    
+    public func withVariables(_ variables: [String: GQLVariable]) -> Self {
+        var varCopy = self.variables
+        variables.forEach { varCopy[$0.key] = $0.value }
         
         return copy(withVariables: varCopy)
     }
