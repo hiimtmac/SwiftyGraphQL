@@ -823,6 +823,9 @@ fragment myfragment on MyFragment { hithere p1 p2 }
 */
 
 /*
-{"query":"query MyCoolQuery($cool: Boolean!, $review: String, $type1: T1!, $type2: T2!) { realFirst: first(t1: $type1) { ...myfragment hello hithere p1 p2 inner(age: 666, fraction: 2.59, name: \"taylor\", rev: $review) { cool @skip(if: $cool) p1 p2 supernested(t2: $type2) { ...myfragment } } there } } fragment myfragment on MyFragment { hithere p1 p2 }","variables":{"type2":{"nested":{"name":"taylor","active":true},"temperature":2.5,"weather":"pretty great"},"type1":{"float":1.5,"int":1,"string":"cool name"},"review":"this is great","cool":true}}
+{
+    "query":"query MyCoolQuery($cool: Boolean!, $review: String, $type1: T1!, $type2: T2!) { realFirst: first(t1: $type1) { ...myfragment hello hithere p1 p2 inner(age: 666, fraction: 2.59, name: \"taylor\", rev: $review) { cool @skip(if: $cool) p1 p2 supernested(t2: $type2) { ...myfragment } } there } } fragment myfragment on MyFragment { hithere p1 p2 }",
+    "variables":{"type2":{"nested":{"name":"taylor","active":true},"temperature":2.5,"weather":"pretty great"},"type1":{"float":1.5,"int":1,"string":"cool name"},"review":"this is great","cool":true}
+}
 */
 ```
