@@ -7,6 +7,9 @@
 //
 
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 public struct GraphQLRequest<T: GQLOperation, U: Decodable> {
     public let query: T

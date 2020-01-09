@@ -6,6 +6,10 @@
 //  Copyright © 2019 hiimtmac. All rights reserved.
 //
 
+import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 import XCTest
 @testable import SwiftyGraphQL
 
