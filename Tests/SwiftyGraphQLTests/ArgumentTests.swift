@@ -9,7 +9,7 @@
 import XCTest
 @testable import SwiftyGraphQL
 
-class ParameterTests: XCTestCase {
+class ArgumentTests: XCTestCase {
     
     func testParameters() {
         let node = GQLNode("test")
@@ -63,6 +63,19 @@ class ParameterTests: XCTestCase {
 
         XCTAssertEqual(node.gqlQueryString, #"test(normal: "also", ok: "thing\\thing", since: "thing\"thing", sure: 4, yes: "thing\\\"thing")"#)
     }
+    
+    func testParametersDict() {
+        let val1 = #"thing"thing"#
+        let val2 = #"thing\thing"#
+        let val3 = #"thing\"thing"#
+        
+        let node = GQLNode("test")
+            .withArgument(named: "since", value: val1)
+            .withArguments(["ok": val2, "yes": val3, "sure": 4])
+            .withArgument(named: "normal", value: "also")
+
+        XCTAssertEqual(node.gqlQueryString, #"test(normal: "also", ok: "thing\\thing", since: "thing\"thing", sure: 4, yes: "thing\\\"thing")"#)
+    }
 
     static var allTests = [
         ("testParameters", testParameters),
@@ -70,6 +83,7 @@ class ParameterTests: XCTestCase {
         ("testQuoteEscaped", testQuoteEscaped),
         ("testSlashEscaped", testSlashEscaped),
         ("testSlashQuoteEscaped", testSlashQuoteEscaped),
-        ("testParametersEncoded", testParametersEncoded)
+        ("testParametersEncoded", testParametersEncoded),
+        ("testParametersDict", testParametersDict)
     ]
 }

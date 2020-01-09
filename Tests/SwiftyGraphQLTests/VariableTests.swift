@@ -49,8 +49,56 @@ class VariableTests: XCTestCase {
         XCTAssertEqual(type(of: CustomGenericClass<String>() as CustomGenericClass<String>?).gqlVariableType, "CustomStringClass")
     }
     
+    func testNodeVariables() {
+        let node = GQLNode("test")
+            .withVariable(named: "since", variableName: "since")
+            .withVariable(named: "ok", variableName: "ok")
+            .withVariable(named: "yes", variableName: "yes")
+            .withVariable(named: "sure", variableName: "sure")
+            .withVariable(named: "normal", variableName: "normal")
+
+        XCTAssertEqual(node.gqlQueryString, #"test(normal: $normal, ok: $ok, since: $since, sure: $sure, yes: $yes)"#)
+    }
+    
+    func testQueryVariables() {
+        let query = GQLQuery {
+            "hi"
+        }
+        .withVariable(named: "since", value: "since")
+        .withVariable(named: "ok", value: 4)
+        .withVariable(named: "yes", value: 5.5)
+        .withVariable(named: "sure", value: true)
+        .withVariable(named: "normal", value: "normal")
+        
+        XCTAssertEqual(query.gqlQueryString, #"query($normal: String!, $ok: Int!, $since: String!, $sure: Boolean!, $yes: Float!) { hi }"#)
+    }
+    
+    func testNodeVariableDict() {
+        let node = GQLNode("test")
+            .withVariable(named: "since", variableName: "since")
+            .withVariables(["ok":"ok", "yes":"yes", "sure":"sure"])
+            .withVariable(named: "normal", variableName: "normal")
+
+        XCTAssertEqual(node.gqlQueryString, #"test(normal: $normal, ok: $ok, since: $since, sure: $sure, yes: $yes)"#)
+    }
+    
+    func testQueryVariableDict() {
+        let query = GQLQuery {
+            "hi"
+        }
+        .withVariable(named: "since", value: "since")
+        .withVariables(["ok":4, "yes":5.5, "sure":true])
+        .withVariable(named: "normal", value: "normal")
+
+        XCTAssertEqual(query.gqlQueryString, #"query($normal: String!, $ok: Int!, $since: String!, $sure: Boolean!, $yes: Float!) { hi }"#)
+    }
+    
     static var allTests = [
         ("testStandard", testStandard),
-        ("testCustom", testCustom)
+        ("testCustom", testCustom),
+        ("testNodeVariables", testNodeVariables),
+        ("testQueryVariables", testQueryVariables),
+        ("testNodeVariableDict", testNodeVariableDict),
+        ("testQueryVariableDict", testQueryVariableDict)
     ]
 }

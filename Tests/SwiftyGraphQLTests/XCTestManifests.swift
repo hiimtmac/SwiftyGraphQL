@@ -9,7 +9,7 @@ public func allTests() -> [XCTestCaseEntry] {
         testCase(GraphQLErrorTests.allTests),
         testCase(GraphQLTests.allTests),
         testCase(MutationTests.allTests),
-        testCase(ParameterTests.allTests),
+        testCase(ArgumentTests.allTests),
         testCase(QueryTests.allTests),
         testCase(VariableTests.allTests)
     ]

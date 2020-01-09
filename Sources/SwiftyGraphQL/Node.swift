@@ -89,22 +89,36 @@ extension GQLNode {
         return .init(name, alias: alias, arguments: copyArgs, directive: directive, content: content)
     }
     
-    public func withVariable(named: String, variableName: String) -> Self {
-        struct Arg: GQLArgument {
-            var gqlArgumentValue: String
-            
-            init(name: String) {
-                gqlArgumentValue = "$\(name)"
-            }
-        }
+    public func withArguments(_ arguments: [String: GQLArgument]) -> Self {
+        var copyArgs = self.arguments
+        arguments.forEach { copyArgs[$0.key] = $0.value }
         
-        var copyArgs = arguments
+        return .init(name, alias: alias, arguments: copyArgs, directive: directive, content: content)
+    }
+    
+    public func withVariable(named: String, variableName: String) -> Self {
+        var copyArgs = self.arguments
         copyArgs[named] = Arg(name: variableName)
+        
+        return .init(name, alias: alias, arguments: copyArgs, directive: directive, content: content)
+    }
+    
+    public func withVariables(_ variables: [String: String]) -> Self {
+        var copyArgs = self.arguments
+        variables.forEach { copyArgs[$0.key] = Arg(name: $0.value) }
         
         return .init(name, alias: alias, arguments: copyArgs, directive: directive, content: content)
     }
     
     public func withDirective(_ directive: GQLDirective) -> Self {
         return .init(name, alias: alias, arguments: arguments, directive: directive, content: content)
+    }
+    
+    private struct Arg: GQLArgument {
+        var gqlArgumentValue: String
+        
+        init(name: String) {
+            gqlArgumentValue = "$\(name)"
+        }
     }
 }
