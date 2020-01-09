@@ -8,10 +8,8 @@
 
 import Foundation
 
-public typealias GQLCodedKey = RawRepresentable & CodingKey
-
 public protocol GQLAttributable {
-    associatedtype CodingKeys: GQLCodedKey
+    associatedtype CodingKeys: RawRepresentable
 }
 
 public struct GQLAttributes: GraphQL {
