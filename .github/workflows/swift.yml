@@ -1,0 +1,18 @@
+name: test
+on:
+- pull_request
+jobs:
+  macos:
+    name: test-macos
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v1
+    - run: swift test --parallel --enable-code-coverage
+  linux:
+    name: test-linux
+    container: 
+      image: swift:latest
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - run: swift test --enable-test-discovery --sanitize=thread --enable-code-coverage --parallel
