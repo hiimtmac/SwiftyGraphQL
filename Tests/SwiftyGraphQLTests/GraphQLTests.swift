@@ -71,7 +71,7 @@ class GraphQLTests: XCTestCase {
     
     // https://graphql.org/learn/queries/#fragments
     func testExample5() {
-        struct Character: GQLFragmentable, GQLAttributable {
+        struct Character: GQLFragmentable {
             static let fragmentName = "comparisonFields"
             
             enum CodingKeys: String, CodingKey, CaseIterable {

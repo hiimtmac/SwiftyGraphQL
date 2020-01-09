@@ -31,7 +31,7 @@ struct Frag2: GQLFragmentable, Codable, Equatable {
     let birthday: Date
     let address: String?
     
-    enum CodingKeys: String, GQLCodedKey, CaseIterable {
+    enum CodingKeys: String, CodingKey, CaseIterable {
         case birthday
         case address
     }
