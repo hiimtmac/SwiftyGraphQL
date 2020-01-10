@@ -15,10 +15,16 @@ public protocol GQLFragmentable {
 }
 
 extension GQLFragmentable {
-    static var fragmentType: String { "\(Self.self)" }
-    static var fragmentName: String { fragmentType.lowercased() }
+    public static var fragmentType: String { "\(Self.self)" }
+    public static var fragmentName: String { fragmentType.lowercased() }
     static var fragmentString: String {
         return "fragment \(fragmentName) on \(fragmentType) { \(gqlContent.gqlQueryString) }"
+    }
+}
+
+extension GQLFragmentable where Self: GQLAttributable, CodingKeys: CaseIterable, CodingKeys.RawValue == String {
+    public static var gqlContent: GraphQL {
+        GQLAttributes(Self.self)
     }
 }
 

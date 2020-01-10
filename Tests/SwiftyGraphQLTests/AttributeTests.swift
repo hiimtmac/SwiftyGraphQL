@@ -48,9 +48,24 @@ class AttributeTests: XCTestCase {
         XCTAssertEqual(attributes.gqlQueryString, "hello there")
     }
     
+    func testDefaultImplementation() {
+        struct Object: GQLFragmentable, GQLAttributable {
+            enum CodingKeys: String, CodingKey, CaseIterable {
+                case one
+                case two
+                case three = "four"
+            }
+        }
+        
+        let fragment = GQLFragment(Object.self)
+        XCTAssertEqual(fragment.gqlQueryString, "...object")
+        XCTAssertEqual(fragment.gqlFragmentString, "fragment object on Object { four one two }")
+    }
+    
     static var allTests = [
         ("testStrings", testStrings),
         ("testCodedKey", testCodedKey),
-        ("testFullFrgment", testFullFrgment)
+        ("testFullFrgment", testFullFrgment),
+        ("testDefaultImplementation", testDefaultImplementation)
     ]
 }
