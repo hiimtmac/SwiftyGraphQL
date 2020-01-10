@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
     
     s.name                    = "SwiftyGraphQL"
-    s.version                 = "1.1.0"
+    s.version                 = "1.2.0"
     s.summary                 = "Typesafe(er) helpers for creating graphql queries & mutations"
     s.description             = <<-DESC
                                 This small library helps to create typesafe(er) mutations & queries for use with graphql.

@@ -25,9 +25,6 @@ struct Frag1: GQLFragmentable, Codable, Equatable {
 }
 
 struct Frag2: GQLFragmentable, Codable, Equatable {
-    static let fragmentName = "frag2"
-    static let fragmentType = "Frag2"
-    
     let birthday: Date
     let address: String?
     
