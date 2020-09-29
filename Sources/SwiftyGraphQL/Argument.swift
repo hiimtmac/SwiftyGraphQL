@@ -40,25 +40,25 @@ extension String: GQLArgument {
 
 extension Int: GQLArgument {
     public var gqlArgumentValue: String {
-        return "\(self)"
+        "\(self)"
     }
 }
 
 extension Double: GQLArgument {
     public var gqlArgumentValue: String {
-        return "\(self)"
+        "\(self)"
     }
 }
 
 extension Float: GQLArgument {
     public var gqlArgumentValue: String {
-        return "\(self)"
+        "\(self)"
     }
 }
 
 extension Bool: GQLArgument {
     public var gqlArgumentValue: String {
-        return "\(self)"
+        "\(self)"
     }
 }
 

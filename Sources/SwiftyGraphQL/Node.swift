@@ -103,6 +103,13 @@ extension GQLNode {
         return .init(name, alias: alias, arguments: copyArgs, directive: directive, content: content)
     }
     
+    public func withVariable(named: String, variables: [String: String]) -> Self {
+        var copyArgs = self.arguments
+        copyArgs[named] = ObjArg(variables)
+
+        return .init(name, alias: alias, arguments: copyArgs, directive: directive, content: content)
+    }
+    
     public func withVariables(_ variables: [String: String]) -> Self {
         var copyArgs = self.arguments
         variables.forEach { copyArgs[$0.key] = Arg(name: $0.value) }
@@ -119,6 +126,27 @@ extension GQLNode {
         
         init(name: String) {
             gqlArgumentValue = "$\(name)"
+        }
+    }
+    
+    private struct ObjArg: GQLArgument {
+        var gqlArgumentValue: String
+        
+        init(_ values: [String: String]) {
+            var value = "{"
+            let enumeration = values
+                .sorted { $0.key < $1.key }
+                .enumerated()
+            
+            for (i, v) in enumeration {
+                if i > 0 {
+                    value += ","
+                }
+                value += " \(v.key): $\(v.value)"
+            }
+            
+            value += " }"
+            gqlArgumentValue = value
         }
     }
 }
