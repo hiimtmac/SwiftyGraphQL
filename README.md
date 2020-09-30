@@ -1,13 +1,14 @@
 # SwiftyGraphQL
 
 [![Platform](https://img.shields.io/badge/platform-iOS-blue.svg?style=flat)](https://developer.apple.com/swift)
-[![Swift Version](https://img.shields.io/badge/swift4-compatible-4BC51D.svg?style=flat)](https://developer.apple.com/swift)
+[![Swift Version](https://img.shields.io/badge/swift-5.3-green.svg?style=flat)](https://developer.apple.com/swift)
 
 This library helps to make typesafe(er) graphql queries & mutations, for those who are scared of a library that does codegen
 
 ## Requirements
 
-- Swift 5.1+
+- Swift 5.3+
+- iOS 11+, macOS 14+
 
 ## Installation
 
@@ -21,7 +22,7 @@ import PackageDescription
 let package = Package(
   name: "TestProject",
   dependencies: [
-    .package(url: "https://github.com/hiimtmac/SwiftyGraphQL.git", from: "1.0.0")
+    .package(url: "https://github.com/hiimtmac/SwiftyGraphQL.git", from: "2.0.0")
   ]
 )
 ```
@@ -30,7 +31,7 @@ let package = Package(
 
 ```ruby
 target 'MyApp' do
-  pod 'SwiftyGraphQL', '~> 1.0'
+  pod 'SwiftyGraphQL', '~> 2.0'
 end
 ```
 

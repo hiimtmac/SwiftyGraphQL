@@ -8,52 +8,64 @@
 import XCTest
 @testable import SwiftyGraphQL
 
-class HelpTests: XCTestCase {
+class HelpTests: BaseTestCase {
     
-    // https://github.com/hiimtmac/SwiftyGraphQL/issues/26
-    func testHelp26() throws {
-        let usernameVar: GQLVariable = "tmac"
-        let slugVar: GQLVariable = "swifty-graphql"
-        
-        let query = GQLQuery("CodaPlayerItem") {
-            GQLNode("cloudcastLookup") {
-                "__typename"
-                "id"
-                GQLNode("streamInfo") {
-                    "__typename"
-                    "dashUrl"
-                    "hlsUrl"
-                    "url"
-                }
-                GQLNode("picture") {
-                    "__typename"
-                    "urlRoot"
-                }
-                "name"
-                GQLNode("owner") {
-                    "__typename"
-                    "displayName"
-                }
-            }
-            .withVariable(named: "lookup", variables: ["username": "username", "slug": "slug"])
+//    // https://github.com/hiimtmac/SwiftyGraphQL/issues/26
+//    func testIssue26() throws {
+//        let slug = GQLVariable(name: "slug", value: "swifty-graphql")
+//        let username = GQLVariable(name: "username", value: "tmac")
+//        
+//        let gql = GQL(name: "CodaPlayerItem") {
+//            GQLNode("cloudcastLookup") {
+//                "__typename"
+//                "id"
+//                GQLNode("streamInfo") {
+//                    "__typename"
+//                    "dashUrl"
+//                    "hlsUrl"
+//                    "url"
+//                }
+//                GQLNode("picture") {
+//                    "__typename"
+//                    "urlRoot"
+//                }
+//                "name"
+//                GQLNode("owner") {
+//                    "__typename"
+//                    "displayName"
+//                }
+//            }
+////            .withArgument("lookup", variableSet: [slug, username])
+//        }
+//        .withVariable(slug)
+//        .withVariable(username)
+//        
+//        gql.serialize(to: &serializer)
+//        
+//        struct Variables: Decodable, Equatable {
+//            let username: String
+//            let slug: String
+//        }
+//        
+//        let compare = #"query CodaPlayerItem($slug: String!, $username: String!) { "# +
+//            #"cloudcastLookup(lookup: { slug: $slug, username: $username }) { "# +
+//            #"__typename id streamInfo { __typename dashUrl hlsUrl url } "# +
+//            #"picture { __typename urlRoot } name "# +
+//            #"owner { __typename displayName } } }"#
+//        
+//        let encoded = try gql.encode()
+//        let decoded = try JSONDecoder().decode(TestEncoded<Variables>.self, from: encoded)
+//        XCTAssertEqual(decoded, TestEncoded<Variables>(query: compare, variables: .init(username: "swifty-graphql", slug: "tmac")))
+//    }
+    
+    // https://github.com/hiimtmac/SwiftyGraphQL/issues/29
+    func testIssue29() {
+        let n1: [GQLNode] = []
+        let n2: [GQLNode] = []
+        let nodes = n1 + n2
+        GQL(name: "test") {
+            nodes
         }
-        .withVariables(["username": usernameVar, "slug": slugVar])
-        
-        struct Decode: Decodable {
-            let query: String
-            let variables: Variables
-            
-            struct Variables: Decodable {
-                let username: String
-                let slug: String
-            }
-        }
-        
-        XCTAssertEqual(query.gqlQueryWithFragments, #"query CodaPlayerItem($slug: String!, $username: String!) { cloudcastLookup(lookup: { slug: $slug, username: $username }) { __typename id name owner { __typename displayName } picture { __typename urlRoot } streamInfo { __typename dashUrl hlsUrl url } } }"#)
-        
-        let encoded = try JSONEncoder().encode(query)
-        let decoded = try JSONDecoder().decode(Decode.self, from: encoded)
-        XCTAssertEqual(decoded.variables.username, "tmac")
-        XCTAssertEqual(decoded.variables.slug, "swifty-graphql")
+        .serialize(to: &serializer)
     }
 }

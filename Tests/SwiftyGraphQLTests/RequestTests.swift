@@ -13,7 +13,7 @@ import XCTest
 class RequestTests: XCTestCase {
     
     var network: MockNetwork!
-    var request: GraphQLRequest<GQLQuery, Frag2>!
+    var request: GQLRequest<Frag2>!
     
     override func setUp() {
         super.setUp()
@@ -29,14 +29,14 @@ class RequestTests: XCTestCase {
         components.host = "graphql.com"
         components.path = "/graphql"
         
-        let query = GQLQuery {
+        let query = GQL(.query) {
             GQLNode("me") {
-                GQLFragment(Frag2.self)
+                Frag2.asFragment()
             }
         }
         
         let headers = HTTPHeaders([HTTPHeader(name: .contentEncoding, value: .json)])
-        request = GraphQLRequest(query: query, headers: headers)
+        request = GQLRequest(query: query, headers: headers)
         
         SwiftyGraphQL.shared.graphQLEndpoint = components.url!
     }
@@ -49,7 +49,7 @@ class RequestTests: XCTestCase {
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["Content-Type"], "application/json; charset=utf-8")
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["Accept"], "application/json; charset=utf-8")
         
-        let compare = #"{"query":"query { me { ...frag2 } } fragment frag2 on Frag2 { address birthday }"}"#
+        let compare = #"{"query":"query { me { ...frag2 } } fragment frag2 on Frag2 { birthday address }"}"#
         
         guard let data = urlRequest.httpBody, let string = String(data: data, encoding: .utf8) else {
             XCTFail("no/bad data")
@@ -60,7 +60,7 @@ class RequestTests: XCTestCase {
     }
     
     func testRequestHeaders() throws {
-        let query = GQLQuery {
+        let query = GQL(.query) {
             GQLNode("hi") {
                 "hi"
             }
@@ -74,7 +74,7 @@ class RequestTests: XCTestCase {
             .init(name: .init("five"), value: "asdasd"),
             .init(name: .init("five"), value: "default")
         ])
-        var request = GraphQLRequest<GQLQuery, String>(query: query, headers: HTTPHeaders([
+        var request = GQLRequest<String>(query: query, headers: HTTPHeaders([
             .init(name: .init("one"), value: "nil"),
             .init(name: .init("two"), value: "request"),
             .init(name: .init("three"), value: "request"),
@@ -203,12 +203,12 @@ class RequestTests: XCTestCase {
     }
     
     func testRequestPlugins() throws {
-        let query = GQLQuery {
+        let query = GQL(.query) {
             GQLNode("hi") {
                 "hi"
             }
         }
-        var request = GraphQLRequest<GQLQuery, String>(query: query)
+        var request = GQLRequest<String>(query: query)
         let urlReq = try request.urlRequest()
         XCTAssertEqual(urlReq.cachePolicy.rawValue, URLRequest.CachePolicy.useProtocolCachePolicy.rawValue)
         XCTAssertEqual(urlReq.timeoutInterval, 60)

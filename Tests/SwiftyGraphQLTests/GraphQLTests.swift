@@ -9,22 +9,23 @@
 import XCTest
 @testable import SwiftyGraphQL
 
-class GraphQLTests: XCTestCase {
+class GraphQLTests: BaseTestCase {
     
     // https://graphql.org/learn/queries/#fields
     func testExample1() {
-        let query = GQLQuery {
+        GQL {
             GQLNode("hero") {
                 "name"
             }
         }
-        
-        XCTAssertEqual(query.gqlQueryString, #"query { hero { name } }"#)
-        XCTAssertEqual(query.gqlQueryWithFragments, #"query { hero { name } }"#)
+        .serialize(to: &serializer)
+
+        XCTAssertEqual(graphQL, #"query { hero { name } }"#)
+        XCTAssert(fragmentQL.isEmpty)
     }
-    
+
     func testExample2() {
-        let query = GQLQuery {
+        GQL {
             GQLNode("hero") {
                 "name"
                 GQLNode("friends") {
@@ -32,135 +33,126 @@ class GraphQLTests: XCTestCase {
                 }
             }
         }
-        
-        XCTAssertEqual(query.gqlQueryString, #"query { hero { friends { name } name } }"#)
-        XCTAssertEqual(query.gqlQueryWithFragments, #"query { hero { friends { name } name } }"#)
+        .serialize(to: &serializer)
+
+        XCTAssertEqual(graphQL, #"query { hero { name friends { name } } }"#)
+        XCTAssert(fragmentQL.isEmpty)
     }
-    
+
     // https://graphql.org/learn/queries/#arguments
     func testExample3() {
-        let query = GQLQuery {
+        GQL {
             GQLNode("human") {
                 "name"
-                GQLNode("height")
-                    .withArgument(named: "unit", value: "FOOT")
+                GQLEmpty("height")
+                    .withArgument("unit", value: "FOOT")
             }
-            .withArgument(named: "id", value: "1000")
+            .withArgument("id", value: "1000")
         }
-        
-        XCTAssertEqual(query.gqlQueryString, #"query { human(id: "1000") { height(unit: "FOOT") name } }"#)
-        XCTAssertEqual(query.gqlQueryWithFragments, #"query { human(id: "1000") { height(unit: "FOOT") name } }"#)
+        .serialize(to: &serializer)
+
+        XCTAssertEqual(graphQL, #"query { human(id: "1000") { name height(unit: "FOOT") } }"#)
+        XCTAssert(fragmentQL.isEmpty)
     }
-    
+
     // https://graphql.org/learn/queries/#aliases
     func testExample4() {
-        let query = GQLQuery {
+        GQL {
             GQLNode("hero", alias: "empireHero") {
                 "name"
             }
-            .withArgument(named: "episode", value: "EMPIRE")
+            .withArgument("episode", value: "EMPIRE")
             GQLNode("hero", alias: "jediHero") {
                 "name"
             }
-            .withArgument(named: "episode", value: "JEDI")
+            .withArgument("episode", value: "JEDI")
         }
-        
-        XCTAssertEqual(query.gqlQueryString, #"query { empireHero: hero(episode: "EMPIRE") { name } jediHero: hero(episode: "JEDI") { name } }"#)
-        XCTAssertEqual(query.gqlQueryWithFragments, #"query { empireHero: hero(episode: "EMPIRE") { name } jediHero: hero(episode: "JEDI") { name } }"#)
+        .serialize(to: &serializer)
+
+        XCTAssertEqual(graphQL, #"query { empireHero: hero(episode: "EMPIRE") { name } jediHero: hero(episode: "JEDI") { name } }"#)
+        XCTAssert(fragmentQL.isEmpty)
     }
-    
+
     // https://graphql.org/learn/queries/#fragments
     func testExample5() {
         struct Character: GQLFragmentable {
             static let fragmentName = "comparisonFields"
-            
-            enum CodingKeys: String, CodingKey, CaseIterable {
-                case name
-            }
-            
-            static var gqlContent: GraphQL {
-                GQLAttributes {
+            static var graqhQl: GraphQLExpression {
+                "name"
+                "appearsIn"
+                GQLNode("friends") {
                     "name"
-                    "appearsIn"
-                    GQLNode("friends") {
-                        "name"
-                    }
                 }
             }
         }
-        
-        let query = GQLQuery {
+
+        GQL {
             GQLNode("hero", alias: "leftComparison") {
                 GQLFragment(Character.self)
             }
-            .withArgument(named: "episode", value: "EMPIRE")
+            .withArgument("episode", value: "EMPIRE")
             GQLNode("hero", alias: "rightComparison") {
                 GQLFragment(Character.self)
             }
-            .withArgument(named: "episode", value: "JEDI")
+            .withArgument("episode", value: "JEDI")
         }
-        
-        XCTAssertEqual(query.gqlQueryString, #"query { leftComparison: hero(episode: "EMPIRE") { ...comparisonFields } rightComparison: hero(episode: "JEDI") { ...comparisonFields } }"#)
-        XCTAssertEqual(query.gqlFragmentString, #"fragment comparisonFields on Character { appearsIn friends { name } name }"#)
-        XCTAssertEqual(query.gqlQueryWithFragments, #"query { leftComparison: hero(episode: "EMPIRE") { ...comparisonFields } rightComparison: hero(episode: "JEDI") { ...comparisonFields } } fragment comparisonFields on Character { appearsIn friends { name } name }"#)
+        .serialize(to: &serializer)
+
+        XCTAssertEqual(graphQL, #"query { leftComparison: hero(episode: "EMPIRE") { ...comparisonFields } rightComparison: hero(episode: "JEDI") { ...comparisonFields } }"#)
+        XCTAssertEqual(fragmentQL, #"fragment comparisonFields on Character { name appearsIn friends { name } }"#)
     }
-    
+
     func testExample6() throws {
-        struct Character: GQLFragmentable, GQLAttributable {
+        struct Character: GQLFragmentable {
             static let fragmentName = "comparisonFields"
-            
-            enum CodingKeys: String, CodingKey, CaseIterable {
-                case name
-            }
-            
-            static var gqlContent: GraphQL {
-                GQLAttributes {
-                    "name"
-                    GQLNode("friendsConnection") {
-                        "totalCount"
-                        GQLNode("edges") {
-                            GQLNode("node") {
-                                "name"
-                            }
+            static var graqhQl: GraphQLExpression {
+                "name"
+                GQLNode("friendsConnection") {
+                    "totalCount"
+                    GQLNode("edges") {
+                        GQLNode("node") {
+                            "name"
                         }
                     }
-                    .withVariable(named: "first", variableName: "first")
                 }
+                .withArgument("first", variableName: "first")
             }
         }
-        
-        let query = GQLQuery("HeroComparison") {
+
+        let gql = GQL(name: "HeroComparison") {
             GQLNode("hero", alias: "leftComparison") {
                 GQLFragment(Character.self)
             }
-            .withArgument(named: "episode", value: "EMPIRE")
+            .withArgument("episode", value: "EMPIRE")
             GQLNode("hero", alias: "rightComparison") {
                 GQLFragment(Character.self)
             }
-            .withArgument(named: "episode", value: "JEDI")
+            .withArgument("episode", value: "JEDI")
         }
-        .withVariable(named: "first", value: 5 as Int?)
+        .withVariable("first", value: 5 as Int?)
         
-        XCTAssertEqual(query.gqlQueryString, #"query HeroComparison($first: Int) { leftComparison: hero(episode: "EMPIRE") { ...comparisonFields } rightComparison: hero(episode: "JEDI") { ...comparisonFields } }"#)
-        XCTAssertEqual(query.gqlFragmentString, #"fragment comparisonFields on Character { friendsConnection(first: $first) { edges { node { name } } totalCount } name }"#)
-        XCTAssertEqual(query.gqlQueryWithFragments, #"query HeroComparison($first: Int) { leftComparison: hero(episode: "EMPIRE") { ...comparisonFields } rightComparison: hero(episode: "JEDI") { ...comparisonFields } } fragment comparisonFields on Character { friendsConnection(first: $first) { edges { node { name } } totalCount } name }"#)
         
+        gql.serialize(to: &serializer)
+
+        XCTAssertEqual(graphQL, #"query HeroComparison($first: Int) { leftComparison: hero(episode: "EMPIRE") { ...comparisonFields } rightComparison: hero(episode: "JEDI") { ...comparisonFields } }"#)
+        XCTAssertEqual(fragmentQL, #"fragment comparisonFields on Character { name friendsConnection(first: $first) { totalCount edges { node { name } } } }"#)
+
         struct Decode: Decodable {
             let query: String
             let variables: Variables
-            
+
             struct Variables: Decodable {
                 let first: Int
             }
         }
-        let encoded = try JSONEncoder().encode(query)
+        let encoded = try gql.encode()
         let decoded = try JSONDecoder().decode(Decode.self, from: encoded)
         XCTAssertEqual(decoded.variables.first, 5)
     }
 
     // https://graphql.org/learn/queries/#operation-name
     func testExample7() {
-        let query = GQLQuery("HeroNameAndFriends") {
+        GQL(name: "HeroNameAndFriends") {
             GQLNode("hero") {
                 "name"
                 GQLNode("friends") {
@@ -168,209 +160,222 @@ class GraphQLTests: XCTestCase {
                 }
             }
         }
-        
-        XCTAssertEqual(query.gqlQueryString, #"query HeroNameAndFriends { hero { friends { name } name } }"#)
-        XCTAssertEqual(query.gqlQueryWithFragments, #"query HeroNameAndFriends { hero { friends { name } name } }"#)
+        .serialize(to: &serializer)
+
+        XCTAssertEqual(graphQL, #"query HeroNameAndFriends { hero { name friends { name } } }"#)
+        XCTAssert(fragmentQL.isEmpty)
     }
-    
+
     // https://graphql.org/learn/queries/#variables
     func testExample8() throws {
-        enum Episode: String, GQLVariable, Codable {
+        enum Episode: String, GraphQLVariableExpression, Codable {
             case jedi = "JEDI"
         }
-        
-        let query = GQLQuery("HeroNameAndFriends") {
+
+        let gql = GQL(name: "HeroNameAndFriends") {
             GQLNode("hero") {
                 "name"
                 GQLNode("friends") {
                     "name"
                 }
             }
-            .withVariable(named: "episode", variableName: "episode")
+            .withArgument("episode", variableName: "episode")
         }
-        .withVariable(named: "episode", value: Episode.jedi as Episode?)
+        .withVariable("episode", value: Episode.jedi as Episode?)
         
-        XCTAssertEqual(query.gqlQueryString, #"query HeroNameAndFriends($episode: Episode) { hero(episode: $episode) { friends { name } name } }"#)
-        XCTAssertEqual(query.gqlQueryWithFragments, #"query HeroNameAndFriends($episode: Episode) { hero(episode: $episode) { friends { name } name } }"#)
-        
+        gql.serialize(to: &serializer)
+
+        XCTAssertEqual(graphQL, #"query HeroNameAndFriends($episode: Episode) { hero(episode: $episode) { name friends { name } } }"#)
+        XCTAssert(fragmentQL.isEmpty)
+
         struct Decode: Decodable {
             let query: String
             let variables: Variables
-            
+
             struct Variables: Decodable {
                 let episode: Episode
             }
         }
-        let encoded = try JSONEncoder().encode(query)
+        let encoded = try gql.encode()
         let decoded = try JSONDecoder().decode(Decode.self, from: encoded)
         XCTAssertEqual(decoded.variables.episode.rawValue, "JEDI")
     }
-    
+
     // https://graphql.org/learn/queries/#default-variables
     func testExample9() {
         // this example doesnt make sense, you would just provide a default value with the optional
-        enum Episode: String, GQLVariable, Codable {
+        enum Episode: String, GraphQLVariableExpression, Codable {
             case jedi = "JEDI"
         }
-        
+
         let optional: Episode? = nil
-        
-        let _ = GQLQuery("HeroNameAndFriends") {
+
+        GQL(name: "HeroNameAndFriends") {
             GQLNode("hero") {
                 "name"
             }
         }
-        .withVariable(named: "episode", value: optional ?? .jedi)
+        .withVariable("episode", value: optional ?? .jedi)
+        .serialize(to: &serializer)
     }
-    
+
     // https://graphql.org/learn/queries/#directives
     func testExample10() throws {
-        enum Episode: String, GQLVariable, Decodable {
+        enum Episode: String, GraphQLVariableExpression, Decodable {
             case jedi = "JEDI"
         }
         
-        let query = GQLQuery("HeroNameAndFriends") {
+        let withFriends = GQLVariable(name: "withFriends", value: false as Bool?)
+
+        let gql = GQL(name: "HeroNameAndFriends") {
             GQLNode("hero") {
                 "name"
                 GQLNode("friends") {
                     "name"
                 }
-                .withDirective(IncludeDirective(if: "withFriends"))
+                .includeIf(withFriends)
             }
-            .withVariable(named: "episode", variableName: "episode")
+            .withArgument("episode", variableName: "episode")
         }
-        .withVariable(named: "episode", value: Episode.jedi as Episode?)
-        .withVariable(named: "withFriends", value: false as Bool?)
-        
-        XCTAssertEqual(query.gqlQueryString, #"query HeroNameAndFriends($episode: Episode, $withFriends: Boolean) { hero(episode: $episode) { friends @include(if: $withFriends) { name } name } }"#)
-        XCTAssertEqual(query.gqlQueryWithFragments, #"query HeroNameAndFriends($episode: Episode, $withFriends: Boolean) { hero(episode: $episode) { friends @include(if: $withFriends) { name } name } }"#)
-        
+        .withVariable("episode", value: Episode.jedi as Episode?)
+        .withVariable(withFriends as GQLVariable)
+
+        gql.serialize(to: &serializer)
+
+        XCTAssertEqual(graphQL, #"query HeroNameAndFriends($episode: Episode, $withFriends: Boolean) { hero(episode: $episode) { name friends @include(if: $withFriends) { name } } }"#)
+        XCTAssert(fragmentQL.isEmpty)
+
         struct Decode: Decodable {
             let query: String
             let variables: Variables
-            
+
             struct Variables: Decodable {
                 let episode: Episode
                 let withFriends: Bool
             }
         }
-        let encoded = try JSONEncoder().encode(query)
+        let encoded = try gql.encode()
         let decoded = try JSONDecoder().decode(Decode.self, from: encoded)
         XCTAssertEqual(decoded.variables.episode.rawValue, "JEDI")
         XCTAssertEqual(decoded.variables.withFriends, false)
     }
-    
+
     // https://graphql.org/learn/queries/#mutations
     func testExample11() throws {
-        struct ReviewInput: GQLVariable, Decodable {
+        struct ReviewInput: GraphQLVariableExpression, Decodable {
             let stars: Int
             let commentary: String
-            
+
             static var stub: Self { .init(stars: 5, commentary: "This is a great movie!") }
         }
-        
-        enum Episode: String, GQLVariable, Decodable {
+
+        enum Episode: String, GraphQLVariableExpression, Decodable {
             case jedi = "JEDI"
         }
         
-        let mutation = GQLMutation("CreateReviewForEpisode") {
+        let variable = GQLVariable(name: "ep", value: Episode.jedi)
+
+        let gql = GQL(.mutation, name: "CreateReviewForEpisode") {
             GQLNode("createReview") {
                 "stars"
                 "commentary"
             }
-            .withVariable(named: "episode", variableName: "ep")
-            .withVariable(named: "review", variableName: "review")
+            .withArgument("episode", variable: variable)
+            .withArgument("review", variableName: "review")
         }
-        .withVariable(named: "ep", value: Episode.jedi)
-        .withVariable(named: "review", value: ReviewInput.stub)
+        .withVariable(variable)
+        .withVariable("review", value: ReviewInput.stub)
         
-        XCTAssertEqual(mutation.gqlQueryString, #"mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) { createReview(episode: $ep, review: $review) { commentary stars } }"#)
-        XCTAssertEqual(mutation.gqlQueryWithFragments, #"mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) { createReview(episode: $ep, review: $review) { commentary stars } }"#)
-        
+        gql.serialize(to: &serializer)
+
+        XCTAssertEqual(graphQL, #"mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) { createReview(episode: $ep, review: $review) { stars commentary } }"#)
+        XCTAssert(fragmentQL.isEmpty)
+
         struct Decode: Decodable {
             let query: String
             let variables: Variables
-            
+
             struct Variables: Decodable {
                 let ep: Episode
                 let review: ReviewInput
             }
         }
-        let encoded = try JSONEncoder().encode(mutation)
+        let encoded = try gql.encode()
         let decoded = try JSONDecoder().decode(Decode.self, from: encoded)
         XCTAssertEqual(decoded.variables.ep.rawValue, "JEDI")
         XCTAssertEqual(decoded.variables.review.stars, 5)
         XCTAssertEqual(decoded.variables.review.commentary, "This is a great movie!")
     }
-    
+
     func testAdvancedExample() throws {
-        struct T1: GQLVariable, Decodable, Equatable {
+        struct T1: GraphQLVariableExpression, Decodable, Equatable {
             let float: Float
             let int: Int
             let string: String
         }
-        
-        struct T2: GQLVariable, Decodable, Equatable {
+
+        struct T2: GraphQLVariableExpression, Decodable, Equatable {
             let nested: NestedT2
             let temperature: Double
             let weather: String?
-            
+
             struct NestedT2: Codable, Equatable {
                 let name: String
                 let active: Bool
             }
         }
-        
-        struct MyFragment: GQLFragmentable, GQLAttributable {
+
+        struct MyFragment: GQLFragmentable, GQLCodable {
+            let p1: String
+            let p2: String
+            let p3: String
+
             enum CodingKeys: String, CodingKey, CaseIterable {
                 case p1
                 case p2
                 case p3 = "hithere"
             }
-            
-            static var gqlContent: GraphQL {
-                GQLAttributes(Self.self)
-            }
         }
-        
+
         let t1 = T1(float: 1.5, int: 1, string: "cool name")
         let t2 = T2(nested: .init(name: "taylor", active: true), temperature: 2.5, weather: "pretty great")
         let rev: String? = "this is great"
-        
-        let query = GQLQuery("MyCoolQuery") {
+
+        let gql = GQL(name: "MyCoolQuery") {
             GQLNode("first", alias: "realFirst") {
                 "hello"
                 "there"
-                GQLAttributes(MyFragment.self)
-                GQLFragment(MyFragment.self)
+                MyFragment.asFragment()
                 GQLNode("inner") {
-                    GQLAttributes(MyFragment.self) { t in
-                        t.p1
-                        t.p2
+                    GQLFragment(name: "adhoc", type: "MyFragment") {
+                        "p1"
+                        "p2"
                     }
-                    GQLNode("cool")
-                        .withDirective(SkipDirective(if: "cool"))
+                    GQLEmpty("cool")
+                        .skipIf("cool")
                     GQLNode("supernested") {
                         GQLFragment(MyFragment.self)
                     }
-                    .withVariable(named: "t2", variableName: "type2")
+                    .withArgument("t2", variableName: "type2")
                 }
-                .withArgument(named: "name", value: "taylor")
-                .withArgument(named: "age", value: 666)
-                .withArgument(named: "fraction", value: 2.59)
-                .withVariable(named: "rev", variableName: "review")
+                .withArgument("name", value: "taylor")
+                .withArgument("age", value: 666)
+                .withArgument("fraction", value: 2.59)
+                .withArgument("rev", variableName: "review")
             }
-            .withVariable(named: "t1", variableName: "type1")
+            .withArgument("t1", variableName: "type1")
         }
-        .withVariable(named: "type1", value: t1)
-        .withVariable(named: "type2", value: t2)
-        .withVariable(named: "review", value: rev)
-        .withVariable(named: "cool", value: true)
-        
+        .withVariable("type1", value: t1)
+        .withVariable("type2", value: t2)
+        .withVariable("review", value: rev)
+        .withVariable("cool", value: true)
+
+        gql.serialize(to: &serializer)
+
         struct Decode: Decodable {
             let query: String
             let variables: Variables
-            
+
             struct Variables: Decodable {
                 let type1: T1
                 let review: String
@@ -378,17 +383,23 @@ class GraphQLTests: XCTestCase {
                 let cool: Bool
             }
         }
-        
-        let encoded = try JSONEncoder().encode(query)
+
+        let encoded = try gql.encode()
         let decoded = try JSONDecoder().decode(Decode.self, from: encoded)
         XCTAssertEqual(decoded.variables.type1, t1)
         XCTAssertEqual(decoded.variables.type2, t2)
         XCTAssertEqual(decoded.variables.review, rev)
-        XCTAssertEqual(decoded.query, """
-        query MyCoolQuery($cool: Boolean!, $review: String, $type1: T1!, $type2: T2!) { realFirst: first(t1: $type1) { ...myfragment hello hithere p1 p2 inner(age: 666, fraction: 2.59, name: "taylor", rev: $review) { cool @skip(if: $cool) p1 p2 supernested(t2: $type2) { ...myfragment } } there } } fragment myfragment on MyFragment { hithere p1 p2 }
-        """)
+        
+        let compare = #"query MyCoolQuery($cool: Boolean!, $review: String, $type1: T1!, $type2: T2!) { "# +
+            #"realFirst: first(t1: $type1) { "# +
+            #"hello there ...myfragment "# +
+            #"inner(age: 666, fraction: 2.59, name: "taylor", rev: $review) { "# +
+            #"...adhoc cool @skip(if: $cool) supernested(t2: $type2) { "# +
+            #"...myfragment } } } } "# +
+            #"fragment adhoc on MyFragment { p1 p2 } fragment myfragment on MyFragment { p1 p2 hithere }"#
+        XCTAssertEqual(decoded.query, compare)
     }
-    
+
     static var allTests = [
         ("testExample1", testExample1),
         ("testExampl21", testExample2),

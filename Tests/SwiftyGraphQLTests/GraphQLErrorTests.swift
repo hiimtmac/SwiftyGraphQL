@@ -12,17 +12,35 @@ import XCTest
 class GraphQLErrorTests: XCTestCase {
 
     func testLocalized() {
-        let error = GraphQLError(message: "hello there", locations: nil, fields: nil, errorType: nil, validationErrorType: nil)
+        let error = GQLError(
+            message: "hello there",
+            locations: nil,
+            fields: nil,
+            errorType: nil,
+            validationErrorType: nil
+        )
         XCTAssertEqual(error.localizedDescription, "Unrecoverable GraphQL© query/mutation: hello there")
     }
     
     func testFailureReason() {
-        let error = GraphQLError(message: "hello there", locations: nil, fields: nil, errorType: "ValidationError", validationErrorType: nil)
+        let error = GQLError(
+            message: "hello there",
+            locations: nil,
+            fields: nil,
+            errorType: "ValidationError",
+            validationErrorType: nil
+        )
         XCTAssertEqual(error.failureReason, "ValidationError")
     }
     
     func testRecoverySuggestion() {
-        let error = GraphQLError(message: "hello there", locations: [GraphQLError.Location(line: 19, column: 2)], fields: ["mutation", "onboard"], errorType: nil, validationErrorType: nil)
+        let error = GQLError(
+            message: "hello there",
+            locations: [.init(line: 19, column: 2)],
+            fields: ["mutation", "onboard"],
+            errorType: nil,
+            validationErrorType: nil
+        )
         XCTAssertEqual(error.recoverySuggestion, "Locations: Ln: 19 / Col: 2 | Fields: mutation, onboard")
     }
     
