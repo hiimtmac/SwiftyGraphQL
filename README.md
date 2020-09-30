@@ -40,7 +40,7 @@ end
 General usage looks as such
 
 ```swift
-let query = GQLQuery("HeroNameAndFriends") {
+let query = GQL(name: "HeroNameAndFriends") {
     GQLNode("hero") {
         "name"
         "age"
@@ -49,22 +49,22 @@ let query = GQLQuery("HeroNameAndFriends") {
             "age"
         }
     }
-    .withVariable(named: "episode", variableName: "episode")
+    .withArgument("episode", variableName: "episode")
 }
-.withVariable(named: "episode", value: "JEDI")
+.withVariable("episode", value: "JEDI")
+```
 
-/*
-query HeroNameAndFriends($episode: Episode) { 
-    hero(episode: $episode) {
-        name
-        age
-        friends { 
-            name
-            age
-        } 
+```graphql
+query HeroNameAndFriends($episode: Episode) {
+  hero(episode: $episode) {
+    name
+    age
+    friends {
+      name
+      age
     }
+  }
 }
-*/
 ```
 
 ### GQLNode
@@ -79,8 +79,9 @@ let node = GQLNode("Root", alias: "root") {
     "thing4"
     GQLFragment(Object.self)
 }
+```
 
-/*
+```graphql
 {
     root: Root {
         sub {
@@ -96,62 +97,54 @@ let node = GQLNode("Root", alias: "root") {
 fragment object on Object {
     ... // object attributes
 }
-*/
 ```
 
 > Note: Output will be separated by spaces rather than carriage returns
 
-```swift
-/*
+```graphql
 { root: Root { sub { thing1 thing2 } thing3 thing4 ...object } } fragment object on Object { ... // object attributes }
-*/
 ```
 
 #### Alias
 
-Add a node alias in  `.init(_ name: String, alias: String? = nil)`. An alias will change the returning json key for that node.
+Add a node alias in `.init(_ name: String, alias: String? = nil)`. An alias will change the returning json key for that node.
 
 ```swift
 let node = GQLNode("sub") {
     "thing1"
     "thing2"
 }
+```
 
-print(node.gqlQueryString) // sub { thing1 thing2 }
+```graphql
+sub { thing1 thing2 }
+```
 
+```swift
 let node = GQLNode("sub", alias: "cool") {
     "thing1"
     "thing2"
 }
+```
 
-print(node.gqlQueryString) // cool: sub { thing1 thing2 }
+```graphql
+cool: sub { thing1 thing2 }
 ```
 
 #### Arguments
 
-Add arguments to a node using ` func withArgument(named: String, value: GQLArgument?) -> Self`. Anything conforming to `GQLArgument` can be used here. Currently, the following types are valid for use in parameters:
-
-* `String`
-* `Int`
-* `Double`
-* `Float`
-* `Bool`
-* `Array` -> `where Element: GQLArgument`
-* `Dictionary` -> `where Key == String, Value: GQLArgument`
-* `Optional` -> `where Wrapped == GQLArgument`
-* Custom types conforming to `GQLArgument`
+TODO documentation
 
 #### Variables
 
-Add variables to an argument using `func withVariable(named: String, variableName: String) -> Self`. Right now this just takes a string variable name.
+TODO documentation
 
 #### Directives
 
-Use directives with `public func withDirective(_ directive: GQLDirective) -> Self`. Currently supported directives are:
+Currently supported directives are:
 
-* `SkipDirective`
-* `IncludeDirective`
-* Custom directives conforming to `GQLDirective`
+- `SkipDirective`
+- `IncludeDirective`
 
 ### Fragment
 
@@ -165,49 +158,38 @@ struct Object {
 
 extension Object: GQLFragmentable {
     // required
-    static var gqlContent: GraphQL { 
-        GQLAttributes {
-            "name"
-            "age"
-        }
+    static var graqhQl: GraphQLExpression {
+        "name"
+        "age"
     }
     // optional - will be synthesized from object Type name if not implemented
     static let fragmentName = "myobject"
     static var fragmentType = "MyObject"
 }
-
-print(Object.fragmentString) // fragment myobject on MyObject { name age }
 ```
 
->***Tip***: If your object has a custom `CodingKeys` implementation, conform your type to `GQLAttributable` and its CodingKeys to `CaseIterable` 
+```graphql
+...myobject
+fragment myobject on MyObject { name age }
+```
+
+> **_Tip_**: If your object has a custom `CodingKeys` implementation, conform your type to `GQLCodable` and its CodingKeys to `CaseIterable`
 
 ```swift
-struct Object: GQLAttributable {
+struct Object: GQLFragmentable, GQLCodable {
     let name: String
     let age: Int
-    
+
     enum CodingKeys: String, CodingKey, CaseIterable {
         case name
         case age
     }
 }
+```
 
-extension Object: GQLFragmentable {
-    var gqlContent: GraphQL {
-        //  TYPE SAFETY! Will use the coding keys's raw values as the parameter
-        GQLAttributes(Self.self) { t in 
-            t.name
-            t.age
-        }
-        
-        // OR
-        
-        // will use all keys from `CaseIterable`
-        GQLAttributes(CodingKeys.self)
-    }
-}
-
-print(Object.fragmentString) // fragment myobject on MyObject { name age }
+```graphql
+...object
+fragment object on Object { name age }
 ```
 
 Once your object conforms to `GQLFragmentable`, it can be used in a `GQLFragment` object in your query
@@ -215,31 +197,36 @@ Once your object conforms to `GQLFragmentable`, it can be used in a `GQLFragment
 ```swift
 let node = GQLNode("test") {
     GQLFragment(Object.self)
+    Object.asFragment()
 }
+```
 
-print(node.gqlQueryString) // test { ...myobject }
-print(node.gqlFragmentString) // fragment myobject on MyObject { name age }
+```graphql
+test { ...myobject }
+fragment myobject on MyObject { name age }
 ```
 
 ## Query
 
-The `GQLQuery` function builder object is used for creating the query for graphql (as seen above).
+The `GQL` function builder object is used for creating the query for graphql (as seen above).
 
 Example:
+
 ```swift
-let query = GQLQuery {
+let query = GQL {
     GQLNode("allNodes") {
         GQLNode("frag") {
-            GQLFragment(Frag2.self)
+            Frag2.asFragment()
         }
         "hi"
         "ok"
     }
 }
 
-let json = try JSONEncoder().encode(query)
+let json = try query.encode()
+```
 
-/*
+```graphql
 query {
     allNodes {
         frag {
@@ -258,7 +245,7 @@ fragment frag2 on Frag2 {
 
 ```json
 {
-    "query": "{ allNodes { frag { ...frag2 } hi ok } } fragment frag2 on Frag2 { ... }"
+  "query": "{ query allNodes { frag { ...frag2 } hi ok } } fragment frag2 on Frag2 { ... }"
 }
 ```
 
@@ -267,20 +254,21 @@ fragment frag2 on Frag2 {
 `GQLMutation` is similar to the `GQLQuery`. Generally you would include the operationName for a mutation.
 
 ```swift
-let mutation = GQLMutation("NewPerson") {
+let mutation = GQL(.mutation, name: "NewPerson") {
     GQLNode("newPerson") {
         GQLNode("person", alias: "createdPerson") {
             GQLFragment(Frag2.self)
         }
     }
-    .withArgument(named: "id", value: "123")
-    .withArgument(named: "name", value: "taylor")
-    .withArgument(named: "age", value: 666)
+    .withArgument("id", value: "123")
+    .withArgument("name", value: "taylor")
+    .withArgument("age", value: 666)
 }
 
-let json = try JSONEncoder().encode(mutation)
+let json = try query.encode()
+```
 
-/*
+```graphql
 mutation NewPerson {
     newPerson(id: "123", name: "taylor", age: 666) {
         createdPerson: person {
@@ -292,45 +280,44 @@ mutation NewPerson {
 fragment frag2 on Frag2 {
     ...
 }
-*/
 ```
 
 ```json
 {
-    "query": "mutation { newPerson(id: \"123\", name: \"taylor\", age: 666) { createdPerson: person { ...frag2 } } fragment frag2 on Frag2 { ... }"
+  "query": "mutation { newPerson(id: \"123\", name: \"taylor\", age: 666) { createdPerson: person { ...frag2 } } fragment frag2 on Frag2 { ... }"
 }
 ```
 
 #### Variables
 
-Add variables to `GQLQuery`  or `GQLMutation` with `func withVariable<T: GQLVariable>(named: String, value: T) -> Self`. This will include the parameter in the head of the query as well as embed its contents into a dictionary to be serialized when you turn the query into json.
+Add variables to `GQL`. This will include the parameter in the head of the query as well as embed its contents into a dictionary to be serialized when you turn the query into json.
 
 ```swift
-let query = GQLQuery("GetIt") {
+let query = GQL(name: "GetIt") {
     GQLNode("node") {
         "hello"
     }
-    .withVairable(named: "rating", variableName: "r")
+    .withArgument("rating", variableName: "r")
 }
-.withVariable(named: "rating", value: 5)
+.withVariable("rating", value: 5)
 
-let json = try JSONEncoder().encode(query)
+let json = try query.encode()
+```
 
-/*
+```graphql
 mutation GetIt($rating: Int) {
     node(rating: $r) {
         "hello"
     }
 }
-*/
 ```
 
 ```json
 {
-    "query": "mutation GetIt($rating: Int) { node(rating: $r) { hello } }",
-    "variables": {
-        "rating": 5
-    }
+  "query": "mutation GetIt($rating: Int) { node(rating: $r) { hello } }",
+  "variables": {
+    "rating": 5
+  }
 }
 ```
 
@@ -345,15 +332,15 @@ Requests can be customized with respect to the headers (`[HTTPHeader]`), encoder
 - On the urlRequest encoding or json decoding functions
 
 ```swift
-public struct GraphQLRequest<T: GQLOperation, U: Decodable> {
-    public let query: T
+public struct GraphQLRequest<T: Decodable> {
+    public let query: GQL
     public var headers: HTTPHeaders
     public var encoder: JSONEncoder?
     public var encodePlugins: [(inout URLRequest) -> Void]
     public var decoder: JSONDecoder?
-    
+
     public func urlRequest() throws -> URLRequest { ... }
-    public func decode(data: Data) throws -> GraphQLResponse<T> { ... }
+    public func decode(data: Data) throws -> GQLResponse<T> { ... }
 }
 ```
 
@@ -369,16 +356,16 @@ extension JSONDecoder {
         do {
             return try decode(type, from: data)
         } catch {
-            let graphQLError = try? JSONDecoder().decode(GraphQLErrors.self, from: data)
+            let graphQLError = try? JSONDecoder().decode(GQLErrors.self, from: data)
             throw graphQLError ?? error
         }
     }
 }
 
 extension GraphQLRequest {
-    public func decode(data: Data) throws -> GraphQLResponse<T> {
+    public func decode(data: Data) throws -> GQLResponse<T> {
         let decoder = self.decoder ?? SwiftyGraphQL.shared.responseDecoder
-        return try decoder.graphQLDecode(GraphQLResponse<T>.self, from: data)
+        return try decoder.graphQLDecode(GQLResponse<T>.self, from: data)
     }
 }
 ```
@@ -396,28 +383,32 @@ Could decode a response that looks like:
 }
 ```
 
-Additionaly, if decoding cannot be completed, the decoder will try to decode a `GraphQLErrors` which graphql will return if there is an error in your query/mutation/schema. `GraphQLErrors` conforms to `Error` and is made up of an array of `GraphQLError`.
+Additionaly, if decoding cannot be completed, the decoder will try to decode a `GQLErrors` which graphql will return if there is an error in your query/mutation/schema. `GQLErrors` conforms to `Error` and is made up of an array of `GQLError`.
 
 ## Examples
 
 From the graphql website:
 
+[Fields](https://graphql.org/learn/queries/#fields)
+
 ```swift
-// https://graphql.org/learn/queries/#fields
-let query = GQLQuery {
+GQL {
     GQLNode("hero") {
         "name"
     }
 }
-/*
+```
+
+```graphql
 query {
   hero {
     name
   }
 }
-*/
+```
 
-let query = GQLQuery {
+```swift
+GQL {
     GQLNode("hero") {
         "name"
         GQLNode("friends") {
@@ -425,7 +416,9 @@ let query = GQLQuery {
         }
     }
 }
-/*
+```
+
+```graphql
 query {
   hero {
     name
@@ -434,39 +427,46 @@ query {
     }
   }
 }
-*/
+```
 
-// https://graphql.org/learn/queries/#arguments
-let query = GQLQuery {
+[Arguments](https://graphql.org/learn/queries/#arguments)
+
+```swift
+GQL {
     GQLNode("human") {
         "name"
-        GQLNode("height")
-            .withArgument(named: "unit", value: "FOOT")
+        GQLEmpty("height")
+            .withArgument("unit", value: "FOOT")
     }
-    .withArgument(named: "id", value: "1000")
+    .withArgument("id", value: "1000")
 }
-/*
+```
+
+```graphql
 query {
   human(id: "1000") {
     name
     height(unit: "FOOT")
   }
 }
-*/
+```
 
-// https://graphql.org/learn/queries/#aliases
-let query = GQLQuery {
+Aliases](https://graphql.org/learn/queries/#aliases)
+
+```swift
+GQL {
     GQLNode("hero", alias: "empireHero") {
         "name"
     }
-    .withArgument(named: "episode", value: "EMPIRE")
-    
+    .withArgument("episode", value: "EMPIRE")
     GQLNode("hero", alias: "jediHero") {
         "name"
     }
-    .withArgument(named: "episode", value: "JEDI")
+    .withArgument("episode", value: "JEDI")
 }
-/*
+```
+
+```graphql
 query {
   empireHero: hero(episode: "EMPIRE") {
     name
@@ -475,35 +475,35 @@ query {
     name
   }
 }
-*/
+```
 
-// https://graphql.org/learn/queries/#fragments
+[Fragments](https://graphql.org/learn/queries/#fragments)
+
+```swift
 struct Character: GQLFragmentable {
     static let fragmentName = "comparisonFields"
-    
-    static var gqlContent: GraphQL {
-        GQLAttributes {
+    static var graqhQl: GraphQLExpression {
+        "name"
+        "appearsIn"
+        GQLNode("friends") {
             "name"
-            "appearsIn"
-            GQLNode("friends") {
-                "name"
-            }
         }
     }
 }
 
-let query = GQLQuery {
+GQL {
     GQLNode("hero", alias: "leftComparison") {
         GQLFragment(Character.self)
     }
-    .withArgument(named: "episode", value: "EMPIRE")
-    
+    .withArgument("episode", value: "EMPIRE")
     GQLNode("hero", alias: "rightComparison") {
         GQLFragment(Character.self)
     }
-    .withArgument(named: "episode", value: "JEDI")
+    .withArgument("episode", value: "JEDI")
 }
-/*
+```
+
+```graphql
 query {
   leftComparison: hero(episode: "EMPIRE") {
     ...comparisonFields
@@ -520,42 +520,39 @@ fragment comparisonFields on Character {
     name
   }
 }
-*/
+```
 
+```swift
 struct Character: GQLFragmentable {
     static let fragmentName = "comparisonFields"
-
-    static var gqlContent: GraphQL {
-        GQLAttributes {
-            "name"
-            GQLNode("friendsConnection") {
-                "totalCount"
-                GQLNode("edges") {
-                    GQLNode("node") {
-                        "name"
-                    }
+    static var graqhQl: GraphQLExpression {
+        "name"
+        GQLNode("friendsConnection") {
+            "totalCount"
+            GQLNode("edges") {
+                GQLNode("node") {
+                    "name"
                 }
             }
-            .withVariable(named: "first", variableName: "first")
         }
+        .withArgument("first", variableName: "first")
     }
 }
 
-let query = GQLQuery("HeroComparison") {
+let gql = GQL(name: "HeroComparison") {
     GQLNode("hero", alias: "leftComparison") {
         GQLFragment(Character.self)
     }
-    .withArgument(named: "episode", value: "EMPIRE")
-    
+    .withArgument("episode", value: "EMPIRE")
     GQLNode("hero", alias: "rightComparison") {
         GQLFragment(Character.self)
     }
-    .withArgument(named: "episode", value: "JEDI")
+    .withArgument("episode", value: "JEDI")
 }
-.withVariable(named: "first", value: 5 as Int?) // to make it optional
+```
 
-/*
-query HeroComparison($first: Int) {  
+```graphql
+query HeroComparison($first: Int) {
   leftComparison: hero(episode: "EMPIRE") {
     ...comparisonFields
   }
@@ -575,10 +572,12 @@ fragment comparisonFields on Character {
     }
   }
 }
-*/
+```
 
-// https://graphql.org/learn/queries/#operation-name
-let query = GQLQuery("HeroNameAndFriends") {
+[Operation Names](https://graphql.org/learn/queries/#operation-name)
+
+```swift
+GQL(name: "HeroNameAndFriends") {
     GQLNode("hero") {
         "name"
         GQLNode("friends") {
@@ -586,7 +585,9 @@ let query = GQLQuery("HeroNameAndFriends") {
         }
     }
 }
-/*
+```
+
+```graphql
 query HeroNameAndFriends {
   hero {
     name
@@ -595,24 +596,28 @@ query HeroNameAndFriends {
     }
   }
 }
-*/
+```
 
-// https://graphql.org/learn/queries/#variables
-enum Episode: String, GQLVariable, Codable {
+[Variables](https://graphql.org/learn/queries/#variables)
+
+```swift
+enum Episode: String, GraphQLVariableExpression, Codable {
     case jedi = "JEDI"
 }
 
-let query = GQLQuery("HeroNameAndFriends") {
+let gql = GQL(name: "HeroNameAndFriends") {
     GQLNode("hero") {
         "name"
         GQLNode("friends") {
             "name"
         }
     }
-    .withVariable(named: "episode", variableName: "episode")
+    .withArgument("episode", variableName: "episode")
 }
-.withVariable(named: "episode", value: Episode.jedi as Episode?)
-/*
+.withVariable("episode", value: Episode.jedi as Episode?) // withouth `as Episode` it would output as `Episode!`
+```
+
+```graphql
 query HeroNameAndFriends($episode: Episode) {
   hero(episode: $episode) {
     name
@@ -626,24 +631,27 @@ variables:
 {
   "episode": "JEDI"
 }
-*/
+```
 
+[Default Variables](https://graphql.org/learn/queries/#default-variables)
 
-// https://graphql.org/learn/queries/#default-variables
+```swift
 // this example doesnt make sense, you would just provide a default value with the optional
-enum Episode: String, GQLVariable, Codable {
+enum Episode: String, GraphQLVariableExpression, Codable {
     case jedi = "JEDI"
 }
 
-let optionalValue: Episode? = nil
+let optional: Episode? = nil
 
-let _ = GQLQuery("HeroNameAndFriends") {
+GQL(name: "HeroNameAndFriends") {
     GQLNode("hero") {
         "name"
     }
 }
-.withVariable(named: "episode", value: optionalValue ?? .jedi)
-/*
+.withVariable("episode", value: optional ?? .jedi)
+```
+
+```graphql
 query HeroNameAndFriends($episode: Episode!) {
   hero(episode: $episode) {
     name
@@ -657,26 +665,32 @@ variables:
 {
   "episode": "JEDI"
 }
-*/
+```
 
-// https://graphql.org/learn/queries/#directives
-enum Episode: String, GQLVariable, Decodable {
+[Directives](https://graphql.org/learn/queries/#directives)
+
+```swift
+enum Episode: String, GraphQLVariableExpression, Decodable {
     case jedi = "JEDI"
 }
 
-let query = GQLQuery("HeroNameAndFriends") {
+let withFriends = GQLVariable(name: "withFriends", value: false as Bool?)
+
+let gql = GQL(name: "HeroNameAndFriends") {
     GQLNode("hero") {
         "name"
         GQLNode("friends") {
             "name"
         }
-        .withDirective(IncludeDirective(if: "withFriends"))
+        .includeIf(withFriends)
     }
-    .withVariable(named: "episode", variableName: "episode")
+    .withArgument("episode", variableName: "episode")
 }
-.withVariable(named: "episode", value: Episode.jedi as Episode?)
-.withVariable(named: "withFriends", value: false as Bool?)
-/*
+.withVariable("episode", value: Episode.jedi as Episode?)
+.withVariable(withFriends as GQLVariable)
+```
+
+```graphql
 query Hero($episode: Episode, $withFriends: Boolean) {
   hero(episode: $episode) {
     name
@@ -692,30 +706,37 @@ variables:
   "withFriends": false
 }
 */
+```
 
-// https://graphql.org/learn/queries/#mutations
-struct ReviewInput: GQLVariable {
+[Mutations](https://graphql.org/learn/queries/#mutations)
+
+```swift
+struct ReviewInput: GraphQLVariableExpression, Decodable {
     let stars: Int
     let commentary: String
-    
+
     static var stub: Self { .init(stars: 5, commentary: "This is a great movie!") }
 }
 
-enum Episode: String, GQLVariable, Decodable {
+enum Episode: String, GraphQLVariableExpression, Decodable {
     case jedi = "JEDI"
 }
 
-let mutation = GQLMutation("CreateReviewForEpisode") {
+let variable = GQLVariable(name: "ep", value: Episode.jedi)
+
+let gql = GQL(.mutation, name: "CreateReviewForEpisode") {
     GQLNode("createReview") {
         "stars"
         "commentary"
     }
-    .withVariable(named: "episode", variableName: "ep")
-    .withVariable(named: "review", variableName: "review")
+    .withArgument("episode", variable: variable)
+    .withArgument("review", variableName: "review")
 }
-.withVariable(named: "ep", value: Episode.jedi)
-.withVariable(named: "review", value: ReviewInput.stub)
-/*
+.withVariable(variable)
+.withVariable("review", value: ReviewInput.stub)
+```
+
+```graphql
 mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) {
   createReview(episode: $ep, review: $review) {
     stars
@@ -731,38 +752,40 @@ variables:
     "commentary": "This is a great movie!"
   }
 }
-*/
+```
 
-// https://graphql.org/learn/queries/#inline-fragments
+[Inline Fragments](https://graphql.org/learn/queries/#inline-fragments)
 TODO: implement
 
-// Advanced example
-struct T1: GQLVariable, Decodable, Equatable {
+Advanced example
+
+```swift
+struct T1: GraphQLVariableExpression, Decodable, Equatable {
     let float: Float
     let int: Int
     let string: String
 }
 
-struct T2: GQLVariable, Decodable, Equatable {
+struct T2: GraphQLVariableExpression, Decodable, Equatable {
     let nested: NestedT2
     let temperature: Double
     let weather: String?
-    
+
     struct NestedT2: Codable, Equatable {
         let name: String
         let active: Bool
     }
 }
 
-struct MyFragment: GQLFragmentable, GQLAttributable {
+struct MyFragment: GQLFragmentable, GQLCodable {
+    let p1: String
+    let p2: String
+    let p3: String
+
     enum CodingKeys: String, CodingKey, CaseIterable {
         case p1
         case p2
         case p3 = "hithere"
-    }
-    
-    static var gqlContent: GraphQL {
-        GQLAttributes(Self.self)
     }
 }
 
@@ -770,63 +793,67 @@ let t1 = T1(float: 1.5, int: 1, string: "cool name")
 let t2 = T2(nested: .init(name: "taylor", active: true), temperature: 2.5, weather: "pretty great")
 let rev: String? = "this is great"
 
-let query = GQLQuery("MyCoolQuery") {
+let gql = GQL(name: "MyCoolQuery") {
     GQLNode("first", alias: "realFirst") {
         "hello"
         "there"
-        GQLAttributes(MyFragment.self)
-        GQLFragment(MyFragment.self)
+        MyFragment.asFragment()
         GQLNode("inner") {
-            GQLAttributes(MyFragment.self) { t in
-                t.p1
-                t.p2
+            GQLFragment(name: "adhoc", type: "MyFragment") {
+                "p1"
+                "p2"
             }
-            GQLNode("cool")
-                .withDirective(SkipDirective(if: "cool"))
+            GQLEmpty("cool")
+                .skipIf("cool")
             GQLNode("supernested") {
                 GQLFragment(MyFragment.self)
             }
-            .withVariable(named: "t2", variableName: "type2")
+            .withArgument("t2", variableName: "type2")
         }
-        .withArgument(named: "name", value: "taylor")
-        .withArgument(named: "age", value: 666)
-        .withArgument(named: "fraction", value: 2.59)
-        .withVariable(named: "rev", variableName: "review")
+        .withArgument("name", value: "taylor")
+        .withArgument("age", value: 666)
+        .withArgument("fraction", value: 2.59)
+        .withArgument("rev", variableName: "review")
     }
-    .withVariable(named: "t1", variableName: "type1")
+    .withArgument("t1", variableName: "type1")
 }
-.withVariable(named: "type1", value: t1)
-.withVariable(named: "type2", value: t2)
-.withVariable(named: "review", value: rev)
-.withVariable(named: "cool", value: true)
+.withVariable("type1", value: t1)
+.withVariable("type2", value: t2)
+.withVariable("review", value: rev)
+.withVariable("cool", value: true)
+```
 
-/*
-query MyCoolQuery($cool: Boolean!, $review: String, $type1: T1!, $type2: T2!) { 
-    realFirst: first(t1: $type1) { 
-        ...myfragment
+```graphql
+query MyCoolQuery($cool: Boolean!, $review: String, $type1: T1!, $type2: T2!) {
+    realFirst: first(t1: $type1) {
         hello
-        hithere
-        p1
-        p2
-        inner(age: 666, fraction: 2.59, name: \"taylor\", rev: $review) { 
-            cool @skip(if: $cool)
-            p1
-            p2
-            supernested(t2: $type2) { 
-                ...myfragment 
-            } 
-        } 
         there
-    } 
-} 
-    
-fragment myfragment on MyFragment { hithere p1 p2 }
-*/
-
-/*
-{
-    "query":"query MyCoolQuery($cool: Boolean!, $review: String, $type1: T1!, $type2: T2!) { realFirst: first(t1: $type1) { ...myfragment hello hithere p1 p2 inner(age: 666, fraction: 2.59, name: \"taylor\", rev: $review) { cool @skip(if: $cool) p1 p2 supernested(t2: $type2) { ...myfragment } } there } } fragment myfragment on MyFragment { hithere p1 p2 }",
-    "variables":{"type2":{"nested":{"name":"taylor","active":true},"temperature":2.5,"weather":"pretty great"},"type1":{"float":1.5,"int":1,"string":"cool name"},"review":"this is great","cool":true}
+        ...myfragment
+        inner(age: 666, fraction: 2.59, name: \"taylor\", rev: $review) {
+            ...adhoc
+            cool @skip(if: $cool)
+            supernested(t2: $type2) {
+                ...myfragment
+            }
+        }
+    }
 }
-*/
+
+fragment adhoc on MyFragment { p1 p2 } fragment myfragment on MyFragment { p1 p2 hithere }
+```
+
+```json
+{
+  "query": "query MyCoolQuery($cool: Boolean!, $review: String, $type1: T1!, $type2: T2!) { realFirst: first(t1: $type1) { hello there ...myfragment inner(age: 666, fraction: 2.59, name: \"taylor\", rev: $review) { ...adhoc cool @skip(if: $cool) supernested(t2: $type2) { ...myfragment } } } } fragment adhoc on MyFragment { p1 p2 } fragment myfragment on MyFragment { p1 p2 hithere }",
+  "variables": {
+    "type2": {
+      "nested": { "name": "taylor", "active": true },
+      "temperature": 2.5,
+      "weather": "pretty great"
+    },
+    "type1": { "float": 1.5, "int": 1, "string": "cool name" },
+    "review": "this is great",
+    "cool": true
+  }
+}
 ```
