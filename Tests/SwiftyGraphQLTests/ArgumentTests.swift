@@ -58,54 +58,6 @@ class ArgumentTests: BaseTestCase {
         val.serialize(to: &serializer)
         XCTAssertEqual(graphQL, "variable: $message")
     }
-    
-//    func testParameters() {
-//        let node = GQLNode("test")
-//            .withArgument(named: "since", value: 20)
-//            .withArgument(named: "name", value: "taylor")
-//            .withArgument(named: "true", value: true)
-//
-//        XCTAssertEqual(node.gqlQueryString, #"test(name: "taylor", since: 20, true: true)"#)
-//    }
-//
-//    func testParameterOverride() {
-//        let node = GQLNode("test")
-//            .withArgument(named: "since", value: 20)
-//            .withArgument(named: "name", value: "taylor")
-//            .withArgument(named: "since", value: nil as Int?)
-//            .withArgument(named: "ok", value: true)
-//            .withArgument(named: "name", value: "difficult")
-//
-//        XCTAssertEqual(node.gqlQueryString, #"test(name: "difficult", ok: true)"#)
-//    }
-
-//    func testParametersEncoded() {
-//        let val1 = #"thing"thing"#
-//        let val2 = #"thing\thing"#
-//        let val3 = #"thing\"thing"#
-//
-//        let node = GQLNode("test")
-//            .withArgument(named: "since", value: val1)
-//            .withArgument(named: "ok", value: val2)
-//            .withArgument(named: "yes", value: val3)
-//            .withArgument(named: "sure", value: 4)
-//            .withArgument(named: "normal", value: "also")
-//
-//        XCTAssertEqual(node.gqlQueryString, #"test(normal: "also", ok: "thing\\thing", since: "thing\"thing", sure: 4, yes: "thing\\\"thing")"#)
-//    }
-    
-//    func testParametersDict() {
-//        let val1 = #"thing"thing"#
-//        let val2 = #"thing\thing"#
-//        let val3 = #"thing\"thing"#
-//
-//        let node = GQLNode("test")
-//            .withArgument(named: "since", value: val1)
-//            .withArguments(["ok": val2, "yes": val3, "sure": 4])
-//            .withArgument(named: "normal", value: "also")
-//
-//        XCTAssertEqual(node.gqlQueryString, #"test(normal: "also", ok: "thing\\thing", since: "thing\"thing", sure: 4, yes: "thing\\\"thing")"#)
-//    }
 
     static var allTests = [
         ("testStringEncoding", testStringEncoding),
