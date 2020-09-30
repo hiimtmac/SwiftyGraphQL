@@ -9,41 +9,47 @@
 import XCTest
 @testable import SwiftyGraphQL
 
-class MutationTests: XCTestCase {
+class MutationTests: BaseTestCase {
 
     func testWithoutFragment() {
-        let mutation = GQLMutation {
+        GQL(.mutation) {
             GQLNode("testMutation") {
                 GQLNode("allNodes") {
                     "hi"
                     "ok"
                 }
             }
-            .withArgument(named: "thing", value: "ok")
+            .withArgument("thing", value: "ok")
         }
-        XCTAssertEqual(mutation.gqlQueryWithFragments, #"mutation { testMutation(thing: "ok") { allNodes { hi ok } } }"#)
+        .serialize(to: &serializer)
+        
+        XCTAssertEqual(graphQL, #"mutation { testMutation(thing: "ok") { allNodes { hi ok } } }"#)
+        XCTAssert(fragmentQL.isEmpty)
     }
 
     func testWithFragment() {
-        let mutation = GQLMutation {
+        GQL(.mutation) {
             GQLNode("testMutation") {
                 GQLNode("allNodes") {
                     GQLFragment(Frag2.self)
                 }
             }
-            .withArgument(named: "thing", value: "ok")
+            .withArgument("thing", value: "ok")
         }
-        XCTAssertEqual(mutation.gqlQueryWithFragments, #"mutation { testMutation(thing: "ok") { allNodes { ...frag2 } } } fragment frag2 on Frag2 { address birthday }"#)
+        .serialize(to: &serializer)
+        
+        XCTAssertEqual(graphQL, #"mutation { testMutation(thing: "ok") { allNodes { ...frag2 } } }"#)
+        XCTAssertEqual(fragmentQL, #"fragment frag2 on Frag2 { birthday address }"#)
     }
     
     func testAdvanced() {
-        let mutation = GQLMutation {
+        GQL(.mutation) {
             GQLNode("testMutation") {
                 GQLNode("myQuery") {
                     GQLNode("frag1", alias: "allFrag1s") {
                         GQLFragment(Frag1.self)
                     }
-                    .withArgument(named: "since", value: 20)
+                    .withArgument("since", value: 20)
                     GQLNode("frag2") {
                         GQLFragment(Frag2.self)
                     }
@@ -51,13 +57,16 @@ class MutationTests: XCTestCase {
                     "thing2"
                 }
             }
-            .withArgument(named: "thing", value: "ok")
+            .withArgument("thing", value: "ok")
         }
-        XCTAssertEqual(mutation.gqlQueryWithFragments, #"mutation { testMutation(thing: "ok") { myQuery { allFrag1s: frag1(since: 20) { ...fragment1 } frag2 { ...frag2 } thing1 thing2 } } } fragment frag2 on Frag2 { address birthday } fragment fragment1 on Fragment1 { age name }"#)
+        .serialize(to: &serializer)
+        
+        XCTAssertEqual(graphQL, #"mutation { testMutation(thing: "ok") { myQuery { allFrag1s: frag1(since: 20) { ...frag1 } frag2 { ...frag2 } thing1 thing2 } } }"#)
+        XCTAssertEqual(fragmentQL, #"fragment frag1 on Frag1 { name age } fragment frag2 on Frag2 { birthday address }"#)
     }
     
     func testWithArray() {
-        let mutation = GQLMutation {
+        GQL(.mutation) {
             GQLNode("testMutation") {
                 GQLNode("one") {
                     GQLFragment(Frag1.self)
@@ -68,24 +77,30 @@ class MutationTests: XCTestCase {
                     GQLFragment(Frag2.self)
                 }
             }
-            .withArgument(named: "thing", value: "ok")
+            .withArgument("thing", value: "ok")
         }
-        XCTAssertEqual(mutation.gqlQueryWithFragments, #"mutation { testMutation(thing: "ok") { one { ...fragment1 } two { ...frag2 maybe no } } } fragment frag2 on Frag2 { address birthday } fragment fragment1 on Fragment1 { age name }"#)
+        .serialize(to: &serializer)
+        
+        XCTAssertEqual(graphQL, #"mutation { testMutation(thing: "ok") { one { ...frag1 } two { no maybe ...frag2 } } }"#)
+        XCTAssertEqual(fragmentQL, #"fragment frag1 on Frag1 { name age } fragment frag2 on Frag2 { birthday address }"#)
     }
     
     func testWithArrayWithEmptyNode() {
-        let mutation = GQLMutation {
+        GQL(.mutation) {
             GQLNode("testMutation") {
-                GQLNode("one")
+                GQLNode("one") {}
                 GQLNode("two") {
                     "no"
                     "maybe"
                     GQLFragment(Frag2.self)
                 }
             }
-            .withArgument(named: "thing", value: "ok")
+            .withArgument("thing", value: "ok")
         }
-        XCTAssertEqual(mutation.gqlQueryWithFragments, #"mutation { testMutation(thing: "ok") { one two { ...frag2 maybe no } } } fragment frag2 on Frag2 { address birthday }"#)
+        .serialize(to: &serializer)
+        
+        XCTAssertEqual(graphQL, #"mutation { testMutation(thing: "ok") { one {  } two { no maybe ...frag2 } } }"#)
+        XCTAssertEqual(fragmentQL, #"fragment frag2 on Frag2 { birthday address }"#)
     }
     
     static var allTests = [

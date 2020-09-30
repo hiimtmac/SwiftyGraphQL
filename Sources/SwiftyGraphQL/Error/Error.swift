@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct GraphQLError: Codable {
+public struct GQLError: Codable {
     public let message: String
     public let locations: [Location]?
     public let fields: [String]?
@@ -25,8 +25,8 @@ public struct GraphQLError: Codable {
     }
 }
 
-extension GraphQLError: Error {}
-extension GraphQLError: LocalizedError {
+extension GQLError: Error {}
+extension GQLError: LocalizedError {
     public var errorDescription: String? {
         return "Unrecoverable GraphQL© query/mutation: \(message)"
     }

@@ -3,14 +3,18 @@ import XCTest
 #if !canImport(ObjectiveC)
 public func allTests() -> [XCTestCaseEntry] {
     return [
-        testCase(AttributeTests.allTests),
+        testCase(ArgumentTests.allTests),
+        testCase(EncodedTests.allTests),
         testCase(FragmentTests.allTests),
+        testCase(GQLTests.allTests),
         testCase(GraphQLDecodeTests.allTests),
         testCase(GraphQLErrorTests.allTests),
         testCase(GraphQLTests.allTests),
+        testCase(HelpTests.allTests),
         testCase(MutationTests.allTests),
-        testCase(ArgumentTests.allTests),
+        testCase(NodeTests.allTests),
         testCase(QueryTests.allTests),
+        testCase(RequestTests.allTests),
         testCase(VariableTests.allTests)
     ]
 }

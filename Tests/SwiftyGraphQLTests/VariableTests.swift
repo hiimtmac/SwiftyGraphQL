@@ -7,98 +7,107 @@
 //
 
 import XCTest
-@testable import SwiftyGraphQL
+import SwiftyGraphQL
 
-class VariableTests: XCTestCase {
-   
-    struct CustomStruct: GQLVariable {
-        static var gqlBaseType: String { "CustomStructure" }
+class VariableTests: BaseTestCase {
+    
+    func testStringEncoding() {
+        let val = GQLVariable(name: "string", value: "hello")
+        val.serialize(to: &serializer)
+        XCTAssertEqual(graphQL, #"$string: String!"#)
     }
     
-    class CustomClass: GQLVariable {}
-    
-    struct CustomGenericStruct<T>: GQLVariable {
-        static var gqlBaseType: String { "CustomStringStructure" }
+    func testIntEncoding() {
+        let val = GQLVariable(name: "int", value: 8)
+        val.serialize(to: &serializer)
+        XCTAssertEqual(graphQL, "$int: Int!")
     }
     
-    class CustomGenericClass<T>: GQLVariable {
-        static var gqlBaseType: String { "CustomStringClass" }
+    func testFloatEncoding() {
+        let val = GQLVariable(name: "float", value: 8.8)
+        val.serialize(to: &serializer)
+        XCTAssertEqual(graphQL, "$float: Float!")
     }
     
-    func testStandard() {
-        XCTAssertEqual(type(of: "string").gqlVariableType, "String!")
-        XCTAssertEqual(type(of: "string" as String?).gqlVariableType, "String")
-        XCTAssertEqual(type(of: 5).gqlVariableType, "Int!")
-        XCTAssertEqual(type(of: 5 as Int?).gqlVariableType, "Int")
-        XCTAssertEqual(type(of: 5 as Float).gqlVariableType, "Float!")
-        XCTAssertEqual(type(of: 5 as Float?).gqlVariableType, "Float")
-        XCTAssertEqual(type(of: 5 as Double).gqlVariableType, "Float!")
-        XCTAssertEqual(type(of: 5 as Double?).gqlVariableType, "Float")
-        XCTAssertEqual(type(of: true).gqlVariableType, "Boolean!")
-        XCTAssertEqual(type(of: true as Bool?).gqlVariableType, "Boolean")
+    func testBoolEncoding() {
+        let val = GQLVariable(name: "bool", value: true)
+        val.serialize(to: &serializer)
+        XCTAssertEqual(graphQL, "$bool: Boolean!")
     }
     
-    func testCustom() {
-        XCTAssertEqual(type(of: CustomStruct()).gqlVariableType, "CustomStructure!")
-        XCTAssertEqual(type(of: CustomStruct() as CustomStruct?).gqlVariableType, "CustomStructure")
-        XCTAssertEqual(type(of: CustomClass()).gqlVariableType, "CustomClass!")
-        XCTAssertEqual(type(of: CustomClass() as CustomClass?).gqlVariableType, "CustomClass")
-        XCTAssertEqual(type(of: CustomGenericStruct<String>()).gqlVariableType, "CustomStringStructure!")
-        XCTAssertEqual(type(of: CustomGenericStruct<String>() as CustomGenericStruct<String>?).gqlVariableType, "CustomStringStructure")
-        XCTAssertEqual(type(of: CustomGenericClass<String>()).gqlVariableType, "CustomStringClass!")
-        XCTAssertEqual(type(of: CustomGenericClass<String>() as CustomGenericClass<String>?).gqlVariableType, "CustomStringClass")
+    func testArrayStringEncoding() {
+        let val = GQLVariable(name: "array", value: ["6", "6"])
+        val.serialize(to: &serializer)
+        XCTAssertEqual(graphQL, #"$array: [String!]!"#)
     }
     
-    func testNodeVariables() {
-        let node = GQLNode("test")
-            .withVariable(named: "since", variableName: "since")
-            .withVariable(named: "ok", variableName: "ok")
-            .withVariable(named: "yes", variableName: "yes")
-            .withVariable(named: "sure", variableName: "sure")
-            .withVariable(named: "normal", variableName: "normal")
-
-        XCTAssertEqual(node.gqlQueryString, #"test(normal: $normal, ok: $ok, since: $since, sure: $sure, yes: $yes)"#)
+    func testArrayIntEncoding() {
+        let val = GQLVariable(name: "array", value: [6, 6])
+        val.serialize(to: &serializer)
+        XCTAssertEqual(graphQL, "$array: [Int!]!")
     }
     
-    func testQueryVariables() {
-        let query = GQLQuery {
-            "hi"
+    func testArrayOptionalEncoding() {
+        let val = GQLVariable(name: "array", value: [6, 6] as [Int?])
+        val.serialize(to: &serializer)
+        XCTAssertEqual(graphQL, "$array: [Int]!")
+    }
+    
+    func testOptionalArrayOptionalEncoding() {
+        let val = GQLVariable(name: "array", value: [6, 6] as [Int?]?)
+        val.serialize(to: &serializer)
+        XCTAssertEqual(graphQL, "$array: [Int]")
+    }
+    
+    func testOptionalEncoding() {
+        let val = GQLVariable(name: "array", value: 6 as Int?)
+        val.serialize(to: &serializer)
+        XCTAssertEqual(graphQL, "$array: Int")
+    }
+    
+    func testCustomEncodableNameSynth() throws {
+        struct Custom: GraphQLVariableExpression {
+            let name: String
         }
-        .withVariable(named: "since", value: "since")
-        .withVariable(named: "ok", value: 4)
-        .withVariable(named: "yes", value: 5.5)
-        .withVariable(named: "sure", value: true)
-        .withVariable(named: "normal", value: "normal")
         
-        XCTAssertEqual(query.gqlQueryString, #"query($normal: String!, $ok: Int!, $since: String!, $sure: Boolean!, $yes: Float!) { hi }"#)
+        let val = GQLVariable(name: "custom", value: Custom(name: "tmac"))
+        val.serialize(to: &serializer)
+        XCTAssertEqual(graphQL, "$custom: Custom!")
     }
     
-    func testNodeVariableDict() {
-        let node = GQLNode("test")
-            .withVariable(named: "since", variableName: "since")
-            .withVariables(["ok":"ok", "yes":"yes", "sure":"sure"])
-            .withVariable(named: "normal", variableName: "normal")
-
-        XCTAssertEqual(node.gqlQueryString, #"test(normal: $normal, ok: $ok, since: $since, sure: $sure, yes: $yes)"#)
-    }
-    
-    func testQueryVariableDict() {
-        let query = GQLQuery {
-            "hi"
+    func testCustomOptional() throws {
+        struct Custom: GraphQLVariableExpression {
+            let name: String
         }
-        .withVariable(named: "since", value: "since")
-        .withVariables(["ok":4, "yes":5.5, "sure":true])
-        .withVariable(named: "normal", value: "normal")
-
-        XCTAssertEqual(query.gqlQueryString, #"query($normal: String!, $ok: Int!, $since: String!, $sure: Boolean!, $yes: Float!) { hi }"#)
+        
+        let val = GQLVariable(name: "custom", value: Custom(name: "tmac") as Custom?)
+        val.serialize(to: &serializer)
+        XCTAssertEqual(graphQL, "$custom: Custom")
     }
     
+    func testCustomEncodableNameCustom() throws {
+        struct Custom: GraphQLVariableExpression {
+            static var gqlScalar: GQLScalar = .custom("CustomThing")
+            let name: String
+        }
+        
+        let val = GQLVariable(name: "custom", value: Custom(name: "tmac"))
+        val.serialize(to: &serializer)
+        XCTAssertEqual(graphQL, "$custom: CustomThing!")
+    }
+      
     static var allTests = [
-        ("testStandard", testStandard),
-        ("testCustom", testCustom),
-        ("testNodeVariables", testNodeVariables),
-        ("testQueryVariables", testQueryVariables),
-        ("testNodeVariableDict", testNodeVariableDict),
-        ("testQueryVariableDict", testQueryVariableDict)
+        ("testStringEncoding", testStringEncoding),
+        ("testIntEncoding", testIntEncoding),
+        ("testFloatEncoding", testFloatEncoding),
+        ("testBoolEncoding", testBoolEncoding),
+        ("testArrayIntEncoding", testArrayIntEncoding),
+        ("testArrayStringEncoding", testArrayStringEncoding),
+        ("testArrayOptionalEncoding", testArrayOptionalEncoding),
+        ("testOptionalEncoding", testOptionalEncoding),
+        ("testOptionalArrayOptionalEncoding", testOptionalArrayOptionalEncoding),
+        ("testCustomEncodableNameSynth", testCustomEncodableNameSynth),
+        ("testCustomOptional", testCustomOptional),
+        ("testCustomEncodableNameCustom", testCustomEncodableNameCustom)
     ]
 }

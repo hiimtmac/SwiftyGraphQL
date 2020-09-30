@@ -9,33 +9,56 @@
 import XCTest
 @testable import SwiftyGraphQL
 
-class FragmentTests: XCTestCase {
+class FragmentTests: BaseTestCase {
+    
+    let f1 = GQLFragment(Frag1.self)
+    let f2 = GQLFragment(Frag2.self)
+    let f3 = GQLFragment(Frag3.self)
+    let f4 = GQLFragment(name: "cool", type: "Beans") {
+        "just"
+        "do"
+        "it"
+    }
 
-    func testWithDefaultValues() {
-        XCTAssertEqual(Frag2.self.fragmentString, "fragment frag2 on Frag2 { address birthday }")
+    func testWithRawKeys() {
+        f1.fragmentBody.serialize(to: &serializer)
+        XCTAssertEqual(serializer.graphQL, "fragment frag1 on Frag1 { name age }")
     }
     
-    func testWithoutDefaultValues() {
-        struct Test: GQLFragmentable {
-            let yes: String
-            let no: String
-            
-            static var gqlContent: GraphQL {
-                GQLAttributes {
-                    "no"
-                    "yes"
-                }
-            }
-            
-            static var fragmentType: String { return "CoolFragment" }
-            static var fragmentName: String { return "myNeatFragment" }
+    func testWithDefault() {
+        f2.fragmentBody.serialize(to: &serializer)
+        XCTAssertEqual(serializer.graphQL, "fragment frag2 on Frag2 { birthday address }")
+    }
+    
+    func testWithCodingKeys() {
+        f3.fragmentBody.serialize(to: &serializer)
+        XCTAssertEqual(serializer.graphQL, "fragment fragment3 on Fragment3 { name age address cool }")
+    }
+    
+    func testWithUntyped() {
+        f4.fragmentBody.serialize(to: &serializer)
+        XCTAssertEqual(serializer.graphQL, "fragment cool on Beans { just do it }")
+    }
+    
+    func testSerializer() {
+        serializer.write(fragment: f1)
+        serializer.write(fragment: f2)
+        serializer.write(fragment: f3)
+        serializer.write(fragment: f4)
+        
+        let f = GQLFragment(name: "cool", type: "Beans") {
+            "replace"
         }
         
-        XCTAssertEqual(Test.self.fragmentString, "fragment myNeatFragment on CoolFragment { no yes }")
+        serializer.write(fragment: f)
+        XCTAssertEqual(serializer.fragments.count, 4)
     }
     
     static var allTests = [
-        ("testWithDefaultValues", testWithDefaultValues),
-        ("testWithoutDefaultValues", testWithoutDefaultValues)
+        ("testWithRawKeys", testWithRawKeys),
+        ("testWithDefault", testWithDefault),
+        ("testWithCodingKeys", testWithCodingKeys),
+        ("testWithUntyped", testWithUntyped),
+        ("testSerializer", testSerializer)
     ]
 }

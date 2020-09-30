@@ -7,71 +7,86 @@
 //
 
 import XCTest
-@testable import SwiftyGraphQL
+import SwiftyGraphQL
 
-class QueryTests: XCTestCase {
+class QueryTests: BaseTestCase {
 
     func testWithoutFragment() {
-        let query = GQLQuery {
+        GQL(.query) {
             GQLNode("allNodes") {
                 "hi"
                 "ok"
             }
         }
-        XCTAssertEqual(query.gqlQueryWithFragments, #"query { allNodes { hi ok } }"#)
+        .serialize(to: &serializer)
+        
+        XCTAssertEqual(graphQL, #"query { allNodes { hi ok } }"#)
+        XCTAssert(fragmentQL.isEmpty)
     }
     
     func testWithFragment() {
-        let query = GQLQuery {
+        GQL(.query) {
             GQLNode("allNodes") {
                 GQLFragment(Frag2.self)
             }
         }
-        XCTAssertEqual(query.gqlQueryWithFragments, #"query { allNodes { ...frag2 } } fragment frag2 on Frag2 { address birthday }"#)
+        .serialize(to: &serializer)
+        
+        XCTAssertEqual(graphQL, #"query { allNodes { ...frag2 } }"#)
+        XCTAssertEqual(fragmentQL, #"fragment frag2 on Frag2 { birthday address }"#)
     }
     
     func testAdvanced() {
-        let query = GQLQuery {
+        GQL(.query) {
             GQLNode("myQuery") {
                 "thing1"
                 "thing2"
                 GQLNode("frag2") {
-                    GQLFragment(Frag2.self)
+                    Frag2.asFragment()
                     GQLNode("frag1", alias: "allFrag1s") {
                         GQLFragment(Frag1.self)
                     }
-                    .withArgument(named: "since", value: 20)
-                    .withArgument(named: "name", value: "taylor")
+                    .withArgument("since", value: 20)
+                    .withArgument("name", value: "taylor")
                 }
             }
         }
-        XCTAssertEqual(query.gqlQueryWithFragments,  #"query { myQuery { frag2 { ...frag2 allFrag1s: frag1(name: "taylor", since: 20) { ...fragment1 } } thing1 thing2 } } fragment frag2 on Frag2 { address birthday } fragment fragment1 on Fragment1 { age name }"#)
+        .serialize(to: &serializer)
+        
+        XCTAssertEqual(graphQL,  #"query { myQuery { thing1 thing2 frag2 { ...frag2 allFrag1s: frag1(name: "taylor", since: 20) { ...frag1 } } } }"#)
+        XCTAssertEqual(fragmentQL,  #"fragment frag1 on Frag1 { name age } fragment frag2 on Frag2 { birthday address }"#)
     }
     
     func testWithArray() {
-        let query = GQLQuery {
+        GQL(.query) {
             GQLNode("one") {
-                GQLFragment(Frag1.self)
+                Frag1.asFragment()
             }
             GQLNode("two") {
                 "no"
                 "maybe"
-                GQLFragment(Frag2.self)
+                Frag3.asFragment()
             }
         }
-        XCTAssertEqual(query.gqlQueryWithFragments, #"query { one { ...fragment1 } two { ...frag2 maybe no } } fragment frag2 on Frag2 { address birthday } fragment fragment1 on Fragment1 { age name }"#)
+        .serialize(to: &serializer)
+        
+        XCTAssertEqual(graphQL, #"query { one { ...frag1 } two { no maybe ...fragment3 } }"#)
+        XCTAssertEqual(fragmentQL, #"fragment frag1 on Frag1 { name age } fragment fragment3 on Fragment3 { name age address cool }"#)
     }
-    
+
     func testWithArrayWithEmptyNode() {
-        let query = GQLQuery {
-            GQLNode("one")
+        GQL(.query) {
+            GQLNode("one") {}
             GQLNode("two") {
                 "no"
                 "maybe"
-                GQLFragment(Frag2.self)
+                Frag2.asFragment()
             }
         }
-        XCTAssertEqual(query.gqlQueryWithFragments, #"query { one two { ...frag2 maybe no } } fragment frag2 on Frag2 { address birthday }"#)
+        .serialize(to: &serializer)
+        
+        XCTAssertEqual(graphQL, #"query { one {  } two { no maybe ...frag2 } }"#)
+        XCTAssertEqual(fragmentQL, #"fragment frag2 on Frag2 { birthday address }"#)
     }
     
     static var allTests = [

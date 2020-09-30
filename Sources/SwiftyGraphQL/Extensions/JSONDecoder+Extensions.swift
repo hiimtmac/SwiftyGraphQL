@@ -13,7 +13,7 @@ extension JSONDecoder {
         do {
             return try decode(type, from: data)
         } catch {
-            let graphQLError = try? JSONDecoder().decode(GraphQLErrors.self, from: data)
+            let graphQLError = try? JSONDecoder().decode(GQLErrorSet.self, from: data)
             throw graphQLError ?? error
         }
     }

@@ -8,21 +8,21 @@
 
 import Foundation
 
-public struct GraphQLErrors: Decodable {
-    public let errors: [GraphQLError]
+public struct GQLErrorSet: Decodable {
+    public let errors: [GQLError]
     
-    public init(errors: [GraphQLError]) {
+    public init(errors: [GQLError]) {
         self.errors = errors
     }
     
-    public init?(errors: [GraphQLError]?) {
+    public init?(errors: [GQLError]?) {
         guard let errors = errors else { return nil }
         self.errors = errors
     }
 }
 
-extension GraphQLErrors: Error {}
-extension GraphQLErrors: LocalizedError {
+extension GQLErrorSet: Error {}
+extension GQLErrorSet: LocalizedError {
     public var errorDescription: String? {
         if errors.count == 1 {
             return errors.first?.localizedDescription

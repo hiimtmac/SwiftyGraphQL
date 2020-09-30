@@ -8,30 +8,40 @@
 
 import Foundation
 
-public protocol GQLDirective {
-    var gqlDirectiveString: String { get }
-}
+public protocol GQLDirective: GraphQLExpression {}
 
 public struct SkipDirective: GQLDirective {
-    let directive: String
+    let argument: GraphQLArgumentExpression
     
-    public init(if: String) {
-        self.directive = `if`
+    public init(if variable: GQLVariable) {
+        self.argument = variable
     }
     
-    public var gqlDirectiveString: String {
-        return "@skip(if: $\(directive))"
+    public init(if variableName: String) {
+        self.argument = GQLStringVariableArgument(variableName)
+    }
+    
+    public func serialize(to serializer: inout Serializer) {
+        serializer.write("@skip(if: ")
+        argument.gqlArgument.serialize(to: &serializer)
+        serializer.write(")")
     }
 }
 
 public struct IncludeDirective: GQLDirective {
-    let directive: String
+    let argument: GraphQLArgumentExpression
     
-    public init(if: String) {
-        self.directive = `if`
+    public init(if variable: GQLVariable) {
+        self.argument = variable
     }
     
-    public var gqlDirectiveString: String {
-        return "@include(if: $\(directive))"
+    public init(if variableName: String) {
+        self.argument = GQLStringVariableArgument(variableName)
+    }
+    
+    public func serialize(to serializer: inout Serializer) {
+        serializer.write("@include(if: ")
+        argument.gqlArgument.serialize(to: &serializer)
+        serializer.write(")")
     }
 }

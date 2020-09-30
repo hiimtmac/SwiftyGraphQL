@@ -11,14 +11,14 @@ import Foundation
 import FoundationNetworking
 #endif
 
-public struct GraphQLRequest<T: GQLOperation, U: Decodable> {
-    public let query: T
+public struct GQLRequest<T: Decodable> {
+    public let query: GQL
     public var headers: HTTPHeaders
     public var encoder: JSONEncoder?
     public var encodePlugins: [(inout URLRequest) -> Void]
     public var decoder: JSONDecoder?
     
-    public init(query: T,
+    public init(query: GQL,
                 headers: HTTPHeaders = .init(),
                 encoder: JSONEncoder? = nil,
                 encodePlugins: [(inout URLRequest) -> Void] = [],
@@ -35,7 +35,7 @@ public struct GraphQLRequest<T: GQLOperation, U: Decodable> {
     }
 }
 
-extension GraphQLRequest {
+extension GQLRequest {
     public func urlRequest() throws -> URLRequest {
         let encoder = self.encoder ?? SwiftyGraphQL.shared.queryEncoder
         
@@ -45,7 +45,7 @@ extension GraphQLRequest {
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.httpBody = try encoder.encode(query)
+        request.httpBody = try query.encode(encoder: encoder)
         
         (SwiftyGraphQL.shared.defaultHeaders + self.headers).headers.forEach {
             request.setValue($0.value, forHTTPHeaderField: $0.key.name)
@@ -56,8 +56,8 @@ extension GraphQLRequest {
         return request
     }
     
-    public func decode(data: Data) throws -> GraphQLResponse<U> {
+    public func decode(data: Data) throws -> GQLResponse<T> {
         let decoder = self.decoder ?? SwiftyGraphQL.shared.responseDecoder
-        return try decoder.graphQLDecode(GraphQLResponse<U>.self, from: data)
+        return try decoder.graphQLDecode(GQLResponse<T>.self, from: data)
     }
 }

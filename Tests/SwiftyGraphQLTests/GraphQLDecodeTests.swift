@@ -12,39 +12,42 @@ import XCTest
 class GraphQLDecodeTests: XCTestCase {
     
     func testNoErrors() throws {
-        let obj = TestRequest(data: ["hello", "hi"],
-                              errors: nil
+        let obj = TestRequest(
+            data: ["hello", "hi"],
+            errors: nil
         )
         
         let data = try JSONEncoder().encode(obj)
         
-        let response = try JSONDecoder().graphQLDecode(GraphQLResponse<[String]>.self, from: data)
+        let response = try JSONDecoder().graphQLDecode(GQLResponse<[String]>.self, from: data)
         XCTAssertEqual(response.data.count, 2)
         XCTAssertNil(response.errors)
         XCTAssertNil(response.error)
     }
     
     func testSucceedsWithErrors() throws {
-        let obj = TestRequest(data: ["hello", "hi"],
-                              errors: [
-                                TestRequest.TestError(message: "wow bad"),
-                                TestRequest.TestError(message: "so bad")
+        let obj = TestRequest(
+            data: ["hello", "hi"],
+            errors: [
+                TestRequest.TestError(message: "wow bad"),
+                TestRequest.TestError(message: "so bad")
             ]
         )
         
         let data = try JSONEncoder().encode(obj)
         
-        let response = try JSONDecoder().graphQLDecode(GraphQLResponse<[String]>.self, from: data)
+        let response = try JSONDecoder().graphQLDecode(GQLResponse<[String]>.self, from: data)
         XCTAssertEqual(response.data.count, 2)
         XCTAssertEqual(response.errors?.count, 2)
         XCTAssertEqual(response.error?.errors.count, 2)
     }
     
     func testFails() throws {
-        let obj = TestRequest<[String]>(data: nil,
-                                        errors: [
-                                            TestRequest.TestError(message: "wow bad"),
-                                            TestRequest.TestError(message: "so bad")
+        let obj = TestRequest<[String]>(
+            data: nil,
+            errors: [
+                TestRequest.TestError(message: "wow bad"),
+                TestRequest.TestError(message: "so bad")
             ]
         )
         
@@ -53,10 +56,10 @@ class GraphQLDecodeTests: XCTestCase {
         print(String(data: data, encoding: .utf8)!)
         
         do {
-            let _ = try JSONDecoder().graphQLDecode(GraphQLResponse<[String]>.self, from: data)
+            let _ = try JSONDecoder().graphQLDecode(GQLResponse<[String]>.self, from: data)
             XCTFail("should not continue")
         } catch {
-            guard let error = error as? GraphQLErrors else {
+            guard let error = error as? GQLErrorSet else {
                 XCTFail("wrong error")
                 return
             }
@@ -105,7 +108,7 @@ class GraphQLDecodeTests: XCTestCase {
             let _ = try JSONDecoder().graphQLDecode(TypeTwo.self, from: data)
             XCTFail("should not work")
         } catch {
-            XCTAssertNil(error as? GraphQLError)
+            XCTAssertNil(error as? GQLError)
             XCTAssertEqual(error.localizedDescription, "The data couldn’t be read because it is missing.")
         }
     }
@@ -136,7 +139,7 @@ class GraphQLDecodeTests: XCTestCase {
             let _ = try JSONDecoder().graphQLDecode(TypeTwo.self, from: data)
             XCTFail("should not work")
         } catch {
-            let decodeError = error as? GraphQLErrors
+            let decodeError = error as? GQLErrorSet
             XCTAssertEqual(decodeError?.localizedDescription, "Unrecoverable GraphQL© query/mutation: this is bad")
         }
     }
@@ -180,7 +183,7 @@ class GraphQLDecodeTests: XCTestCase {
             let _ = try JSONDecoder().graphQLDecode(TypeTwo.self, from: data)
             XCTFail("should not work")
         } catch {
-            let decodeError = error as? GraphQLErrors
+            let decodeError = error as? GQLErrorSet
             XCTAssertEqual(decodeError?.localizedDescription, "Multiple unrecoverable GraphQL© queries/mutations")
         }
     }
