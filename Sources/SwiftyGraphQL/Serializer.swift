@@ -8,11 +8,11 @@
 import Foundation
 
 public struct Serializer {
-    var graphQL: String
-    var fragments: [String: GQLFragment]
-    var variables: [String: GQLVariable]
+    public var graphQL: String
+    public var fragments: [String: GQLFragment]
+    public var variables: [String: GQLVariable]
     
-    init() {
+    public init() {
         self.graphQL = ""
         self.fragments = [:]
         self.variables = [:]
