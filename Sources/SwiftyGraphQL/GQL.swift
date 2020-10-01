@@ -48,20 +48,16 @@ public struct GQL: GraphQLExpression {
     }
     
     public func encode(encoder: JSONEncoder = .init()) throws -> Data {
-        var gqlSerializer = Serializer()
-        self.serialize(to: &gqlSerializer)
+        var serializer = Serializer()
+        self.serialize(to: &serializer)
         
-        var query = gqlSerializer.graphQL
-        
-        if !gqlSerializer.fragments.isEmpty {
-            var fragmentSerializer = Serializer()
-            let fragmentBodies = gqlSerializer.fragments.map(\.value.fragmentBody).sorted()
-            GQLList(fragmentBodies, delimiter: " ").serialize(to: &fragmentSerializer)
-            query += " "
-            query += fragmentSerializer.graphQL
+        if !serializer.fragments.isEmpty {
+            let fragmentBodies = serializer.fragments.map(\.value.fragmentBody).sorted()
+            serializer.writeSpace()
+            GQLList(fragmentBodies, delimiter: " ").serialize(to: &serializer)
         }
         
-        let encodable = GQLEncoded(query: query, variables: gqlSerializer.variables.map(\.value))
+        let encodable = GQLEncoded(query: serializer.graphQL, variables: serializer.variables.map(\.value))
         return try encoder.encode(encodable)
     }
 }

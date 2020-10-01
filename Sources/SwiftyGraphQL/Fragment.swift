@@ -54,37 +54,37 @@ public struct GQLFragment: GraphQLExpression {
         serializer.write(fragment: self)
     }
     
-    var fragmentBody: GQLFragmentBody {
+    public var fragmentBody: GQLFragmentBody {
         .init(name: name, type: type, content: content)
     }
+}
+
+public struct GQLFragmentBody: GraphQLExpression, Comparable {
+    let name: String
+    let type: String
+    let content: GraphQLExpression
     
-    struct GQLFragmentBody: GraphQLExpression, Comparable {
-        let name: String
-        let type: String
-        let content: GraphQLExpression
-        
-        static func ==(lhs: Self, rhs: Self) -> Bool {
-            lhs.name == rhs.name
-        }
-        
-        static func <(lhs: Self, rhs: Self) -> Bool {
-            lhs.name < rhs.name
-        }
-        
-        func serialize(to serializer: inout Serializer) {
-            serializer.write("fragment")
-            serializer.writeSpace()
-            serializer.write(name)
-            serializer.writeSpace()
-            serializer.write("on")
-            serializer.writeSpace()
-            serializer.write(type)
-            serializer.writeSpace()
-            serializer.write("{")
-            serializer.writeSpace()
-            content.serialize(to: &serializer)
-            serializer.writeSpace()
-            serializer.write("}")
-        }
+    public static func ==(lhs: Self, rhs: Self) -> Bool {
+        lhs.name == rhs.name
+    }
+    
+    public static func <(lhs: Self, rhs: Self) -> Bool {
+        lhs.name < rhs.name
+    }
+    
+    public func serialize(to serializer: inout Serializer) {
+        serializer.write("fragment")
+        serializer.writeSpace()
+        serializer.write(name)
+        serializer.writeSpace()
+        serializer.write("on")
+        serializer.writeSpace()
+        serializer.write(type)
+        serializer.writeSpace()
+        serializer.write("{")
+        serializer.writeSpace()
+        content.serialize(to: &serializer)
+        serializer.writeSpace()
+        serializer.write("}")
     }
 }
