@@ -4,7 +4,7 @@ import SwiftyGraphQLTests
 
 var tests = [XCTestCaseEntry]()
 tests += ArgumentTests.allTests()
-tests += EncodedTests.allTests()
+tests += EncodingTests.allTests()
 tests += FragmentTests.allTests()
 tests += GQLTests.allTests()
 tests += GraphQLDecodeTests.allTests()

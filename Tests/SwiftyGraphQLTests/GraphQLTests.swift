@@ -145,7 +145,7 @@ class GraphQLTests: BaseTestCase {
                 let first: Int
             }
         }
-        let encoded = try gql.encode()
+        let encoded = try JSONEncoder().encode(gql)
         let decoded = try JSONDecoder().decode(Decode.self, from: encoded)
         XCTAssertEqual(decoded.variables.first, 5)
     }
@@ -196,7 +196,7 @@ class GraphQLTests: BaseTestCase {
                 let episode: Episode
             }
         }
-        let encoded = try gql.encode()
+        let encoded = try JSONEncoder().encode(gql)
         let decoded = try JSONDecoder().decode(Decode.self, from: encoded)
         XCTAssertEqual(decoded.variables.episode.rawValue, "JEDI")
     }
@@ -254,7 +254,7 @@ class GraphQLTests: BaseTestCase {
                 let withFriends: Bool
             }
         }
-        let encoded = try gql.encode()
+        let encoded = try JSONEncoder().encode(gql)
         let decoded = try JSONDecoder().decode(Decode.self, from: encoded)
         XCTAssertEqual(decoded.variables.episode.rawValue, "JEDI")
         XCTAssertEqual(decoded.variables.withFriends, false)
@@ -300,7 +300,7 @@ class GraphQLTests: BaseTestCase {
                 let review: ReviewInput
             }
         }
-        let encoded = try gql.encode()
+        let encoded = try JSONEncoder().encode(gql)
         let decoded = try JSONDecoder().decode(Decode.self, from: encoded)
         XCTAssertEqual(decoded.variables.ep.rawValue, "JEDI")
         XCTAssertEqual(decoded.variables.review.stars, 5)
@@ -384,7 +384,7 @@ class GraphQLTests: BaseTestCase {
             }
         }
 
-        let encoded = try gql.encode()
+        let encoded = try JSONEncoder().encode(gql)
         let decoded = try JSONDecoder().decode(Decode.self, from: encoded)
         XCTAssertEqual(decoded.variables.type1, t1)
         XCTAssertEqual(decoded.variables.type2, t2)

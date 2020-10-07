@@ -1,11 +1,3 @@
-//
-//  GraphQLError.swift
-//  SwiftyGraphQL
-//
-//  Created by Taylor McIntyre on 2018-10-24.
-//  Copyright © 2018 hiimtmac. All rights reserved.
-//
-
 import Foundation
 
 public struct GQLError: Codable {
