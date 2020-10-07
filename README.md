@@ -22,7 +22,7 @@ import PackageDescription
 let package = Package(
   name: "TestProject",
   dependencies: [
-    .package(url: "https://github.com/hiimtmac/SwiftyGraphQL.git", from: "2.0.0")
+    .package(url: "https://github.com/hiimtmac/SwiftyGraphQL.git", from: "2.1.0")
   ]
 )
 ```
@@ -31,7 +31,7 @@ let package = Package(
 
 ```ruby
 target 'MyApp' do
-  pod 'SwiftyGraphQL', '~> 2.0'
+  pod 'SwiftyGraphQL', '~> 2.1'
 end
 ```
 
