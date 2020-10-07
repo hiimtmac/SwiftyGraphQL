@@ -46,20 +46,6 @@ public struct GQL: GraphQLExpression {
         serializer.writeSpace()
         serializer.write("}")
     }
-    
-    public func encode(encoder: JSONEncoder = .init()) throws -> Data {
-        var serializer = Serializer()
-        self.serialize(to: &serializer)
-        
-        if !serializer.fragments.isEmpty {
-            let fragmentBodies = serializer.fragments.map(\.value.fragmentBody).sorted()
-            serializer.writeSpace()
-            GQLList(fragmentBodies, delimiter: " ").serialize(to: &serializer)
-        }
-        
-        let encodable = GQLEncoded(query: serializer.graphQL, variables: serializer.variables.map(\.value))
-        return try encoder.encode(encodable)
-    }
 }
 
 extension GQL {
@@ -81,5 +67,31 @@ extension GQL {
         var variables = self.variables
         variables[variable.name] = variable
         return .init(type: self.type, name: self.name, variables: variables, content: self.content)
+    }
+}
+
+extension GQL: Encodable {
+    enum GQLCodingKeys: String, CodingKey {
+        case query
+        case variables
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var serializer = Serializer()
+        self.serialize(to: &serializer)
+        
+        if !serializer.fragments.isEmpty {
+            let fragmentBodies = serializer.fragments.map(\.value.fragmentBody).sorted()
+            serializer.writeSpace()
+            GQLList(fragmentBodies, delimiter: " ").serialize(to: &serializer)
+        }
+        
+        var container = encoder.container(keyedBy: GQLCodingKeys.self)
+        try container.encode(serializer.graphQL, forKey: .query)
+        
+        if !serializer.variables.isEmpty {
+            let storage = GQLVariableStorage(variables: serializer.variables.map(\.value))
+            try container.encode(storage, forKey: .variables)
+        }
     }
 }

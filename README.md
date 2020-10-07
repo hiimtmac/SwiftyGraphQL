@@ -321,31 +321,6 @@ mutation GetIt($rating: Int) {
 }
 ```
 
-## Request
-
-A simple request struct is included to help create `URLRequest` to be sent over the network. The reason it is generic over `T, U` is that the `GraphQLRequest` has a function for decoding graphql responses along with graphql errors.
-
-Requests can be customized with respect to the headers (`[HTTPHeader]`), encoder (`JSONEncoder`), and decoder (`JSONDecoder`) at 3 levels.
-
-- `SwiftyGraphQL` singleton, (which is where you configure the endpoint), which will apply to every request (unless overridden)
-- On the `GraphQLRequest.init(_:_:_:_:)` which will apple to all requests of that type (unless overridden)
-- On the urlRequest encoding or json decoding functions
-
-```swift
-public struct GraphQLRequest<T: Decodable> {
-    public let query: GQL
-    public var headers: HTTPHeaders
-    public var encoder: JSONEncoder?
-    public var encodePlugins: [(inout URLRequest) -> Void]
-    public var decoder: JSONDecoder?
-
-    public func urlRequest() throws -> URLRequest { ... }
-    public func decode(data: Data) throws -> GQLResponse<T> { ... }
-}
-```
-
-This gives flexibility to adapt headers or use a custom decoders without effecting other requests/config
-
 ## Response
 
 Helpers for response decoding have been included. This removes the requirement to make all return structs include the `data` key at a level up in the object.
@@ -359,13 +334,6 @@ extension JSONDecoder {
             let graphQLError = try? JSONDecoder().decode(GQLErrors.self, from: data)
             throw graphQLError ?? error
         }
-    }
-}
-
-extension GraphQLRequest {
-    public func decode(data: Data) throws -> GQLResponse<T> {
-        let decoder = self.decoder ?? SwiftyGraphQL.shared.responseDecoder
-        return try decoder.graphQLDecode(GQLResponse<T>.self, from: data)
     }
 }
 ```

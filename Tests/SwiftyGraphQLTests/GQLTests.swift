@@ -51,7 +51,7 @@ class GQLTests: BaseTestCase {
             let `var`: String
         }
         
-        let data = try gql.encode()
+        let data = try JSONEncoder().encode(gql)
         let decoded = try JSONDecoder().decode(TestEncoded<Variables>.self, from: data)
         
         let compare = #"query cool($var: String!) { "# +

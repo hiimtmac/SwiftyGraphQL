@@ -12,12 +12,12 @@ public struct HTTPHeader {
     public let name: HTTPHeaderName
     public let value: String
     
-    public init(name: HTTPHeaderName, value: String) {
+    public init(_ name: HTTPHeaderName, value: String) {
         self.name = name
         self.value = value
     }
     
-    public init(name: HTTPHeaderName, value: MediaType) {
+    public init(_ name: HTTPHeaderName, value: MediaType) {
         self.name = name
         self.value = value.serialize()
     }
