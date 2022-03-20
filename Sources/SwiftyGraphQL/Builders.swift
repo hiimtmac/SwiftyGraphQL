@@ -8,7 +8,7 @@
 
 import Foundation
 
-@_functionBuilder
+@resultBuilder
 public struct GraphQLBuilder {    
     public static func buildBlock(_ values: GraphQLExpression...) -> GraphQLExpression {
         GQLList(values, delimiter: " ")
