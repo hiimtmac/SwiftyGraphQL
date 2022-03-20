@@ -48,14 +48,14 @@ jobs:
   #       uses: maxim-lobanov/setup-xcode@v1
   #       with:
   #         xcode-version: ${{ matrix.xcode }}
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
   #     - name: Cache Swift PM
   #       uses: actions/cache@v2
   #       with:
   #         path: .build
   #         key: ${{ runner.os }}-${{ matrix.images }}-spm-v2
   #         restore-keys: ${{ runner.os }}-${{ matrix.images }}-spm-
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
   #     - name: Build & Test
   #       run: |
   #         swift test --parallel --sanitize=thread \
