@@ -1,8 +1,7 @@
 #if canImport(FoundationNetworking)
 import FoundationNetworking
-#else
-import Foundation
 #endif
+import Foundation
 
 extension URLRequest {
     public mutating func add(_ header: HTTPHeader) {
