@@ -21,18 +21,23 @@ class RequestTests: XCTestCase {
     func testRequestHeaders() throws {
         var urlRequest = URLRequest.graphql(url: URL(string: "https://graphql.com/graphql")!)
 
-        urlRequest.add(HTTPHeader(.init("one"), value: "default"))
-        urlRequest.set(HTTPHeader(.init("two"), value: "default"))
-        urlRequest.add(HTTPHeader(.init("three"), value: "default"))
-        urlRequest.set(HTTPHeader(.init("four"), value: "default"))
+        let one = HTTPHeaderName("one")
+        let two = HTTPHeaderName("two")
+        let three = HTTPHeaderName("three")
+        let four = HTTPHeaderName("four")
+        
+        urlRequest.add(HTTPHeader(one, value: "default"))
+        urlRequest.set(HTTPHeader(two, value: "default"))
+        urlRequest.add(HTTPHeader(three, value: "default"))
+        urlRequest.set(HTTPHeader(four, value: "default"))
 
-        urlRequest.add(HTTPHeader(.init("one"), value: "nil"))
-        urlRequest.set(HTTPHeader(.init("two"), value: "request"))
-        urlRequest.add(HTTPHeader(.init("three"), value: "request"))
-        urlRequest.add(HTTPHeader(.init("four"), value: "request"))
+        urlRequest.add(HTTPHeader(one, value: "nil"))
+        urlRequest.set(HTTPHeader(two, value: "request"))
+        urlRequest.add(HTTPHeader(three, value: "request"))
+        urlRequest.add(HTTPHeader(four, value: "request"))
 
-        urlRequest.remove(.init("three"))
-        urlRequest.set(HTTPHeader(.init("four"), value: "after"))
+        urlRequest.remove(three)
+        urlRequest.set(HTTPHeader(four, value: "after"))
 
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["one"], "default,nil")
         XCTAssertEqual(urlRequest.allHTTPHeaderFields?["two"], "request")
