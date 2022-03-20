@@ -28,7 +28,6 @@ jobs:
         with:
           path: .build
           key: ${{ runner.os }}-${{ matrix.images }}-spm-v2
-          # key: ${{ runner.os }}-${{ matrix.images }}-spm-${{ hashFiles('**/Package.resolved') }}-v2
           restore-keys: ${{ runner.os }}-${{ matrix.images }}-spm-
       - name: Resolve Swift dependencies
         run: swift package resolve
@@ -49,8 +48,8 @@ jobs:
   #       uses: maxim-lobanov/setup-xcode@v1
   #       with:
   #         xcode-version: ${{ matrix.xcode }}
-  #     - name: Check out Vapor
-  #       uses: actions/checkout@v2
+  #     - name: Check
+  #       uses: actions/checkout@v3
   #     - name: Run main tests with Thread Sanitizer
   #       run: |
   #         swift test --parallel --sanitize=thread \
