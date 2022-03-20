@@ -1,7 +1,5 @@
 # SwiftyGraphQL
 
-[![Platform](https://img.shields.io/badge/platform-iOS-blue.svg?style=flat)](https://developer.apple.com/swift)
-[![Platform](https://img.shields.io/badge/platform-macOS-blue.svg?style=flat)](https://developer.apple.com/swift)
 [![Swift Version](https://img.shields.io/badge/swift-5.6-green.svg?style=flat)](https://developer.apple.com/swift)
 
 This library helps to make typesafe(er) graphql queries & mutations, for those who are scared of a library that does codegen
@@ -22,7 +20,7 @@ import PackageDescription
 let package = Package(
   name: "TestProject",
   dependencies: [
-    .package(url: "https://github.com/hiimtmac/SwiftyGraphQL.git", from: "2.2.0")
+    .package(url: "https://github.com/hiimtmac/SwiftyGraphQL.git", from: "3.0.0")
   ]
 )
 ```
@@ -31,7 +29,7 @@ let package = Package(
 
 ```ruby
 target 'MyApp' do
-  pod 'SwiftyGraphQL', '~> 2.2'
+  pod 'SwiftyGraphQL', '~> 3.0'
 end
 ```
 
@@ -321,38 +319,6 @@ mutation GetIt($rating: Int) {
 }
 ```
 
-## Response
-
-Helpers for response decoding have been included. This removes the requirement to make all return structs include the `data` key at a level up in the object.
-
-```swift
-extension JSONDecoder {
-    public func graphQLDecode<T>(_ type: T.Type, from data: Data) throws -> T where T: Decodable {
-        do {
-            return try decode(type, from: data)
-        } catch {
-            let graphQLError = try? JSONDecoder().decode(GQLErrors.self, from: data)
-            throw graphQLError ?? error
-        }
-    }
-}
-```
-
-Could decode a response that looks like:
-
-```json
-{
-    "data": {
-        {
-            "name": "taylor",
-            "age": 666
-        }
-    }
-}
-```
-
-Additionaly, if decoding cannot be completed, the decoder will try to decode a `GQLErrors` which graphql will return if there is an error in your query/mutation/schema. `GQLErrors` conforms to `Error` and is made up of an array of `GQLError`.
-
 ## Examples
 
 From the graphql website:
@@ -419,7 +385,7 @@ query {
 }
 ```
 
-Aliases](https://graphql.org/learn/queries/#aliases)
+[Aliases](https://graphql.org/learn/queries/#aliases)
 
 ```swift
 GQL {

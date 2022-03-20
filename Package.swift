@@ -13,6 +13,8 @@ let package = Package(
     ],
     targets: [
         .target(name: "SwiftyGraphQL", dependencies: []),
-        .testTarget(name: "SwiftyGraphQLTests", dependencies: ["SwiftyGraphQL"]),
+        .testTarget(name: "SwiftyGraphQLTests", dependencies: [
+            .target(name: "SwiftyGraphQL")
+        ]),
     ]
 )
