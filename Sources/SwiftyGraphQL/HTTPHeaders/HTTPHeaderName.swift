@@ -1,16 +1,11 @@
-//
-//  HTTPHeaderName.swift
-//  SwiftyGraphQL
-//
-//  Created by Taylor McIntyre on 2019-11-04.
-//  Copyright © 2019 hiimtmac. All rights reserved.
-//
+// HTTPHeaderName.swift
+// Copyright © 2022 hiimtmac
 
 import Foundation
 
 public struct HTTPHeaderName: Hashable {
     public let name: String
-    
+
     public init(_ name: String) {
         self.name = name
     }

@@ -1,3 +1,6 @@
+// Response.swift
+// Copyright © 2022 hiimtmac
+
 import Foundation
 
 /// All graphql responses come back wrapped in a `data` object
@@ -5,14 +8,14 @@ import Foundation
 public struct GQLResponse<T> {
     public let data: T
     public let errors: [GQLError]?
-    
+
     public init(data: T, errors: [GQLError]?) {
         self.data = data
         self.errors = errors
     }
-    
+
     public var error: GQLErrorSet? {
-        return GQLErrorSet(errors: errors)
+        return GQLErrorSet(errors: self.errors)
     }
 }
 

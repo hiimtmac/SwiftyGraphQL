@@ -1,10 +1,5 @@
-//
-//  Variable.swift
-//  SwiftyGraphQL
-//
-//  Created by Taylor McIntyre on 2020-01-08.
-//  Copyright © 2020 hiimtmac. All rights reserved.
-//
+// Variable.swift
+// Copyright © 2022 hiimtmac
 
 import Foundation
 
@@ -19,26 +14,26 @@ extension GraphQLVariableExpression {
 public struct GQLVariable: GraphQLExpression, Comparable {
     let name: String
     let value: GraphQLVariableExpression
-    
+
     public init(name: String, value: GraphQLVariableExpression) {
         self.name = name
         self.value = value
     }
-    
-    public static func ==(lhs: Self, rhs: Self) -> Bool {
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.name == rhs.name
     }
-    
-    public static func <(lhs: Self, rhs: Self) -> Bool {
+
+    public static func < (lhs: Self, rhs: Self) -> Bool {
         lhs.name < rhs.name
     }
-    
+
     public func serialize(to serializer: inout Serializer) {
         serializer.write("$")
-        serializer.write(name)
+        serializer.write(self.name)
         serializer.write(": ")
-        type(of: value).gqlScalar.serialize(to: &serializer)
-        
+        type(of: self.value).gqlScalar.serialize(to: &serializer)
+
         serializer.write(variable: self)
     }
 }
@@ -46,14 +41,14 @@ public struct GQLVariable: GraphQLExpression, Comparable {
 extension GQLVariable: GraphQLArgumentExpression {
     struct GQLVariableArgument: GraphQLExpression {
         let variable: GQLVariable
-        
+
         func serialize(to serializer: inout Serializer) {
             serializer.write("$")
-            serializer.write(variable.name)
-            serializer.write(variable: variable)
+            serializer.write(self.variable.name)
+            serializer.write(variable: self.variable)
         }
     }
-    
+
     public var gqlArgument: GraphQLExpression { GQLVariableArgument(variable: self) }
 }
 

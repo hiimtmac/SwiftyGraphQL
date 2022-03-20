@@ -1,16 +1,10 @@
-//
-//  BuilderTests.swift
-//  SwiftyGraphQLTests
-//
-//  Created by Taylor McIntyre on 2020-01-07.
-//  Copyright © 2020 hiimtmac. All rights reserved.
-//
+// GraphQLTests.swift
+// Copyright © 2022 hiimtmac
 
 import XCTest
 @testable import SwiftyGraphQL
 
 class GraphQLTests: BaseTestCase {
-    
     // https://graphql.org/learn/queries/#fields
     func testExample1() {
         GQL {
@@ -130,8 +124,7 @@ class GraphQLTests: BaseTestCase {
             .withArgument("episode", value: "JEDI")
         }
         .withVariable("first", value: 5 as Int?)
-        
-        
+
         gql.serialize(to: &serializer)
 
         XCTAssertEqual(graphQL, #"query HeroComparison($first: Int) { leftComparison: hero(episode: "EMPIRE") { ...comparisonFields } rightComparison: hero(episode: "JEDI") { ...comparisonFields } }"#)
@@ -182,7 +175,7 @@ class GraphQLTests: BaseTestCase {
             .withArgument("episode", variableName: "episode")
         }
         .withVariable("episode", value: Episode.jedi as Episode?)
-        
+
         gql.serialize(to: &serializer)
 
         XCTAssertEqual(graphQL, #"query HeroNameAndFriends($episode: Episode) { hero(episode: $episode) { name friends { name } } }"#)
@@ -224,7 +217,7 @@ class GraphQLTests: BaseTestCase {
         enum Episode: String, GraphQLVariableExpression, Decodable {
             case jedi = "JEDI"
         }
-        
+
         let withFriends = GQLVariable(name: "withFriends", value: false as Bool?)
 
         let gql = GQL(name: "HeroNameAndFriends") {
@@ -272,7 +265,7 @@ class GraphQLTests: BaseTestCase {
         enum Episode: String, GraphQLVariableExpression, Decodable {
             case jedi = "JEDI"
         }
-        
+
         let variable = GQLVariable(name: "ep", value: Episode.jedi)
 
         let gql = GQL(.mutation, name: "CreateReviewForEpisode") {
@@ -285,7 +278,7 @@ class GraphQLTests: BaseTestCase {
         }
         .withVariable(variable)
         .withVariable("review", value: ReviewInput.stub)
-        
+
         gql.serialize(to: &serializer)
 
         XCTAssertEqual(graphQL, #"mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) { createReview(episode: $ep, review: $review) { stars commentary } }"#)
@@ -389,7 +382,7 @@ class GraphQLTests: BaseTestCase {
         XCTAssertEqual(decoded.variables.type1, t1)
         XCTAssertEqual(decoded.variables.type2, t2)
         XCTAssertEqual(decoded.variables.review, rev)
-        
+
         let compare = #"query MyCoolQuery($cool: Boolean!, $review: String, $type1: T1!, $type2: T2!) { "# +
             #"realFirst: first(t1: $type1) { "# +
             #"hello there ...myfragment "# +
@@ -412,6 +405,6 @@ class GraphQLTests: BaseTestCase {
         ("testExampl91", testExample9),
         ("testExample10", testExample10),
         ("testExample11", testExample11),
-        ("testAdvancedExample", testAdvancedExample)
+        ("testAdvancedExample", testAdvancedExample),
     ]
 }

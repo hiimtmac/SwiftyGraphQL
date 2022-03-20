@@ -1,3 +1,6 @@
+// Encodable+Extensions.swift
+// Copyright © 2022 hiimtmac
+
 import Foundation
 
 extension Encodable {

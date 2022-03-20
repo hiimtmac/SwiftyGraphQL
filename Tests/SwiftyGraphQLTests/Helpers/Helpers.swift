@@ -1,10 +1,5 @@
-//
-//  Helpers.swift
-//  SwiftyGraphQLTests
-//
-//  Created by Taylor McIntyre on 2018-10-09.
-//  Copyright © 2018 hiimtmac All rights reserved.
-//
+// Helpers.swift
+// Copyright © 2022 hiimtmac
 
 import Foundation
 import SwiftyGraphQL
@@ -17,12 +12,12 @@ struct TestEncoded<T>: Decodable, Equatable where T: Decodable & Equatable {
 struct TestRequest<T: Encodable>: Encodable {
     let data: T?
     let errors: [TestError]?
-    
+
     init(data: T?, errors: [TestError]?) {
         self.data = data
         self.errors = errors
     }
-    
+
     struct TestError: Encodable {
         let message: String
     }

@@ -1,9 +1,5 @@
-//
-//  File.swift
-//  
-//
-//  Created by Taylor McIntyre on 2020-09-29.
-//
+// Scalar.swift
+// Copyright © 2022 hiimtmac
 
 import Foundation
 
@@ -15,21 +11,21 @@ public enum GQLScalar: GraphQLExpression, Equatable {
     case custom(String)
     indirect case array(of: GQLScalar)
     indirect case optional(of: GQLScalar)
-    
+
     public func serialize(to serializer: inout Serializer) {
         switch self {
         case .string: serializer.write("String")
         case .int: serializer.write("Int")
         case .float: serializer.write("Float")
         case .boolean: serializer.write("Boolean")
-        case .custom(let type): serializer.write(type)
-        case .array(let type):
+        case let .custom(type): serializer.write(type)
+        case let .array(type):
             serializer.write("[")
             type.serialize(to: &serializer)
             serializer.write("]")
-        case .optional(let type): type.serialize(to: &serializer)
+        case let .optional(type): type.serialize(to: &serializer)
         }
-        
+
         switch self {
         case .string, .int, .float, .boolean, .custom, .array:
             serializer.write("!")

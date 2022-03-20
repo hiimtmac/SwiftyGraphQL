@@ -1,22 +1,18 @@
-//
-//  File.swift
-//  
-//
-//  Created by Taylor McIntyre on 2020-09-29.
-//
+// BaseTestCase.swift
+// Copyright © 2022 hiimtmac
 
 import XCTest
 @testable import SwiftyGraphQL
 
 class BaseTestCase: XCTestCase {
     var serializer = Serializer()
-    
-    var graphQL: String { serializer.graphQL }
-    var variables: [String: GQLVariable] { serializer.variables }
-    var fragments: [String: GQLFragment] { serializer.fragments }
-    
+
+    var graphQL: String { self.serializer.graphQL }
+    var variables: [String: GQLVariable] { self.serializer.variables }
+    var fragments: [String: GQLFragment] { self.serializer.fragments }
+
     var fragmentQL: String {
-        let values = fragments.map(\.value.fragmentBody).sorted()
+        let values = self.fragments.map(\.value.fragmentBody).sorted()
         let list = GQLList(values, delimiter: " ")
         var serial = Serializer()
         list.serialize(to: &serial)

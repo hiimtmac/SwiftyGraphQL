@@ -1,10 +1,5 @@
-//
-//  MediaType.swift
-//  SwiftyGraphQL
-//
-//  Created by Taylor McIntyre on 2019-11-04.
-//  Copyright © 2019 hiimtmac. All rights reserved.
-//
+// MediaType.swift
+// Copyright © 2022 hiimtmac
 
 import Foundation
 
@@ -12,16 +7,16 @@ public struct MediaType: Hashable {
     public let type: String
     public let subType: String
     public let parameters: [String: String]
-    
+
     public init(type: String, subType: String, parameters: [String: String] = [:]) {
         self.type = type
         self.subType = subType
         self.parameters = parameters
     }
-    
+
     public func serialize() -> String {
         var string = "\(type)/\(subType)"
-        for (key, val) in parameters {
+        for (key, val) in self.parameters {
             string += "; \(key)=\(val)"
         }
         return string

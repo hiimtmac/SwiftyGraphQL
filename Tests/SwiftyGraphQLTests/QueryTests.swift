@@ -1,16 +1,10 @@
-//
-//  QueryTests.swift
-//  SwiftyGraphQLTests
-//
-//  Created by Taylor McIntyre on 2018-10-09.
-//  Copyright © 2018 hiimtmac All rights reserved.
-//
+// QueryTests.swift
+// Copyright © 2022 hiimtmac
 
-import XCTest
 import SwiftyGraphQL
+import XCTest
 
 class QueryTests: BaseTestCase {
-
     func testWithoutFragment() {
         GQL(.query) {
             GQLNode("allNodes") {
@@ -19,11 +13,11 @@ class QueryTests: BaseTestCase {
             }
         }
         .serialize(to: &serializer)
-        
+
         XCTAssertEqual(graphQL, #"query { allNodes { hi ok } }"#)
         XCTAssert(fragmentQL.isEmpty)
     }
-    
+
     func testWithFragment() {
         GQL(.query) {
             GQLNode("allNodes") {
@@ -31,11 +25,11 @@ class QueryTests: BaseTestCase {
             }
         }
         .serialize(to: &serializer)
-        
+
         XCTAssertEqual(graphQL, #"query { allNodes { ...frag2 } }"#)
         XCTAssertEqual(fragmentQL, #"fragment frag2 on Frag2 { birthday address }"#)
     }
-    
+
     func testAdvanced() {
         GQL(.query) {
             GQLNode("myQuery") {
@@ -52,11 +46,11 @@ class QueryTests: BaseTestCase {
             }
         }
         .serialize(to: &serializer)
-        
+
         XCTAssertEqual(graphQL,  #"query { myQuery { thing1 thing2 frag2 { ...frag2 allFrag1s: frag1(name: "taylor", since: 20) { ...frag1 } } } }"#)
         XCTAssertEqual(fragmentQL,  #"fragment frag1 on Frag1 { name age } fragment frag2 on Frag2 { birthday address }"#)
     }
-    
+
     func testWithArray() {
         GQL(.query) {
             GQLNode("one") {
@@ -69,7 +63,7 @@ class QueryTests: BaseTestCase {
             }
         }
         .serialize(to: &serializer)
-        
+
         XCTAssertEqual(graphQL, #"query { one { ...frag1 } two { no maybe ...fragment3 } }"#)
         XCTAssertEqual(fragmentQL, #"fragment frag1 on Frag1 { name age } fragment fragment3 on Fragment3 { name age address cool }"#)
     }
@@ -84,16 +78,16 @@ class QueryTests: BaseTestCase {
             }
         }
         .serialize(to: &serializer)
-        
+
         XCTAssertEqual(graphQL, #"query { one {  } two { no maybe ...frag2 } }"#)
         XCTAssertEqual(fragmentQL, #"fragment frag2 on Frag2 { birthday address }"#)
     }
-    
+
     static var allTests = [
         ("testWithoutFragment", testWithoutFragment),
         ("testWithFragment", testWithFragment),
         ("testAdvanced", testAdvanced),
         ("testWithArray", testWithArray),
-        ("testWithArrayWithEmptyNode", testWithArrayWithEmptyNode)
+        ("testWithArrayWithEmptyNode", testWithArrayWithEmptyNode),
     ]
 }

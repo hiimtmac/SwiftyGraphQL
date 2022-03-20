@@ -6,13 +6,13 @@ import PackageDescription
 let package = Package(
     name: "SwiftyGraphQL",
     platforms: [
-        .macOS(.v10_14), .iOS(.v11)
+        .macOS(.v10_14), .iOS(.v11),
     ],
     products: [
-        .library(name: "SwiftyGraphQL", targets: ["SwiftyGraphQL"])
+        .library(name: "SwiftyGraphQL", targets: ["SwiftyGraphQL"]),
     ],
     targets: [
         .target(name: "SwiftyGraphQL", dependencies: []),
-        .testTarget(name: "SwiftyGraphQLTests", dependencies: ["SwiftyGraphQL"])
+        .testTarget(name: "SwiftyGraphQLTests", dependencies: ["SwiftyGraphQL"]),
     ]
 )
