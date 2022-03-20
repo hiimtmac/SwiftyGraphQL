@@ -2,7 +2,7 @@
 --swiftversion 5.6
 
 # Exclusions
---exclude .build,.swiftpm,Resources,dev,hooks
+--exclude .build,.swiftpm
 
 # Use comma rather than && where possible
 --rules andOperator
@@ -39,7 +39,6 @@
 # Format if-else on same line with braces, guard-else appropriately to context
 --rules elseOnSameLine
 --elseposition same-line
---guardelse auto
 
 # No spaces inside empty braces
 --rules emptyBraces
@@ -61,7 +60,7 @@
 --rules indent
 --indent 4
 --smarttabs enabled
---indentcase false # Ugh.
+--indentcase false
 --ifdef indent
 --xcodeindentation disabled
 --indentstrings true
@@ -120,9 +119,6 @@
 
 # Remove get {} in getter-only computed properties
 --rules redundantGet
-
-# Remove unneeded explicit .init in constructor expressions
---rules redundantInit
 
 # Remove let/var from _ = expressions
 --rules redundantLet
@@ -232,4 +228,3 @@
 # --rules wrapEnumCases
 # --rules wrapSwitchCases
 # --rules yodaConditions
-

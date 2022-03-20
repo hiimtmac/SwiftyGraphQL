@@ -16,7 +16,7 @@ struct GQLVariableStorage: Encodable {
         var container = encoder.singleValueContainer()
         let sequence = self.storage.map { ($0.key, $0.value) }
         let wrappedDict = Dictionary
-        (uniqueKeysWithValues: sequence)
+            .init(uniqueKeysWithValues: sequence)
             .mapValues(EncodableWrapper.init)
 
         try container.encode(wrappedDict)
