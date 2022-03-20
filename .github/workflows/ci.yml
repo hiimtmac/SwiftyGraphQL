@@ -14,10 +14,11 @@ jobs:
       fail-fast: false
       matrix:
         images:
-          - swift:5.3
-          - swift:5.4
-          - swift:5.5
-          - swift:5.6
+          - swift:5.6-focal
+          - swift:5.6-bionic
+          - swift:5.6-xenial
+          - swift:5.6-centos7
+          - swift:5.6-amazonlinux2
           - swiftlang/swift:nightly-main
     container: ${{ matrix.images }}
     steps:
@@ -32,7 +33,7 @@ jobs:
       - name: Resolve Swift dependencies
         run: swift package resolve
       - name: Build & Test
-        run: swift test --enable-test-discovery --parallel
+        run: swift test --enable-test-discovery --parallel --sanitize=thread
 
   test-macos:
     name: Test macOS
@@ -59,4 +60,5 @@ jobs:
       - name: Resolve Swift dependencies
         run: swift package resolve
       - name: Build & Test
-        run: swift test --enable-test-discovery --parallel
+        run: swift test --enable-test-discovery --parallel --sanitize=thread -Xlinker -rpath \
+          -Xlinker $(xcode-select -p)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-5.6/macosx
