@@ -32,8 +32,8 @@ extension URLRequest {
     ) -> URLRequest {
         var request = URLRequest(url: url, cachePolicy: cachePolicy, timeoutInterval: timeoutInterval)
         request.httpMethod = "POST"
-        request.set(.init(.contentType, value: .json))
-        request.set(.init(.accept, value: .json))
+        request.set(HTTPHeader(.contentType, value: .json))
+        request.set(HTTPHeader(.accept, value: .json))
         return request
     }
 }
