@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version:5.6
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -6,13 +6,15 @@ import PackageDescription
 let package = Package(
     name: "SwiftyGraphQL",
     platforms: [
-        .macOS(.v10_14), .iOS(.v11)
+        .macOS(.v10_14), .iOS(.v11),
     ],
     products: [
-        .library(name: "SwiftyGraphQL", targets: ["SwiftyGraphQL"])
+        .library(name: "SwiftyGraphQL", targets: ["SwiftyGraphQL"]),
     ],
     targets: [
         .target(name: "SwiftyGraphQL", dependencies: []),
-        .testTarget(name: "SwiftyGraphQLTests", dependencies: ["SwiftyGraphQL"])
+        .testTarget(name: "SwiftyGraphQLTests", dependencies: [
+            .target(name: "SwiftyGraphQL")
+        ]),
     ]
 )

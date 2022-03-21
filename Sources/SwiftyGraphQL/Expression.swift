@@ -1,9 +1,5 @@
-//
-//  File.swift
-//  
-//
-//  Created by Taylor McIntyre on 2020-09-29.
-//
+// Expression.swift
+// Copyright © 2022 hiimtmac
 
 import Foundation
 
@@ -20,7 +16,7 @@ extension String: GraphQLExpression {
 extension Array: GraphQLExpression where Element: GraphQLExpression {
     public func serialize(to serializer: inout Serializer) {
         for (i, g) in self.enumerated() {
-            if (i > 0) {
+            if i > 0 {
                 serializer.writeSpace()
             }
             g.serialize(to: &serializer)

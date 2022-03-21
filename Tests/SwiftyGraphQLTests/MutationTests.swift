@@ -1,16 +1,10 @@
-//
-//  MutationTests.swift
-//  SwiftyGraphQLTests
-//
-//  Created by Taylor McIntyre on 2018-10-09.
-//  Copyright © 2018 hiimtmac All rights reserved.
-//
+// MutationTests.swift
+// Copyright © 2022 hiimtmac
 
 import XCTest
 @testable import SwiftyGraphQL
 
 class MutationTests: BaseTestCase {
-
     func testWithoutFragment() {
         GQL(.mutation) {
             GQLNode("testMutation") {
@@ -22,7 +16,7 @@ class MutationTests: BaseTestCase {
             .withArgument("thing", value: "ok")
         }
         .serialize(to: &serializer)
-        
+
         XCTAssertEqual(graphQL, #"mutation { testMutation(thing: "ok") { allNodes { hi ok } } }"#)
         XCTAssert(fragmentQL.isEmpty)
     }
@@ -37,11 +31,11 @@ class MutationTests: BaseTestCase {
             .withArgument("thing", value: "ok")
         }
         .serialize(to: &serializer)
-        
+
         XCTAssertEqual(graphQL, #"mutation { testMutation(thing: "ok") { allNodes { ...frag2 } } }"#)
         XCTAssertEqual(fragmentQL, #"fragment frag2 on Frag2 { birthday address }"#)
     }
-    
+
     func testAdvanced() {
         GQL(.mutation) {
             GQLNode("testMutation") {
@@ -60,11 +54,11 @@ class MutationTests: BaseTestCase {
             .withArgument("thing", value: "ok")
         }
         .serialize(to: &serializer)
-        
+
         XCTAssertEqual(graphQL, #"mutation { testMutation(thing: "ok") { myQuery { allFrag1s: frag1(since: 20) { ...frag1 } frag2 { ...frag2 } thing1 thing2 } } }"#)
         XCTAssertEqual(fragmentQL, #"fragment frag1 on Frag1 { name age } fragment frag2 on Frag2 { birthday address }"#)
     }
-    
+
     func testWithArray() {
         GQL(.mutation) {
             GQLNode("testMutation") {
@@ -80,11 +74,11 @@ class MutationTests: BaseTestCase {
             .withArgument("thing", value: "ok")
         }
         .serialize(to: &serializer)
-        
+
         XCTAssertEqual(graphQL, #"mutation { testMutation(thing: "ok") { one { ...frag1 } two { no maybe ...frag2 } } }"#)
         XCTAssertEqual(fragmentQL, #"fragment frag1 on Frag1 { name age } fragment frag2 on Frag2 { birthday address }"#)
     }
-    
+
     func testWithArrayWithEmptyNode() {
         GQL(.mutation) {
             GQLNode("testMutation") {
@@ -98,16 +92,16 @@ class MutationTests: BaseTestCase {
             .withArgument("thing", value: "ok")
         }
         .serialize(to: &serializer)
-        
+
         XCTAssertEqual(graphQL, #"mutation { testMutation(thing: "ok") { one {  } two { no maybe ...frag2 } } }"#)
         XCTAssertEqual(fragmentQL, #"fragment frag2 on Frag2 { birthday address }"#)
     }
-    
+
     static var allTests = [
         ("testWithoutFragment", testWithoutFragment),
         ("testWithFragment", testWithFragment),
         ("testAdvanced", testAdvanced),
         ("testWithArray", testWithArray),
-        ("testWithArrayWithEmptyNode", testWithArrayWithEmptyNode)
+        ("testWithArrayWithEmptyNode", testWithArrayWithEmptyNode),
     ]
 }
